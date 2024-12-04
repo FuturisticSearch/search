@@ -4,54 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> <!-- Google Font -->
     <style>
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #121212;
-            color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 50px;
-            height: 100vh;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
+            padding: 0;
+            height: 100vh;
             overflow: hidden;
-            position: relative;
-            text-align: center;
-            transition: background 0.3s, color 0.3s; 
+            transition: background 0.3s ease;
         }
 
-       
+        /* Dark Mode Space Background */
+        body.dark-theme {
+            background: #000;
+            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Light Mode Day on Earth Background */
         body.light-theme {
-            background: #f8f8f8;
-            color: #202124;
+            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
 
-        h1 {
+        .theme-switch {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-theme .theme-switch:hover {
             color: #00e0ff;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0;
-            transform: translateY(-100px);
-            animation: slideInFromTop 1s forwards;
         }
 
-        @keyframes slideInFromTop {
-            0% {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        /* Floating Stars Animation for Dark Mode */
+        @keyframes star-field {
+            0% { transform: scale(1); }
+            100% { transform: scale(2); }
         }
 
-       
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: star-field 1.5s infinite alternate;
+            pointer-events: none;
+        }
+
+        .star[data-size="1"] {
+            width: 2px;
+            height: 2px;
+        }
+
+        .star[data-size="2"] {
+            width: 4px;
+            height: 4px;
+        }
+
+        .star[data-size="3"] {
+            width: 6px;
+            height: 6px;
+        }
+
+        /* Input, Button, Select */
         input, button, select {
             padding: 15px 30px;
             font-size: 18px;
@@ -75,7 +95,6 @@
             color: #aaa;
         }
 
-       
         select {
             background: transparent;
             border: 2px solid #00e0ff;
@@ -89,17 +108,6 @@
             box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
         }
 
-        select.light-theme {
-            border-color: #202124;
-            color: #202124;
-        }
-
-        select.light-theme:focus {
-            border-color: #202124;
-            box-shadow: 0 0 15px rgba(32, 33, 36, 0.8);
-        }
-
-        
         button {
             background: #00e0ff;
             color: #121212; 
@@ -110,7 +118,6 @@
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-       
         body.light-theme button {
             background: #202124;
             color: #fff;
@@ -121,77 +128,7 @@
             box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
         }
 
-        .theme-switch {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #fff; 
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .theme-switch:hover {
-            color: #00b8d4;
-        }
-
-        #results {
-            margin-top: 30px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 500px;
-            overflow-y: auto;
-            padding: 20px;
-            background: #222;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .light-theme #results {
-            background: #fff;
-            color: #202124;
-        }
-
-        .loading {
-            color: #00e0ff;
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .result-item {
-            margin-bottom: 25px;
-        }
-
-        .result-item a {
-            color: #00e0ff;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        .result-item a:hover {
-            color: #00b8d4;
-            text-decoration: underline;
-        }
-
-        .description {
-            font-size: 16px;
-            color: #e0e0e0;
-            margin-top: 5px;
-        }
-
-        .url {
-            font-size: 14px;
-            color: #00e0ff;
-            margin-top: 5px;
-        }
-
-        .image-preview {
-            margin-top: 10px;
-            max-width: 100%;
-            height: auto;
-        }
-
-       
+        /* Transition Effects */
         .theme-transition {
             position: absolute;
             top: 0;
@@ -224,14 +161,13 @@
                 border-radius: 0;
             }
         }
-
     </style>
 </head>
-<body>
+<body class="dark-theme">
     <h1>Future Search</h1>
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
-    <select id="searchCategory" style="margin-bottom: 20px; padding: 10px; font-size: 16px;">
+    <select id="searchCategory">
         <option value="web">Web</option>
         <option value="image">Images</option>
         <option value="news">News</option>
@@ -239,36 +175,47 @@
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
 
+    <!-- Floating Stars for Dark Mode -->
+    <div id="stars-container"></div>
+
     <script>
-      
+        // Star creation for Dark Mode (Animated Stars Background)
+        const numStars = 100; // Number of stars to create
+        const starsContainer = document.getElementById("stars-container");
+
+        for (let i = 0; i < numStars; i++) {
+            let star = document.createElement('div');
+            star.classList.add('star');
+            star.style.top = `${Math.random() * 100}vh`;
+            star.style.left = `${Math.random() * 100}vw`;
+            star.setAttribute('data-size', Math.floor(Math.random() * 3) + 1);
+            starsContainer.appendChild(star);
+        }
+
+        // Mouse move effect (3D movement for Dark and Light Theme)
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1; // range [-1, 1]
+            mouseY = (event.clientY / window.innerHeight) * 2 - 1; // range [-1, 1]
+            updateBackground();
+        });
+
+        function updateBackground() {
+            if (document.body.classList.contains('dark-theme')) {
+                starsContainer.style.transform = `translate(${mouseX * 50}px, ${mouseY * 50}px)`;
+            } else {
+                document.body.style.transform = `perspective(1000px) rotateX(${mouseY * 10}deg) rotateY(${mouseX * 10}deg)`;
+            }
+        }
+
         const API_CSE_PAIRS = [
             { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
             { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },  
             { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }   
         ];
 
-        
-        function toggleTheme() {
-            const themeTransition = document.createElement('div');
-            themeTransition.classList.add('theme-transition');
-            document.body.appendChild(themeTransition);
-
-            document.body.classList.toggle('light-theme');
-
-            const themeSwitchButton = document.querySelector('.theme-switch');
-            if (document.body.classList.contains('light-theme')) {
-                themeSwitchButton.textContent = 'Switch to Dark Mode';
-            } else {
-                themeSwitchButton.textContent = 'Switch to Light Mode';
-            }
-
-            
-            themeTransition.addEventListener('animationend', () => {
-                themeTransition.remove();
-            });
-        }
-
-        
         function getRandomAPIConfig() {
             const randomPair = API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
             return randomPair;
@@ -285,38 +232,67 @@
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = '<div class="loading">Loading results...</div>';
 
-           
-            const { apiKey, cseId } = getRandomAPIConfig();
+            let retryCount = 0;
+            let success = false;
 
-            let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+            while (retryCount < 6 && !success) {
+                const { apiKey, cseId } = getRandomAPIConfig();
 
-            
-            if (category === 'image') {
-                url += '&searchType=image';
-            } else if (category === 'news') {
-                url += '&searchType=news';
-            }
+                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.items && data.items.length > 0) {
-                    resultsContainer.innerHTML = data.items.map(item => `
-                        <div class="result-item">
-                            <a href="${item.link}" target="_blank">${item.title}</a>
-                            <p class="url">${item.link}</p>
-                            <p class="description">${item.snippet}</p>
-                            ${category === 'image' && item.pagemap && item.pagemap.cse_image ? `<img class="image-preview" src="${item.pagemap.cse_image[0].src}" alt="Image preview">` : ''}
-                        </div>
-                    `).join('');
-                } else {
-                    resultsContainer.innerHTML = '<p>No results found.</p>';
+                if (category === 'image') {
+                    url += '&searchType=image';
+                } else if (category === 'news') {
+                    url += '&searchType=news';
                 }
-            } catch (error) {
-                resultsContainer.innerHTML = '<p>Error fetching results. Please try again later.</p>';
-                console.error('Error fetching search results:', error);
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        resultsContainer.innerHTML = data.items.map(item => `
+                            <div class="result-item">
+                                <a href="${item.link}" target="_blank">${item.title}</a>
+                                <p class="url">${item.link}</p>
+                                <p class="description">${item.snippet}</p>
+                                ${category === 'image' && item.pagemap && item.pagemap.cse_image ? `<img class="image-preview" src="${item.pagemap.cse_image[0].src}" alt="Image preview">` : ''}
+                            </div>
+                        `).join('');
+                        success = true;
+                    } else {
+                        resultsContainer.innerHTML = '<p>No results found.</p>';
+                        success = true;
+                    }
+                } catch (error) {
+                    retryCount++;
+                    if (retryCount >= 6) {
+                        window.location.href = 'https://FuturisticSearch.github.io/error';
+                    } else {
+                        resultsContainer.innerHTML = '<div class="loading">Retrying...</div>';
+                    }
+                }
             }
+        }
+
+        function toggleTheme() {
+            const themeTransition = document.createElement('div');
+            themeTransition.classList.add('theme-transition');
+            document.body.appendChild(themeTransition);
+
+            document.body.classList.toggle('light-theme');
+            document.body.classList.toggle('dark-theme');
+
+            const themeSwitchButton = document.querySelector('.theme-switch');
+            if (document.body.classList.contains('light-theme')) {
+                themeSwitchButton.textContent = 'Switch to Dark Mode';
+            } else {
+                themeSwitchButton.textContent = 'Switch to Light Mode';
+            }
+
+            themeTransition.addEventListener('animationend', () => {
+                themeTransition.remove();
+            });
         }
     </script>
 </body>
