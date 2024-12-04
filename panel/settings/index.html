@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #fff;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #202124;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar h1 {
+            color: #00e0ff;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            color: #e0e0e0;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px;
+            margin: 10px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar nav a:hover {
+            background-color: #00b8d4;
+            color: #121212;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        h2 {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        .settings-form {
+            background-color: #202124;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #00e0ff;
+        }
+
+        .settings-form input,
+        .settings-form select,
+        .settings-form button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 2px solid #00e0ff;
+            background: transparent;
+            color: #e0e0e0;
+        }
+
+        .settings-form button {
+            background-color: #00e0ff;
+            color: #121212;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .settings-form button:hover {
+            background-color: #00b8d4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h1>Admin Panel</h1>
+        <nav>
+            <a href="https://FuturisticSearch.github.io/search/panel/dashboard" target="_blank">Dashboard</a>
+            <a href="https://FuturisticSearch.github.io/search/panel/users" target="_blank">Users</a>
+            <a href="https://FuturisticSearch.github.io/search/panel/settings" target="_blank">Settings</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>Settings</h2>
+
+        <!-- Settings Form -->
+        <div class="settings-form">
+            <h3>Panel Settings</h3>
+            <label for="theme">Choose Theme</label>
+            <select id="theme">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+            </select>
+
+            <label for="notifications">Enable Notifications</label>
+            <select id="notifications">
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+            </select>
+
+            <label for="language">Language</label>
+            <select id="language">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+            </select>
+
+            <button onclick="saveSettings()">Save Settings</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to save settings to localStorage
+        function saveSettings() {
+            const theme = document.getElementById("theme").value;
+            const notifications = document.getElementById("notifications").value;
+            const language = document.getElementById("language").value;
+
+            const settings = {
+                theme: theme,
+                notifications: notifications,
+                language: language
+            };
+
+            // Save settings to localStorage
+            localStorage.setItem("settings", JSON.stringify(settings));
+
+            alert("Settings have been saved.");
+        }
+
+        // Load settings from localStorage if available
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem("settings"));
+            if (settings) {
+                document.getElementById("theme").value = settings.theme;
+                document.getElementById("notifications").value = settings.notifications;
+                document.getElementById("language").value = settings.language;
+            }
+        }
+
+        // Load settings on page load
+        loadSettings();
+    </script>
+
+</body>
+</html>
