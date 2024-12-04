@@ -12,6 +12,7 @@
             padding: 0;
             height: 100vh;
             transition: background 0.3s ease, transform 0.3s ease;
+            cursor: none; /* Hide the default cursor */
         }
 
         body.dark-theme {
@@ -117,6 +118,41 @@
         .result-item a:hover {
             text-decoration: underline;
         }
+
+        /* Custom glowing cursor and trail */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 224, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
+            z-index: 9999;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 224, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fade 0.6s ease-out forwards;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
     </style>
 </head>
 <body class="dark-theme">
@@ -131,6 +167,9 @@
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
 
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+
     <script>
         const API_CSE_PAIRS = [
             { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
@@ -142,13 +181,23 @@
         let mouseY = 0;
 
         document.addEventListener('mousemove', (event) => {
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1; // range [-1, 1]
-            mouseY = (event.clientY / window.innerHeight) * 2 - 1; // range [-1, 1]
-            updateBackground();
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            updateCursor(event);
         });
 
-        function updateBackground() {
-            document.body.style.transform = `perspective(1000px) rotateX(${mouseY * 10}deg) rotateY(${mouseX * 10}deg)`;
+        function updateCursor(event) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.top = `${event.clientY}px`;
+            cursor.style.left = `${event.clientX}px`;
+
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.top = `${event.clientY}px`;
+            trail.style.left = `${event.clientX}px`;
+            document.body.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 600); // Remove the trail after animation
         }
 
         function getRandomAPIConfig() {
