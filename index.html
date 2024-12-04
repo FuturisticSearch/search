@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -12,7 +12,7 @@
             padding: 0;
             height: 100vh;
             overflow: hidden;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
         }
 
         /* Dark Mode Space Background */
@@ -41,37 +41,6 @@
             color: #00e0ff;
         }
 
-        /* Floating Stars Animation for Dark Mode */
-        @keyframes star-field {
-            0% { transform: scale(1); }
-            100% { transform: scale(2); }
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.7;
-            animation: star-field 1.5s infinite alternate;
-            pointer-events: none;
-        }
-
-        .star[data-size="1"] {
-            width: 2px;
-            height: 2px;
-        }
-
-        .star[data-size="2"] {
-            width: 4px;
-            height: 4px;
-        }
-
-        .star[data-size="3"] {
-            width: 6px;
-            height: 6px;
-        }
-
-        /* Input, Button, Select */
         input, button, select {
             padding: 15px 30px;
             font-size: 18px;
@@ -110,7 +79,7 @@
 
         button {
             background: #00e0ff;
-            color: #121212; 
+            color: #121212;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
@@ -128,38 +97,28 @@
             box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
         }
 
-        /* Transition Effects */
-        .theme-transition {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #121212;
-            z-index: 9999;
-            border-radius: 50%;
-            animation: virusSpread 2s forwards;
+        #results {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #00e0ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
         }
 
-        body.light-theme .theme-transition {
-            background: #f8f8f8;
+        .result-item {
+            margin-bottom: 20px;
         }
 
-        @keyframes virusSpread {
-            0% {
-                width: 0;
-                height: 0;
-                top: 50%;
-                left: 50%;
-                border-radius: 50%;
-            }
-            100% {
-                width: 100vw;
-                height: 100vh;
-                top: 0;
-                left: 0;
-                border-radius: 0;
-            }
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -175,24 +134,8 @@
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
 
-    <!-- Floating Stars for Dark Mode -->
-    <div id="stars-container"></div>
-
     <script>
-        // Star creation for Dark Mode (Animated Stars Background)
-        const numStars = 100; // Number of stars to create
-        const starsContainer = document.getElementById("stars-container");
-
-        for (let i = 0; i < numStars; i++) {
-            let star = document.createElement('div');
-            star.classList.add('star');
-            star.style.top = `${Math.random() * 100}vh`;
-            star.style.left = `${Math.random() * 100}vw`;
-            star.setAttribute('data-size', Math.floor(Math.random() * 3) + 1);
-            starsContainer.appendChild(star);
-        }
-
-        // Mouse move effect (3D movement for Dark and Light Theme)
+        // Mouse move effect for both themes
         let mouseX = 0;
         let mouseY = 0;
 
@@ -203,96 +146,31 @@
         });
 
         function updateBackground() {
-            if (document.body.classList.contains('dark-theme')) {
-                starsContainer.style.transform = `translate(${mouseX * 50}px, ${mouseY * 50}px)`;
-            } else {
-                document.body.style.transform = `perspective(1000px) rotateX(${mouseY * 10}deg) rotateY(${mouseX * 10}deg)`;
-            }
-        }
-
-        const API_CSE_PAIRS = [
-            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
-            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },  
-            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }   
-        ];
-
-        function getRandomAPIConfig() {
-            const randomPair = API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
-            return randomPair;
+            document.body.style.transform = `perspective(1000px) rotateX(${mouseY * 10}deg) rotateY(${mouseX * 10}deg)`;
         }
 
         async function performSearch() {
             const query = document.getElementById("searchBar").value;
             const category = document.getElementById("searchCategory").value;
-
-            if (!query) {
-                return alert('Please enter a search term');
-            }
-
             const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = '<div class="loading">Loading results...</div>';
-
-            let retryCount = 0;
-            let success = false;
-
-            while (retryCount < 6 && !success) {
-                const { apiKey, cseId } = getRandomAPIConfig();
-
-                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-
-                if (category === 'image') {
-                    url += '&searchType=image';
-                } else if (category === 'news') {
-                    url += '&searchType=news';
-                }
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (data.items && data.items.length > 0) {
-                        resultsContainer.innerHTML = data.items.map(item => `
-                            <div class="result-item">
-                                <a href="${item.link}" target="_blank">${item.title}</a>
-                                <p class="url">${item.link}</p>
-                                <p class="description">${item.snippet}</p>
-                                ${category === 'image' && item.pagemap && item.pagemap.cse_image ? `<img class="image-preview" src="${item.pagemap.cse_image[0].src}" alt="Image preview">` : ''}
-                            </div>
-                        `).join('');
-                        success = true;
-                    } else {
-                        resultsContainer.innerHTML = '<p>No results found.</p>';
-                        success = true;
-                    }
-                } catch (error) {
-                    retryCount++;
-                    if (retryCount >= 6) {
-                        window.location.href = 'https://FuturisticSearch.github.io/error';
-                    } else {
-                        resultsContainer.innerHTML = '<div class="loading">Retrying...</div>';
-                    }
-                }
-            }
+            resultsContainer.innerHTML = '<div>Loading results...</div>';
+            // Mock search result for demonstration
+            setTimeout(() => {
+                resultsContainer.innerHTML = `
+                    <div class="result-item"><a href="#">Result 1 for ${query}</a></div>
+                    <div class="result-item"><a href="#">Result 2 for ${query}</a></div>
+                    <div class="result-item"><a href="#">Result 3 for ${query}</a></div>
+                `;
+            }, 2000);
         }
 
         function toggleTheme() {
-            const themeTransition = document.createElement('div');
-            themeTransition.classList.add('theme-transition');
-            document.body.appendChild(themeTransition);
-
             document.body.classList.toggle('light-theme');
             document.body.classList.toggle('dark-theme');
-
-            const themeSwitchButton = document.querySelector('.theme-switch');
-            if (document.body.classList.contains('light-theme')) {
-                themeSwitchButton.textContent = 'Switch to Dark Mode';
-            } else {
-                themeSwitchButton.textContent = 'Switch to Light Mode';
-            }
-
-            themeTransition.addEventListener('animationend', () => {
-                themeTransition.remove();
-            });
+            document.querySelector('.theme-switch').textContent =
+                document.body.classList.contains('light-theme')
+                    ? 'Switch to Dark Mode'
+                    : 'Switch to Light Mode';
         }
     </script>
 </body>
