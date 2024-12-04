@@ -3,196 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuristic Search - Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Admin Panel Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> <!-- Google Font -->
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #fff;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .container {
             display: flex;
-            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
             align-items: center;
+            background-color: #f5f5f5;
         }
 
-        .panel-card {
-            background: #333;
-            padding: 20px;
-            margin: 20px;
-            width: 60%;
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-        }
-
-        .panel-card h2 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .button {
-            background-color: #00e0ff;
-            color: #121212;
-            padding: 15px 30px;
-            border-radius: 10px;
-            border: none;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
             text-align: center;
-        }
-
-        .button:hover {
-            background-color: #00b8d4;
-        }
-
-        .button:focus {
-            outline: none;
         }
 
         .input-field {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #00e0ff;
-            background: transparent;
-            color: #fff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #00e0ff;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
         }
 
         .input-field:focus {
             border-color: #00b8d4;
-            box-shadow: 0 0 10px rgba(0, 184, 212, 0.8);
+            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
         }
 
-        .log-table {
+        .login-button {
             width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
+            padding: 15px;
+            font-size: 16px;
+            background: #00e0ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .log-table th, .log-table td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #00e0ff;
+        .login-button:hover {
+            background: #00b8d4;
         }
 
-        .log-table th {
-            background-color: #333;
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
         }
 
-        .log-table td {
-            background-color: #222;
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            margin-top: 30px;
+        }
+
+        .sidebar nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #484d53;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar nav a:hover {
+            background-color: #007b7f;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: #00e0ff;
+            color: #fff;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
+    <!-- Login Form -->
+    <div class="login-container" id="login-form">
+        <h2>Admin Login</h2>
+        <input type="text" id="username" class="input-field" placeholder="Username" required />
+        <input type="password" id="password" class="input-field" placeholder="Password" required />
+        <button class="login-button" onclick="login()">Login</button>
+        <div class="error-message" id="error-message"></div>
+    </div>
 
-    <h1>Futuristic Search - Admin Panel</h1>
-
-    <div class="container">
-        <!-- API Key Management -->
-        <div class="panel-card">
-            <h2>Manage API Keys</h2>
-            <input type="text" id="newApiKey" class="input-field" placeholder="Enter new API Key">
-            <button class="button" onclick="addApiKey()">Add New API Key</button>
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="admin-panel">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>Admin Panel</h1>
+            <nav>
+                <a href="#">Dashboard</a>
+                <a href="#">Users</a>
+                <a href="#">Search</a>
+                <a href="#">Settings</a>
+            </nav>
+            <button class="theme-switch" onclick="toggleTheme()">Switch Theme</button>
         </div>
 
-        <!-- View Logs Section -->
-        <div class="panel-card">
-            <h2>View Logs</h2>
-            <table class="log-table" id="logTable">
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="logBody">
-                    <tr>
-                        <td colspan="3">No logs available.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Admin Dashboard</h2>
+                <button class="theme-switch" onclick="toggleTheme()">Switch Theme</button>
+            </div>
 
-        <!-- Button to view error logs -->
-        <div class="panel-card">
-            <button class="button" onclick="viewErrorLogs()">View Error Logs</button>
+            <div class="search-panel">
+                <input type="text" id="searchBar" placeholder="Search for something...">
+                <select id="searchCategory">
+                    <option value="web">Web</option>
+                    <option value="image">Images</option>
+                    <option value="news">News</option>
+                </select>
+                <button onclick="performSearch()">Search</button>
+            </div>
+
+            <div id="results"></div>
         </div>
     </div>
 
     <script>
-        // Store the API Keys in localStorage or use a backend in real life
-        let apiKeys = JSON.parse(localStorage.getItem('apiKeys')) || [];
+        const correctPassword = "Pacejov+2012"; // Correct password
+        const correctUsername = "admin"; // Correct username (if needed)
 
-        // Store error logs in localStorage for now
-        let logs = JSON.parse(localStorage.getItem('logs')) || [];
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("error-message");
 
-        // Function to add a new API Key
-        function addApiKey() {
-            const newApiKey = document.getElementById('newApiKey').value.trim();
-            if (newApiKey && !apiKeys.includes(newApiKey)) {
-                apiKeys.push(newApiKey);
-                localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
-                alert('New API Key added successfully!');
-                document.getElementById('newApiKey').value = ''; // Clear the input
+            if (username === "admin" && password === correctPassword) {
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("admin-panel").style.display = "flex";
+                errorMessage.textContent = "";
             } else {
-                alert('Please provide a valid, unique API Key');
+                errorMessage.textContent = "Invalid username or password!";
             }
         }
 
-        // Function to display logs
-        function displayLogs() {
-            const logBody = document.getElementById('logBody');
-            logBody.innerHTML = ''; // Clear current logs
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle("dark-theme");
+            const sidebar = document.querySelector(".sidebar");
+            sidebar.classList.toggle("dark-theme");
+        }
 
-            if (logs.length === 0) {
-                logBody.innerHTML = '<tr><td colspan="3">No logs available.</td></tr>';
-            } else {
-                logs.forEach(log => {
-                    const logRow = document.createElement('tr');
-                    logRow.innerHTML = `
-                        <td>${log.timestamp}</td>
-                        <td>${log.message}</td>
-                        <td>${log.status}</td>
-                    `;
-                    logBody.appendChild(logRow);
-                });
+        async function performSearch() {
+            const query = document.getElementById("searchBar").value;
+            const category = document.getElementById("searchCategory").value;
+
+            if (!query) {
+                return alert("Please enter a search term.");
             }
-        }
 
-        // Function to simulate an error log
-        function logError(message, status) {
-            const timestamp = new Date().toISOString();
-            const log = { timestamp, message, status };
-            logs.push(log);
-            localStorage.setItem('logs', JSON.stringify(logs));
-            displayLogs();
-        }
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "<div>Loading...</div>";
 
-        // Simulating an error log when a user views logs
-        function viewErrorLogs() {
-            logError('Error fetching API data after multiple retries', 'Failed');
-            displayLogs();
-        }
+            // Dummy results for demonstration (replace with actual search logic/API call)
+            const dummyResults = [
+                { title: "Result 1", link: "#", snippet: "This is a result description." },
+                { title: "Result 2", link: "#", snippet: "Another description here." },
+            ];
 
-        // Initialize the display of logs
-        displayLogs();
+            resultsContainer.innerHTML = dummyResults.map(result => `
+                <div class="result-item">
+                    <a href="${result.link}" target="_blank">${result.title}</a>
+                    <p>${result.snippet}</p>
+                </div>
+            `).join("");
+        }
     </script>
 </body>
 </html>
-  
