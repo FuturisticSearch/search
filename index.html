@@ -11,11 +11,9 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-            overflow: hidden;
             transition: background 0.3s ease, transform 0.3s ease;
         }
 
-        /* Dark Mode Space Background */
         body.dark-theme {
             background: #000;
             background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
@@ -23,7 +21,6 @@
             background-position: center;
         }
 
-        /* Light Mode Day on Earth Background */
         body.light-theme {
             background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
             background-size: cover;
@@ -135,7 +132,12 @@
     <div id="results"></div>
 
     <script>
-        // Mouse move effect for both themes
+        const API_CSE_PAIRS = [
+            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
+            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
+            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
+        ];
+
         let mouseX = 0;
         let mouseY = 0;
 
@@ -149,19 +151,59 @@
             document.body.style.transform = `perspective(1000px) rotateX(${mouseY * 10}deg) rotateY(${mouseX * 10}deg)`;
         }
 
+        function getRandomAPIConfig() {
+            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        }
+
         async function performSearch() {
             const query = document.getElementById("searchBar").value;
             const category = document.getElementById("searchCategory").value;
+
+            if (!query) {
+                return alert('Please enter a search term');
+            }
+
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = '<div>Loading results...</div>';
-            // Mock search result for demonstration
-            setTimeout(() => {
-                resultsContainer.innerHTML = `
-                    <div class="result-item"><a href="#">Result 1 for ${query}</a></div>
-                    <div class="result-item"><a href="#">Result 2 for ${query}</a></div>
-                    <div class="result-item"><a href="#">Result 3 for ${query}</a></div>
-                `;
-            }, 2000);
+
+            let retryCount = 0;
+            let success = false;
+
+            while (retryCount < 6 && !success) {
+                const { apiKey, cseId } = getRandomAPIConfig();
+                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+                if (category === 'image') {
+                    url += '&searchType=image';
+                } else if (category === 'news') {
+                    url += '&searchType=news';
+                }
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        resultsContainer.innerHTML = data.items.map(item => `
+                            <div class="result-item">
+                                <a href="${item.link}" target="_blank">${item.title}</a>
+                                <p class="url">${item.link}</p>
+                                <p class="description">${item.snippet}</p>
+                            </div>
+                        `).join('');
+                        success = true;
+                    } else {
+                        resultsContainer.innerHTML = '<p>No results found.</p>';
+                        success = true;
+                    }
+                } catch (error) {
+                    retryCount++;
+                    if (retryCount >= 6) {
+                        window.location.href = 'https://FuturisticSearch.github.io/error';
+                    } else {
+                        resultsContainer.innerHTML = '<div>Retrying...</div>';
+                    }
+                }
+            }
         }
 
         function toggleTheme() {
