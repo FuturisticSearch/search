@@ -1,1 +1,1 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b20e7eb9-271e-4339-8a7d-86e21c953887/deploy-status)](https://app.netlify.com/sites/futuresearch/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/de41135f-9ca8-4b5c-b332-747b1acc312a/deploy-status)](https://app.netlify.com/sites/futuresearch/deploys)
