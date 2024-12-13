@@ -348,42 +348,68 @@
         }
 
         function addBookmark(name, url) {
+            // Load existing bookmarks from localStorage
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+            // Check if the site is already bookmarked
+            const alreadyBookmarked = bookmarks.some(bookmark => bookmark.url === url);
+            if (alreadyBookmarked) {
+                alert('This site is already bookmarked!');
+                return;
+            }
+
+            // Add the new bookmark to the array
+            bookmarks.push({ name, url });
+
+            // Save the updated bookmarks back to localStorage
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
+            // Update the bookmarks bar
+            renderBookmarks();
+        }
+
+        function renderBookmarks() {
             const bookmarksBar = document.getElementById('bookmarks-bar');
-            const bookmark = document.createElement('div');
-            bookmark.className = 'bookmark';
-            bookmark.innerText = name;
-            bookmark.onclick = () => window.open(url, '_blank');
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
-            bookmark.addEventListener('contextmenu', (event) => {
-                event.preventDefault();
-                const menu = document.createElement('div');
-                menu.className = 'context-menu';
-                menu.innerHTML = '<button onclick="deleteBookmark(this)">Delete</button>';
-                document.body.appendChild(menu);
+            bookmarksBar.innerHTML = ''; // Clear current bookmarks
 
-                menu.style.left = `${event.pageX}px`;
-                menu.style.top = `${event.pageY}px`;
+            bookmarks.forEach(bookmark => {
+                const bookmarkElement = document.createElement('div');
+                bookmarkElement.className = 'bookmark';
+                bookmarkElement.innerText = bookmark.name;
+                bookmarkElement.onclick = () => window.open(bookmark.url, '_blank');
 
-                document.addEventListener('click', () => {
-                    if (menu) menu.remove();
+                // Add right-click delete functionality
+                bookmarkElement.addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                    const menu = document.createElement('div');
+                    menu.className = 'context-menu';
+                    menu.innerHTML = '<button onclick="deleteBookmark(\'' + bookmark.url + '\')">Delete</button>';
+                    document.body.appendChild(menu);
+
+                    menu.style.left = `${event.pageX}px`;
+                    menu.style.top = `${event.pageY}px`;
+
+                    document.addEventListener('click', () => {
+                        menu.remove();
+                    });
                 });
 
-                menu.querySelector('button').onclick = () => {
-                    deleteBookmark(bookmark);
-                    menu.remove();
-                };
+                bookmarksBar.appendChild(bookmarkElement);
             });
-
-            bookmarksBar.appendChild(bookmark);
         }
 
-        function deleteBookmark(bookmark) {
-            bookmark.remove();
+        function deleteBookmark(url) {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            const updatedBookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
+
+            localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+            renderBookmarks(); // Re-render the bookmarks bar
         }
 
-        // Example: Add a bookmark
-        addBookmark('Google', 'https://www.google.com');
-        addBookmark('GitHub', 'https://github.com');
+        // Render bookmarks when the page loads
+        renderBookmarks();
     </script>
 </body>
 </html>
