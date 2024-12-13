@@ -6,34 +6,98 @@
     <title>Future Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Existing styles remain unchanged */
-
-        /* AR Mode styles */
-        #ar-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            z-index: 10000;
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            transition: background 0.3s ease, transform 0.3s ease;
+            cursor: none;
         }
 
-        #ar-button {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            padding: 15px 30px;
-            background-color: #00e0ff;
-            color: #121212;
-            border-radius: 10px;
+        body.dark-theme {
+            background: #000;
+            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: background 1s ease-in-out;
+        }
+
+        body.light-theme {
+            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
+            background-size: cover;
+            transition: background 1s ease-in-out;
+        }
+
+        .theme-switch {
+            margin-bottom: 20px;
             font-size: 18px;
+            color: #fff;
             cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-theme .theme-switch:hover {
+            color: #00e0ff;
+        }
+
+        input, button, select {
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #00e0ff;
+            outline: none;
+            width: 350px;
+            text-align: center;
+            background: transparent;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
             transition: all 0.3s ease-in-out;
         }
 
-        #ar-button:hover {
-            background-color: #00b8d4;
+        button {
+            background: #00e0ff;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 224, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
+            z-index: 9999;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 224, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fade 0.6s ease-out forwards;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
         }
 
         #results {
@@ -46,6 +110,52 @@
             background: rgba(0, 0, 0, 0.5);
             color: #fff;
         }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .bookmark-btn {
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .result-item:hover .bookmark-btn {
+            background: #e65100;
+        }
+
+        #results3D {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            perspective: 1000px;
+        }
+
+        .result-item3D {
+            margin: 20px;
+            width: 200px;
+            height: 200px;
+            background: #00e0ff;
+            border-radius: 10px;
+            transform: rotateY(30deg);
+            transition: transform 0.3s ease;
+        }
+
+        .result-item3D:hover {
+            transform: rotateY(0deg);
+        }
     </style>
 </head>
 <body class="dark-theme">
@@ -56,6 +166,7 @@
         <option value="web">Web</option>
         <option value="image">Images</option>
         <option value="news">News</option>
+        <option value="meme">Memes</option> <!-- Meme search category -->
     </select>
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
@@ -64,26 +175,11 @@
     <button onclick="loadWebsite()">Open Website</button>
     <iframe id="siteViewer" title="Website Viewer"></iframe>
 
+    <!-- 3D Results container -->
+    <div id="results3D"></div>
+
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
-
-    <!-- AR Container -->
-    <div id="ar-container">
-        <a-scene embedded arjs>
-            <!-- 3D Model (can be replaced with anything you like) -->
-            <a-marker preset="hiro">
-                <a-box position="0 0.5 0" material="color: red;"></a-box>
-            </a-marker>
-            <a-camera></a-camera>
-        </a-scene>
-    </div>
-
-    <!-- AR Mode Button -->
-    <button id="ar-button" onclick="toggleARMode()">Activate AR Mode</button>
-
-    <!-- AR.js -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
 
     <script>
         const API_CSE_PAIRS = [
@@ -119,6 +215,15 @@
             return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
         }
 
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            document.body.classList.toggle('dark-theme');
+            document.querySelector('.theme-switch').textContent =
+                document.body.classList.contains('light-theme')
+                    ? 'Switch to Dark Mode'
+                    : 'Switch to Light Mode';
+        }
+
         async function performSearch() {
             const query = document.getElementById("searchBar").value;
             const category = document.getElementById("searchCategory").value;
@@ -140,25 +245,41 @@
                     url += '&searchType=image';
                 } else if (category === 'news') {
                     url += '&searchType=news';
+                } else if (category === 'meme') {
+                    url = `https://api.imgflip.com/get_memes`;
                 }
 
                 try {
                     const response = await fetch(url);
                     const data = await response.json();
 
-                    if (data.items && data.items.length > 0) {
-                        resultsContainer.innerHTML = data.items.map(item => `
-                            <div class="result-item">
-                                <a href="${item.link}" target="_blank">${item.title}</a>
-                                <p class="url">${item.link}</p>
-                                <p class="description">${item.snippet}</p>
-                            </div>
-                        `).join('');
-                        success = true;
+                    if (category === 'meme') {
+                        // Meme search
+                        if (data.data && data.data.memes) {
+                            resultsContainer.innerHTML = data.data.memes.slice(0, 5).map(meme => `
+                                <div class="result-item">
+                                    <img src="${meme.url}" alt="${meme.name}" width="200">
+                                    <p>${meme.name}</p>
+                                    <button class="bookmark-btn" onclick="bookmarkResult('${meme.url}', '${meme.name}')">Bookmark</button>
+                                </div>
+                            `).join('');
+                        }
                     } else {
-                        resultsContainer.innerHTML = '<p>No results found.</p>';
-                        success = true;
+                        // Standard Web/Image/News search
+                        if (data.items && data.items.length > 0) {
+                            resultsContainer.innerHTML = data.items.map(item => `
+                                <div class="result-item">
+                                    <a href="${item.link}" target="_blank">${item.title}</a>
+                                    <p class="url">${item.link}</p>
+                                    <p class="description">${item.snippet}</p>
+                                    <button class="bookmark-btn" onclick="bookmarkResult('${item.link}', '${item.title}')">Bookmark</button>
+                                </div>
+                            `).join('');
+                        } else {
+                            resultsContainer.innerHTML = '<p>No results found.</p>';
+                        }
                     }
+                    success = true;
                 } catch (error) {
                     retryCount++;
                     if (retryCount >= 6) {
@@ -170,13 +291,11 @@
             }
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            document.body.classList.toggle('dark-theme');
-            document.querySelector('.theme-switch').textContent =
-                document.body.classList.contains('light-theme')
-                    ? 'Switch to Dark Mode'
-                    : 'Switch to Light Mode';
+        function bookmarkResult(url, title) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks.push({ url, title });
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            alert('Result Bookmarked!');
         }
 
         function loadWebsite() {
@@ -184,10 +303,8 @@
             const siteViewer = document.getElementById('siteViewer');
             
             if (siteInput === 'computer') {
-                // Load a virtual Windows desktop environment when 'computer' is entered
-                siteViewer.src = 'https://win10.webjeet.me/'; // Example of a Windows 10 emulator
+                siteViewer.src = 'https://win10.webjeet.me/';
             } else {
-                // Otherwise, try to open the URL entered
                 if (siteInput) {
                     const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
                         ? siteInput
@@ -196,20 +313,6 @@
                 } else {
                     alert('Please enter a valid URL');
                 }
-            }
-        }
-
-        function toggleARMode() {
-            const arContainer = document.getElementById("ar-container");
-            const arButton = document.getElementById("ar-button");
-
-            // Toggle AR view
-            if (arContainer.style.display === "none") {
-                arContainer.style.display = "block";
-                arButton.textContent = "Exit AR Mode";
-            } else {
-                arContainer.style.display = "none";
-                arButton.textContent = "Activate AR Mode";
             }
         }
     </script>
