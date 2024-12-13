@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,7 +119,6 @@
             text-decoration: underline;
         }
 
-       
         .cursor {
             position: fixed;
             width: 20px;
@@ -278,15 +276,22 @@
         }
 
         function loadWebsite() {
-            const siteInput = document.getElementById('siteInput').value;
+            const siteInput = document.getElementById('siteInput').value.trim().toLowerCase();
             const siteViewer = document.getElementById('siteViewer');
-            if (siteInput.trim()) {
-                const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
-                    ? siteInput
-                    : `https://${siteInput}`;
-                siteViewer.src = url;
+            
+            if (siteInput === 'computer') {
+                // Load a virtual Windows desktop environment when 'computer' is entered
+                siteViewer.src = 'https://win10.webjeet.me/'; // Example of a Windows 10 emulator
             } else {
-                alert('Please enter a valid URL');
+                // Otherwise, try to open the URL entered
+                if (siteInput) {
+                    const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
+                        ? siteInput
+                        : `https://${siteInput}`;
+                    siteViewer.src = url;
+                } else {
+                    alert('Please enter a valid URL');
+                }
             }
         }
     </script>
