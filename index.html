@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,10 +161,66 @@
             margin-top: 20px;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
+
+        .bookmark {
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+            margin: 5px;
+            background: rgba(0, 224, 255, 0.6);
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        #bookmarks-bar {
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            display: flex;
+            overflow-x: auto;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .context-menu {
+            position: absolute;
+            background-color: #222;
+            border: 1px solid #00e0ff;
+            box-shadow: 0 0 10px rgba(0, 224, 255, 0.8);
+            color: #fff;
+            padding: 10px;
+            z-index: 9999;
+        }
+
+        .context-menu button {
+            background: #00e0ff;
+            border: none;
+            color: #121212;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .context-menu button:hover {
+            background: #00b8d4;
+        }
+
+        .theme-switch {
+            margin: 20px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            background: #00e0ff;
+            border-radius: 5px;
+            color: #fff;
+        }
     </style>
 </head>
 <body class="dark-theme">
-    <h1>Future Search</h1>
+    <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
+
+    <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
+    
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
     <select id="searchCategory">
@@ -191,6 +248,7 @@
         let mouseX = 0;
         let mouseY = 0;
 
+        // Track mouse movement for custom cursor
         document.addEventListener('mousemove', (event) => {
             mouseX = event.clientX;
             mouseY = event.clientY;
@@ -248,6 +306,7 @@
                                 <a href="${item.link}" target="_blank">${item.title}</a>
                                 <p class="url">${item.link}</p>
                                 <p class="description">${item.snippet}</p>
+                                <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
                             </div>
                         `).join('');
                         success = true;
@@ -257,43 +316,79 @@
                     }
                 } catch (error) {
                     retryCount++;
-                    if (retryCount >= 6) {
-                        window.location.href = 'https://FuturisticSearch.github.io/error';
-                    } else {
-                        resultsContainer.innerHTML = '<div>Retrying...</div>';
-                    }
                 }
             }
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            document.body.classList.toggle('dark-theme');
-            document.querySelector('.theme-switch').textContent =
-                document.body.classList.contains('light-theme')
-                    ? 'Switch to Dark Mode'
-                    : 'Switch to Light Mode';
+            const body = document.body;
+            body.classList.toggle("dark-theme");
+            body.classList.toggle("light-theme");
+            const button = document.querySelector(".theme-switch");
+            if (body.classList.contains("dark-theme")) {
+                button.innerText = "Switch to Light Mode";
+            } else {
+                button.innerText = "Switch to Dark Mode";
+            }
         }
 
         function loadWebsite() {
-            const siteInput = document.getElementById('siteInput').value.trim().toLowerCase();
-            const siteViewer = document.getElementById('siteViewer');
-            
-            if (siteInput === 'computer') {
-                // Load a virtual Windows desktop environment when 'computer' is entered
-                siteViewer.src = 'https://win10.webjeet.me/'; // Example of a Windows 10 emulator
-            } else {
-                // Otherwise, try to open the URL entered
-                if (siteInput) {
-                    const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
-                        ? siteInput
-                        : `https://${siteInput}`;
-                    siteViewer.src = url;
-                } else {
-                    alert('Please enter a valid URL');
-                }
-            }
+            const siteURL = document.getElementById("siteInput").value;
+            const iframe = document.getElementById("siteViewer");
+            iframe.src = siteURL;
         }
+
+        function addBookmark(title, url) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+            // Check if the site is already bookmarked
+            if (bookmarks.find(bookmark => bookmark.url === url)) {
+                alert("This site is already bookmarked.");
+                return;
+            }
+
+            bookmarks.push({ title, url });
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            displayBookmarks();
+        }
+
+        function displayBookmarks() {
+            const bookmarksBar = document.getElementById('bookmarks-bar');
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+            bookmarksBar.innerHTML = bookmarks.map(bookmark => `
+                <div class="bookmark" oncontextmenu="showContextMenu(event, '${bookmark.url}')">
+                    <a href="${bookmark.url}" target="_blank">${bookmark.title}</a>
+                </div>
+            `).join('');
+        }
+
+        function showContextMenu(event, url) {
+            event.preventDefault();
+            const contextMenu = document.createElement('div');
+            contextMenu.className = 'context-menu';
+            contextMenu.innerHTML = `
+                <button onclick="deleteBookmark('${url}')">Delete Bookmark</button>
+            `;
+            document.body.appendChild(contextMenu);
+            contextMenu.style.top = `${event.clientY}px`;
+            contextMenu.style.left = `${event.clientX}px`;
+
+            // Remove the context menu after clicking elsewhere
+            document.addEventListener('click', () => {
+                contextMenu.remove();
+            });
+        }
+
+        function deleteBookmark(url) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            displayBookmarks();
+        }
+
+        // Load bookmarks on page load
+        window.onload = displayBookmarks;
     </script>
 </body>
 </html>
