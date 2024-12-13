@@ -156,9 +156,48 @@
         .result-item3D:hover {
             transform: rotateY(0deg);
         }
+
+        /* Bookmarks bar */
+        #bookmarksBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #00e0ff;
+            padding: 10px;
+            z-index: 10000;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .bookmark-item {
+            display: inline-block;
+            margin-right: 20px;
+            background-color: #121212;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .bookmark-item:hover {
+            background-color: #ff9800;
+        }
+
+        iframe {
+            border: 1px solid #00e0ff;
+            width: 100%;
+            height: 80vh;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
     </style>
 </head>
 <body class="dark-theme">
+    <!-- Bookmarks Bar -->
+    <div id="bookmarksBar"></div>
+
     <h1>Future Search</h1>
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
@@ -295,7 +334,16 @@
             let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
             bookmarks.push({ url, title });
             localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            updateBookmarksBar();
             alert('Result Bookmarked!');
+        }
+
+        function updateBookmarksBar() {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            const bookmarksBar = document.getElementById('bookmarksBar');
+            bookmarksBar.innerHTML = bookmarks.map(bookmark => `
+                <div class="bookmark-item" onclick="window.open('${bookmark.url}', '_blank')">${bookmark.title}</div>
+            `).join('');
         }
 
         function loadWebsite() {
@@ -315,6 +363,9 @@
                 }
             }
         }
+
+        // Update bookmarks on page load
+        window.onload = updateBookmarksBar;
     </script>
 </body>
 </html>
