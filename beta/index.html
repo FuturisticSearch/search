@@ -27,12 +27,6 @@
             background-size: cover;
         }
 
-        h1 {
-            text-align: center;
-            color: #00e0ff;
-            text-shadow: 0 0 10px #00e0ff;
-        }
-
         .theme-switch {
             margin-bottom: 20px;
             font-size: 18px;
@@ -207,9 +201,20 @@
         .book-site-btn:hover {
             background-color: #00b8d4;
         }
+
+        /* Move Future Search text below the bookmark bar */
+        h1 {
+            text-align: center;
+            color: #00e0ff;
+            text-shadow: 0 0 10px #00e0ff;
+            margin-top: 80px; /* Adjusted to appear below the bookmarks bar */
+        }
     </style>
 </head>
 <body class="dark-theme">
+    <!-- Bookmarks bar -->
+    <div id="bookmarks-bar"></div>
+
     <h1>Future Search</h1>
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
@@ -224,9 +229,6 @@
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
     <iframe id="siteViewer" title="Website Viewer"></iframe>
-
-    <!-- Bookmarks bar -->
-    <div id="bookmarks-bar"></div>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
@@ -332,10 +334,8 @@
             const siteViewer = document.getElementById('siteViewer');
             
             if (siteInput === 'computer') {
-                // Load a virtual Windows desktop environment when 'computer' is entered
                 siteViewer.src = 'https://win10.webjeet.me/'; // Example of a Windows 10 emulator
             } else {
-                // Otherwise, try to open the URL entered
                 if (siteInput) {
                     const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
                         ? siteInput
@@ -347,7 +347,6 @@
             }
         }
 
-        // Bookmark functionality
         function addBookmark(name, url) {
             const bookmarksBar = document.getElementById('bookmarks-bar');
             const bookmark = document.createElement('div');
@@ -355,7 +354,6 @@
             bookmark.innerText = name;
             bookmark.onclick = () => window.open(url, '_blank');
 
-            // Right-click menu for deleting bookmark
             bookmark.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
                 const menu = document.createElement('div');
