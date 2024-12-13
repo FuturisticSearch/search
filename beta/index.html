@@ -119,9 +119,8 @@
             text-decoration: underline;
         }
 
-       
         .cursor {
-            position: fixed;
+            position: absolute; /* Change from fixed to absolute */
             width: 20px;
             height: 20px;
             background: rgba(0, 224, 255, 0.8);
@@ -129,11 +128,11 @@
             pointer-events: none;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
-            z-index: 9999;
+            z-index: 9999; /* Ensure it's above all other content */
         }
 
         .cursor-trail {
-            position: fixed;
+            position: absolute;
             width: 10px;
             height: 10px;
             background: rgba(0, 224, 255, 0.4);
