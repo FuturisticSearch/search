@@ -6,208 +6,30 @@
     <title>Future Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            transition: background 0.3s ease, transform 0.3s ease;
-            cursor: none;
-        }
+        /* ... other styles ... */
 
-        body.dark-theme {
-            background: #000;
-            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-
-        body.light-theme {
-            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .theme-switch {
-            margin-bottom: 20px;
-            font-size: 18px;
+        /* Context menu styles */
+        .context-menu {
+            position: absolute;
+            background-color: #121212;
             color: #fff;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        body.dark-theme .theme-switch:hover {
-            color: #00e0ff;
-        }
-
-        input, button, select {
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #00e0ff;
-            outline: none;
-            width: 350px;
-            text-align: center;
-            background: transparent;
-            color: #e0e0e0;
+            border-radius: 5px;
+            padding: 5px;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-            transition: all 0.3s ease-in-out;
         }
 
-        input.light-theme, select.light-theme {
-            color: #202124;
-        }
-
-        input::placeholder, select {
-            color: #aaa;
-        }
-
-        select {
-            background: transparent;
-            border: 2px solid #00e0ff;
-            color: #e0e0e0;
-            cursor: pointer;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        select:focus {
-            border-color: #00b8d4;
-            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
-        }
-
-        button {
+        .context-menu button {
             background: #00e0ff;
             color: #121212;
             border: none;
+            padding: 10px;
             cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            border-radius: 5px;
+            font-size: 14px;
         }
 
-        body.light-theme button {
-            background: #202124;
-            color: #fff;
-        }
-
-        button:hover {
+        .context-menu button:hover {
             background: #00b8d4;
-            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
-        }
-
-        #results {
-            max-height: 50vh;
-            overflow-y: auto;
-            padding: 10px;
-            margin-top: 20px;
-            border: 1px solid #00e0ff;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-        }
-
-        .result-item {
-            margin-bottom: 20px;
-        }
-
-        .result-item a {
-            color: #00e0ff;
-            text-decoration: none;
-        }
-
-        .result-item a:hover {
-            text-decoration: underline;
-        }
-
-        .cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: rgba(0, 224, 255, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
-            z-index: 9999;
-        }
-
-        .cursor-trail {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: rgba(0, 224, 255, 0.4);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            animation: fade 0.6s ease-out forwards;
-        }
-
-        @keyframes fade {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(2);
-            }
-        }
-
-        iframe {
-            width: 90%;
-            height: 80vh;
-            border: none;
-            margin-top: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-        }
-
-        /* Bookmarks bar */
-        #bookmarks-bar {
-            background-color: #121212;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 10px;
-            display: flex;
-            justify-content: flex-start;
-            overflow-x: auto;
-            z-index: 9998;
-        }
-
-        #bookmarks-bar .bookmark {
-            background-color: #00e0ff;
-            color: #121212;
-            padding: 5px 10px;
-            margin: 0 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #bookmarks-bar .bookmark:hover {
-            background-color: #00b8d4;
-        }
-
-        .book-site-btn {
-            margin-top: 10px;
-            background-color: #00e0ff;
-            color: #121212;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .book-site-btn:hover {
-            background-color: #00b8d4;
-        }
-
-        /* Move Future Search text below the bookmark bar */
-        h1 {
-            text-align: center;
-            color: #00e0ff;
-            text-shadow: 0 0 10px #00e0ff;
-            margin-top: 80px; /* Adjusted to appear below the bookmarks bar */
         }
     </style>
 </head>
@@ -406,6 +228,19 @@
 
             localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
             renderBookmarks(); // Re-render the bookmarks bar
+
+            // After bookmark deletion, re-render search results and show the "Book Site" button again
+            const searchResults = document.querySelectorAll('.result-item');
+            searchResults.forEach(result => {
+                const bookButton = result.querySelector('.book-site-btn');
+                const siteUrl = result.querySelector('.url').innerText;
+
+                if (updatedBookmarks.every(bookmark => bookmark.url !== siteUrl)) {
+                    bookButton.style.display = 'block'; // Show the "Book Site" button again
+                } else {
+                    bookButton.style.display = 'none'; // Hide the button if it's bookmarked
+                }
+            });
         }
 
         // Render bookmarks when the page loads
