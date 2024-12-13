@@ -4,146 +4,247 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background: #121212;
+            height: 100vh;
+            transition: background 0.3s ease, transform 0.3s ease;
+            cursor: none; /* Hide the default cursor */
+        }
+
+        body.dark-theme {
+            background: #000;
+            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        body.light-theme {
+            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .theme-switch {
+            margin-bottom: 20px;
+            font-size: 18px;
             color: #fff;
-        }
-
-        #bookmarks-bar {
-            padding: 10px;
-            background-color: lightblue;
-            display: flex;
-            overflow-x: auto;
-            align-items: center;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-        }
-
-        .bookmark {
-            color: white;
-            background-color: purple;
             cursor: pointer;
-            padding: 10px 15px;
-            margin: 5px;
-            border-radius: 5px;
-            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-theme .theme-switch:hover {
+            color: #00e0ff;
+        }
+
+        input, button, select {
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #00e0ff;
+            outline: none;
+            width: 350px;
             text-align: center;
-            font-size: 14px;
-            display: inline-block;
+            background: transparent;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease-in-out;
         }
 
-        .bookmark:hover {
-            background-color: darkviolet;
+        input.light-theme, select.light-theme {
+            color: #202124;
         }
 
-        .context-menu {
-            position: absolute;
-            background-color: #222;
-            border: 1px solid #00e0ff;
-            box-shadow: 0 0 10px rgba(0, 224, 255, 0.8);
+        input::placeholder, select {
+            color: #aaa;
+        }
+
+        select {
+            background: transparent;
+            border: 2px solid #00e0ff;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #00b8d4;
+            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
+        }
+
+        button {
+            background: #00e0ff;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        body.light-theme button {
+            background: #202124;
             color: #fff;
+        }
+
+        button:hover {
+            background: #00b8d4;
+            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
+        }
+
+        #results {
+            max-height: 50vh;
+            overflow-y: auto;
             padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #00e0ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 224, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
             z-index: 9999;
         }
 
-        .context-menu button {
-            background: #00e0ff;
-            border: none;
-            color: #121212;
-            padding: 5px 10px;
-            cursor: pointer;
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 224, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fade 0.6s ease-out forwards;
         }
 
-        .context-menu button:hover {
-            background: #00b8d4;
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        iframe {
+            width: 90%;
+            height: 80vh;
+            border: none;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        /* AR Mode Styling */
+        #ar-mode-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            z-index: 9999;
+        }
+
+        #ar-view {
+            width: 100%;
+            height: 100%;
+        }
+
+        #exit-ar-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        #exit-ar-button:hover {
+            background-color: darkred;
         }
     </style>
 </head>
 <body>
-    <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
+    <!-- Existing Elements -->
 
-    <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
-    
-    <input type="text" id="searchBar" placeholder="Type a keyword...">
-    <button onclick="performSearch()">Search</button>
-    <div id="results"></div>
+    <!-- AR Mode Container -->
+    <div id="ar-mode-container">
+        <video id="ar-view" autoplay></video>
+        <button id="exit-ar-button" onclick="exitAR()">Exit AR Mode</button>
+    </div>
+
+    <!-- AR Mode Button -->
+    <button onclick="activateAR()">Activate AR Mode</button>
 
     <script>
-        function addBookmark(title, url) {
-            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+        let arStream = null;
 
-            // Check if the site is already bookmarked
-            if (bookmarks.find(bookmark => bookmark.url === url)) {
-                alert("This site is already bookmarked.");
-                return;
+        // Activate AR Mode
+        function activateAR() {
+            const arContainer = document.getElementById('ar-mode-container');
+            const arView = document.getElementById('ar-view');
+
+            // Show AR container
+            arContainer.style.display = 'block';
+
+            // Access camera
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(stream => {
+                    arStream = stream;
+                    arView.srcObject = stream;
+                })
+                .catch(err => {
+                    alert('Failed to access the camera: ' + err.message);
+                    exitAR();
+                });
+        }
+
+        // Exit AR Mode
+        function exitAR() {
+            const arContainer = document.getElementById('ar-mode-container');
+
+            // Hide AR container
+            arContainer.style.display = 'none';
+
+            // Stop camera stream
+            if (arStream) {
+                const tracks = arStream.getTracks();
+                tracks.forEach(track => track.stop());
+                arStream = null;
             }
-
-            bookmarks.push({ title, url });
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            displayBookmarks();
         }
-
-        function displayBookmarks() {
-            const bookmarksBar = document.getElementById('bookmarks-bar');
-            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-
-            bookmarksBar.innerHTML = bookmarks.map(bookmark => `
-                <a 
-                    href="${bookmark.url}" 
-                    class="bookmark" 
-                    target="_blank" 
-                    oncontextmenu="showContextMenu(event, '${bookmark.url}')"
-                    ontouchstart="startLongPress(event, '${bookmark.url}')"
-                    ontouchend="endLongPress()"
-                >
-                    ${bookmark.title}
-                </a>
-            `).join('');
-        }
-
-        function showContextMenu(event, url) {
-            event.preventDefault();
-            const contextMenu = document.createElement('div');
-            contextMenu.className = 'context-menu';
-            contextMenu.innerHTML = `
-                <button onclick="deleteBookmark('${url}')">Delete Bookmark</button>
-            `;
-            document.body.appendChild(contextMenu);
-            contextMenu.style.top = `${event.clientY}px`;
-            contextMenu.style.left = `${event.clientX}px`;
-
-            // Remove the context menu after clicking elsewhere
-            document.addEventListener('click', () => {
-                contextMenu.remove();
-            });
-        }
-
-        function deleteBookmark(url) {
-            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            displayBookmarks();
-        }
-
-        // Mobile Long-Press Logic
-        let longPressTimeout;
-        function startLongPress(event, url) {
-            event.preventDefault();
-            longPressTimeout = setTimeout(() => {
-                showContextMenu(event, url);
-            }, 2000); // 2 seconds for long press
-        }
-
-        function endLongPress() {
-            clearTimeout(longPressTimeout);
-        }
-
-        // Load bookmarks on page load
-        window.onload = displayBookmarks;
     </script>
 </body>
 </html>
