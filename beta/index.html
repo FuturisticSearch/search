@@ -12,7 +12,7 @@
             padding: 0;
             height: 100vh;
             transition: background 0.3s ease, transform 0.3s ease;
-            cursor: none;
+            cursor: none; /* Hide the default cursor */
         }
 
         body.dark-theme {
@@ -20,13 +20,11 @@
             background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
             background-size: cover;
             background-position: center;
-            transition: background 1s ease-in-out;
         }
 
         body.light-theme {
             background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
             background-size: cover;
-            transition: background 1s ease-in-out;
         }
 
         .theme-switch {
@@ -56,6 +54,27 @@
             transition: all 0.3s ease-in-out;
         }
 
+        input.light-theme, select.light-theme {
+            color: #202124;
+        }
+
+        input::placeholder, select {
+            color: #aaa;
+        }
+
+        select {
+            background: transparent;
+            border: 2px solid #00e0ff;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #00b8d4;
+            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
+        }
+
         button {
             background: #00e0ff;
             color: #121212;
@@ -64,6 +83,40 @@
             transition: all 0.3s ease-in-out;
             text-align: center;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        body.light-theme button {
+            background: #202124;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #00b8d4;
+            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
+        }
+
+        #results {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #00e0ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
         }
 
         .cursor {
@@ -100,125 +153,83 @@
             }
         }
 
-        #results {
-            max-height: 50vh;
-            overflow-y: auto;
-            padding: 10px;
+        iframe {
+            width: 90%;
+            height: 80vh;
+            border: none;
             margin-top: 20px;
-            border: 1px solid #00e0ff;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        .result-item {
-            margin-bottom: 20px;
-        }
-
-        .result-item a {
-            color: #00e0ff;
-            text-decoration: none;
-        }
-
-        .result-item a:hover {
-            text-decoration: underline;
-        }
-
-        .bookmark-btn {
-            background: #ff9800;
-            color: white;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        .result-item:hover .bookmark-btn {
-            background: #e65100;
-        }
-
-        #results3D {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            perspective: 1000px;
-        }
-
-        .result-item3D {
-            margin: 20px;
-            width: 200px;
-            height: 200px;
-            background: #00e0ff;
-            border-radius: 10px;
-            transform: rotateY(30deg);
-            transition: transform 0.3s ease;
-        }
-
-        .result-item3D:hover {
-            transform: rotateY(0deg);
-        }
-
-        /* Bookmarks bar */
+        /* Bookmarks Bar */
         #bookmarksBar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background-color: #00e0ff;
+            background: rgba(0, 0, 0, 0.5);
             padding: 10px;
-            z-index: 10000;
+            color: #fff;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+        }
+
+        #bookmarksList {
+            display: flex;
             overflow-x: auto;
-            white-space: nowrap;
+            gap: 15px;
         }
 
-        .bookmark-item {
-            display: inline-block;
-            margin-right: 20px;
-            background-color: #121212;
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .bookmark-item:hover {
-            background-color: #ff9800;
-        }
-
-        /* Custom right-click menu */
-        #rightClickMenu {
-            position: fixed;
-            display: none;
-            background-color: #121212;
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
-            z-index: 99999;
+        .bookmark {
             padding: 10px;
+            cursor: pointer;
+            color: #00e0ff;
+            text-decoration: none;
+            border-radius: 5px;
         }
 
-        #rightClickMenu div {
-            padding: 8px;
+        .bookmark:hover {
+            background-color: #00b8d4;
+        }
+
+        /* Right-click menu styles */
+        .right-click-menu {
+            display: none;
+            position: absolute;
+            background-color: #202124;
+            color: #fff;
+            border: 1px solid #00e0ff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            z-index: 9999;
+        }
+
+        .right-click-menu ul {
+            list-style: none;
+            padding: 5px;
+            margin: 0;
+        }
+
+        .right-click-menu ul li {
+            padding: 10px;
             cursor: pointer;
         }
 
-        #rightClickMenu div:hover {
-            background-color: #ff9800;
+        .right-click-menu ul li:hover {
+            background-color: #00b8d4;
         }
 
-        iframe {
-            border: 1px solid #00e0ff;
-            width: 100%;
-            height: 80vh;
-            margin-top: 20px;
-            border-radius: 10px;
+        h1 {
+            text-align: center;
+            font-size: 50px;
+            color: #00e0ff; /* Light blue color */
+            text-shadow: 0 0 10px #00e0ff, 0 0 20px #00e0ff, 0 0 30px #00e0ff, 0 0 40px #00e0ff, 0 0 50px #00e0ff, 0 0 75px #00e0ff, 0 0 100px #00e0ff;
+            margin-top: 50px;
         }
-
     </style>
 </head>
 <body class="dark-theme">
-    <!-- Bookmarks Bar -->
-    <div id="bookmarksBar"></div>
-
     <h1>Future Search</h1>
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
@@ -226,7 +237,6 @@
         <option value="web">Web</option>
         <option value="image">Images</option>
         <option value="news">News</option>
-        <option value="meme">Memes</option> <!-- Meme search category -->
     </select>
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
@@ -235,194 +245,86 @@
     <button onclick="loadWebsite()">Open Website</button>
     <iframe id="siteViewer" title="Website Viewer"></iframe>
 
-    <!-- 3D Results container -->
-    <div id="results3D"></div>
+    <!-- Bookmarks Bar -->
+    <div id="bookmarksBar">
+        <h2>Bookmarks</h2>
+        <div id="bookmarksList"></div>
+    </div>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
-    <!-- Custom right-click menu -->
-    <div id="rightClickMenu">
-        <div id="deleteBookmark">Delete Bookmark</div>
+    <!-- Right-click Menu -->
+    <div id="rightClickMenu" class="right-click-menu">
+        <ul>
+            <li id="deleteBookmark">Delete Bookmark</li>
+        </ul>
     </div>
 
     <script>
-        const API_CSE_PAIRS = [
-            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
-            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
-            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
-        ];
+        let bookmarks = [];  // Store bookmarks in an array
 
-        let mouseX = 0;
-        let mouseY = 0;
-
-        document.addEventListener('mousemove', (event) => {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-            updateCursor(event);
-        });
-
-        function updateCursor(event) {
-            const cursor = document.getElementById('cursor');
-            cursor.style.top = `${event.clientY}px`;
-            cursor.style.left = `${event.clientX}px`;
-
-            const trail = document.createElement('div');
-            trail.className = 'cursor-trail';
-            trail.style.top = `${event.clientY}px`;
-            trail.style.left = `${event.clientX}px`;
-            document.body.appendChild(trail);
-
-            setTimeout(() => trail.remove(), 600);
+        // Function to add a bookmark
+        function addBookmark(title, url) {
+            bookmarks.push({ title, url });
+            displayBookmarks();
         }
 
-        function getRandomAPIConfig() {
-            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        // Function to display bookmarks
+        function displayBookmarks() {
+            const bookmarksList = document.getElementById('bookmarksList');
+            bookmarksList.innerHTML = '';  // Clear the list before redisplaying
+
+            bookmarks.forEach((bookmark, index) => {
+                const bookmarkElement = document.createElement('div');
+                bookmarkElement.classList.add('bookmark');
+                bookmarkElement.textContent = bookmark.title;
+                bookmarkElement.dataset.url = bookmark.url;
+                bookmarkElement.setAttribute('data-index', index);
+
+                bookmarkElement.addEventListener('click', () => {
+                    window.location.href = bookmark.url;  // Redirect to bookmarked URL
+                });
+
+                // Append to the bookmarks list
+                bookmarksList.appendChild(bookmarkElement);
+
+                // Right-click event listener for context menu
+                bookmarkElement.addEventListener('contextmenu', (event) => {
+                    event.preventDefault();  // Prevent the default right-click menu
+                    showRightClickMenu(event, index);  // Show custom right-click menu
+                });
+            });
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            document.body.classList.toggle('dark-theme');
-            document.querySelector('.theme-switch').textContent =
-                document.body.classList.contains('light-theme')
-                    ? 'Switch to Dark Mode'
-                    : 'Switch to Light Mode';
-        }
-
-        async function performSearch() {
-            const query = document.getElementById("searchBar").value;
-            const category = document.getElementById("searchCategory").value;
-
-            if (!query) {
-                return alert('Please enter a search term');
-            }
-
-            const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = '<div>Loading results...</div>';
-
-            let retryCount = 0;
-            let success = false;
-
-            while (retryCount < 6 && !success) {
-                const { apiKey, cseId } = getRandomAPIConfig();
-                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-                if (category === 'image') {
-                    url += '&searchType=image';
-                } else if (category === 'news') {
-                    url += '&searchType=news';
-                } else if (category === 'meme') {
-                    url = `https://api.imgflip.com/get_memes`;
-                }
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (category === 'meme') {
-                        // Meme search
-                        if (data.data && data.data.memes) {
-                            resultsContainer.innerHTML = data.data.memes.slice(0, 5).map(meme => `
-                                <div class="result-item" data-id="${meme.url}">
-                                    <img src="${meme.url}" alt="${meme.name}" width="200">
-                                    <p>${meme.name}</p>
-                                    <button class="bookmark-btn" onclick="bookmarkResult('${meme.url}', '${meme.name}')">Bookmark</button>
-                                </div>
-                            `).join('');
-                        }
-                    } else {
-                        // Standard Web/Image/News search
-                        if (data.items && data.items.length > 0) {
-                            resultsContainer.innerHTML = data.items.map(item => `
-                                <div class="result-item" data-id="${item.link}">
-                                    <a href="${item.link}" target="_blank">${item.title}</a>
-                                    <p class="url">${item.link}</p>
-                                    <p class="description">${item.snippet}</p>
-                                    <button class="bookmark-btn" onclick="bookmarkResult('${item.link}', '${item.title}')">Bookmark</button>
-                                </div>
-                            `).join('');
-                        } else {
-                            resultsContainer.innerHTML = '<p>No results found.</p>';
-                        }
-                    }
-                    success = true;
-                } catch (error) {
-                    retryCount++;
-                    if (retryCount >= 6) {
-                        window.location.href = 'https://FuturisticSearch.github.io/error';
-                    } else {
-                        resultsContainer.innerHTML = '<div>Retrying...</div>';
-                    }
-                }
-            }
-        }
-
-        function bookmarkResult(url, title) {
-            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-            bookmarks.push({ url, title });
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            updateBookmarksBar();
-            alert('Result Bookmarked!');
-        }
-
-        function updateBookmarksBar() {
-            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-            const bookmarksBar = document.getElementById('bookmarksBar');
-            bookmarksBar.innerHTML = bookmarks.map(bookmark => `
-                <div class="bookmark-item" oncontextmenu="showRightClickMenu(event, '${bookmark.url}')">
-                    ${bookmark.title}
-                </div>
-            `).join('');
-        }
-
-        // Show custom right-click menu
-        function showRightClickMenu(event, url) {
-            event.preventDefault();
-
+        // Function to show right-click menu
+        function showRightClickMenu(event, index) {
             const menu = document.getElementById('rightClickMenu');
-            const deleteOption = document.getElementById('deleteBookmark');
             menu.style.display = 'block';
-            menu.style.left = `${event.pageX}px`;
-            menu.style.top = `${event.pageY}px`;
+            menu.style.top = `${event.clientY}px`;
+            menu.style.left = `${event.clientX}px`;
 
-            deleteOption.onclick = function() {
-                deleteBookmark(url);
-                menu.style.display = 'none';
+            // Handle delete bookmark
+            const deleteOption = document.getElementById('deleteBookmark');
+            deleteOption.onclick = () => {
+                deleteBookmark(index);
+                menu.style.display = 'none';  // Hide the menu after action
             };
         }
 
-        // Delete a bookmark
-        function deleteBookmark(url) {
-            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            updateBookmarksBar();
+        // Function to delete a bookmark
+        function deleteBookmark(index) {
+            bookmarks.splice(index, 1);
+            displayBookmarks();  // Redisplay the bookmarks after deletion
         }
 
-        // Close right-click menu if clicked elsewhere
-        document.addEventListener('click', function() {
+        // Hide right-click menu when clicking elsewhere
+        document.addEventListener('click', () => {
             document.getElementById('rightClickMenu').style.display = 'none';
         });
 
-        function loadWebsite() {
-            const siteInput = document.getElementById('siteInput').value.trim().toLowerCase();
-            const siteViewer = document.getElementById('siteViewer');
-            
-            if (siteInput === 'computer') {
-                siteViewer.src = 'https://win10.webjeet.me/';
-            } else {
-                if (siteInput) {
-                    const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
-                        ? siteInput
-                        : `https://${siteInput}`;
-                    siteViewer.src = url;
-                } else {
-                    alert('Please enter a valid URL');
-                }
-            }
-        }
-
-        // Update bookmarks on page load
-        window.onload = updateBookmarksBar;
+        // Initially display the bookmarks
+        displayBookmarks();
     </script>
 </body>
 </html>
