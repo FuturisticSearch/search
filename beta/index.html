@@ -29,67 +29,143 @@
             background-size: cover;
         }
 
-        body.time-travel-mode {
-            background: #ffb3b3; /* Retro color */
-            background-image: url('https://example.com/retro-web-bg.jpg'); /* Simulate old internet look */
-            background-size: cover;
-        }
-
-        /* New Time Travel Button */
-        .time-travel-button {
+        .theme-switch {
+            margin-bottom: 20px;
             font-size: 18px;
             color: #fff;
             cursor: pointer;
             transition: color 0.3s ease;
-            margin-top: 20px;
         }
 
-        body.time-travel-mode .time-travel-button:hover {
+        body.dark-theme .theme-switch:hover {
             color: #00e0ff;
         }
 
-        .time-travel-container {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: #fff;
-            display: none;
-        }
-
-        body.time-travel-mode .time-travel-container {
-            display: block;
-        }
-
-        /* Additional Styles for Time-Travel UI */
-        .time-travel-link {
+        input, button, select {
+            padding: 15px 30px;
             font-size: 18px;
-            color: #ffcc00;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #00e0ff;
+            outline: none;
+            width: 350px;
+            text-align: center;
+            background: transparent;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        input.light-theme, select.light-theme {
+            color: #202124;
+        }
+
+        input::placeholder, select {
+            color: #aaa;
+        }
+
+        select {
+            background: transparent;
+            border: 2px solid #00e0ff;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #00b8d4;
+            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
+        }
+
+        button {
+            background: #00e0ff;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        body.light-theme button {
+            background: #202124;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #00b8d4;
+            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
+        }
+
+        #results {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #00e0ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
             text-decoration: none;
         }
 
-        .time-travel-link:hover {
+        .result-item a:hover {
             text-decoration: underline;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 224, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
+            z-index: 9999;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 224, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fade 0.6s ease-out forwards;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        iframe {
+            width: 90%;
+            height: 80vh;
+            border: none;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
     </style>
 </head>
 <body class="dark-theme">
     <h1>Future Search</h1>
-
-    <!-- Time Travel Mode Button -->
-    <button class="time-travel-button" onclick="toggleTimeTravelMode()">Activate Time Travel Mode</button>
-
-    <!-- Time Travel Mode Content -->
-    <div class="time-travel-container">
-        <h2>Welcome to Time-Travel Mode!</h2>
-        <p>Explore the web as it appeared in the 1990s!</p>
-        <ul>
-            <li><a class="time-travel-link" href="http://www.archive.org/web/" target="_blank">Wayback Machine</a></li>
-            <li><a class="time-travel-link" href="http://www.geocities.com/" target="_blank">Geocities (Old Web Pages)</a></li>
-            <li><a class="time-travel-link" href="http://www.angelfire.com/" target="_blank">Angelfire (Classic Personal Sites)</a></li>
-        </ul>
-    </div>
-
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
     <select id="searchCategory">
@@ -108,19 +184,111 @@
     <div class="cursor" id="cursor"></div>
 
     <script>
-        // Existing script content
+        const API_CSE_PAIRS = [
+            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
+            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
+            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
+        ];
 
-        function toggleTimeTravelMode() {
-            document.body.classList.toggle('time-travel-mode');
-            const timeTravelButton = document.querySelector('.time-travel-button');
-            if (document.body.classList.contains('time-travel-mode')) {
-                timeTravelButton.textContent = 'Deactivate Time Travel Mode';
-            } else {
-                timeTravelButton.textContent = 'Activate Time Travel Mode';
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            updateCursor(event);
+        });
+
+        function updateCursor(event) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.top = `${event.clientY}px`;
+            cursor.style.left = `${event.clientX}px`;
+
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.top = `${event.clientY}px`;
+            trail.style.left = `${event.clientX}px`;
+            document.body.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 600);
+        }
+
+        function getRandomAPIConfig() {
+            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        }
+
+        async function performSearch() {
+            const query = document.getElementById("searchBar").value;
+            const category = document.getElementById("searchCategory").value;
+
+            if (!query) {
+                return alert('Please enter a search term');
+            }
+
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = '<div>Loading results...</div>';
+
+            let retryCount = 0;
+            let success = false;
+
+            while (retryCount < 6 && !success) {
+                const { apiKey, cseId } = getRandomAPIConfig();
+                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+                if (category === 'image') {
+                    url += '&searchType=image';
+                } else if (category === 'news') {
+                    url += '&searchType=news';
+                }
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        resultsContainer.innerHTML = data.items.map(item => `
+                            <div class="result-item">
+                                <a href="${item.link}" target="_blank">${item.title}</a>
+                                <p class="url">${item.link}</p>
+                                <p class="description">${item.snippet}</p>
+                            </div>
+                        `).join('');
+                        success = true;
+                    } else {
+                        resultsContainer.innerHTML = '<p>No results found.</p>';
+                        success = true;
+                    }
+                } catch (error) {
+                    retryCount++;
+                    if (retryCount >= 6) {
+                        window.location.href = 'https://FuturisticSearch.github.io/error';
+                    } else {
+                        resultsContainer.innerHTML = '<div>Retrying...</div>';
+                    }
+                }
             }
         }
 
-        // Other functions like toggleTheme(), performSearch(), loadWebsite() remain unchanged
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            document.body.classList.toggle('dark-theme');
+            document.querySelector('.theme-switch').textContent =
+                document.body.classList.contains('light-theme')
+                    ? 'Switch to Dark Mode'
+                    : 'Switch to Light Mode';
+        }
+
+        function loadWebsite() {
+            const siteInput = document.getElementById('siteInput').value;
+            const siteViewer = document.getElementById('siteViewer');
+            if (siteInput.trim()) {
+                const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
+                    ? siteInput
+                    : `https://${siteInput}`;
+                siteViewer.src = url;
+            } else {
+                alert('Please enter a valid URL');
+            }
+        }
     </script>
 </body>
 </html>
