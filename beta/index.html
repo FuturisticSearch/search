@@ -120,7 +120,7 @@
         }
 
         .cursor {
-            position: absolute; /* Change from fixed to absolute */
+            position: fixed;
             width: 20px;
             height: 20px;
             background: rgba(0, 224, 255, 0.8);
@@ -128,11 +128,11 @@
             pointer-events: none;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
-            z-index: 9999; /* Ensure it's above all other content */
+            z-index: 9999;
         }
 
         .cursor-trail {
-            position: absolute;
+            position: fixed;
             width: 10px;
             height: 10px;
             background: rgba(0, 224, 255, 0.4);
@@ -276,15 +276,22 @@
         }
 
         function loadWebsite() {
-            const siteInput = document.getElementById('siteInput').value;
+            const siteInput = document.getElementById('siteInput').value.trim().toLowerCase();
             const siteViewer = document.getElementById('siteViewer');
-            if (siteInput.trim()) {
-                const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
-                    ? siteInput
-                    : `https://${siteInput}`;
-                siteViewer.src = url;
+            
+            if (siteInput === 'computer') {
+                // Load a virtual Windows desktop environment when 'computer' is entered
+                siteViewer.src = 'https://win10.webjeet.me/'; // Example of a Windows 10 emulator
             } else {
-                alert('Please enter a valid URL');
+                // Otherwise, try to open the URL entered
+                if (siteInput) {
+                    const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
+                        ? siteInput
+                        : `https://${siteInput}`;
+                    siteViewer.src = url;
+                } else {
+                    alert('Please enter a valid URL');
+                }
             }
         }
     </script>
