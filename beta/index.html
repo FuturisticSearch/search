@@ -184,6 +184,27 @@
             background-color: #ff9800;
         }
 
+        /* Custom right-click menu */
+        #rightClickMenu {
+            position: fixed;
+            display: none;
+            background-color: #121212;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+            z-index: 99999;
+            padding: 10px;
+        }
+
+        #rightClickMenu div {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        #rightClickMenu div:hover {
+            background-color: #ff9800;
+        }
+
         iframe {
             border: 1px solid #00e0ff;
             width: 100%;
@@ -219,6 +240,11 @@
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
+
+    <!-- Custom right-click menu -->
+    <div id="rightClickMenu">
+        <div id="deleteBookmark">Delete Bookmark</div>
+    </div>
 
     <script>
         const API_CSE_PAIRS = [
@@ -296,7 +322,7 @@
                         // Meme search
                         if (data.data && data.data.memes) {
                             resultsContainer.innerHTML = data.data.memes.slice(0, 5).map(meme => `
-                                <div class="result-item">
+                                <div class="result-item" data-id="${meme.url}">
                                     <img src="${meme.url}" alt="${meme.name}" width="200">
                                     <p>${meme.name}</p>
                                     <button class="bookmark-btn" onclick="bookmarkResult('${meme.url}', '${meme.name}')">Bookmark</button>
@@ -307,7 +333,7 @@
                         // Standard Web/Image/News search
                         if (data.items && data.items.length > 0) {
                             resultsContainer.innerHTML = data.items.map(item => `
-                                <div class="result-item">
+                                <div class="result-item" data-id="${item.link}">
                                     <a href="${item.link}" target="_blank">${item.title}</a>
                                     <p class="url">${item.link}</p>
                                     <p class="description">${item.snippet}</p>
@@ -342,9 +368,40 @@
             const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
             const bookmarksBar = document.getElementById('bookmarksBar');
             bookmarksBar.innerHTML = bookmarks.map(bookmark => `
-                <div class="bookmark-item" onclick="window.open('${bookmark.url}', '_blank')">${bookmark.title}</div>
+                <div class="bookmark-item" oncontextmenu="showRightClickMenu(event, '${bookmark.url}')">
+                    ${bookmark.title}
+                </div>
             `).join('');
         }
+
+        // Show custom right-click menu
+        function showRightClickMenu(event, url) {
+            event.preventDefault();
+
+            const menu = document.getElementById('rightClickMenu');
+            const deleteOption = document.getElementById('deleteBookmark');
+            menu.style.display = 'block';
+            menu.style.left = `${event.pageX}px`;
+            menu.style.top = `${event.pageY}px`;
+
+            deleteOption.onclick = function() {
+                deleteBookmark(url);
+                menu.style.display = 'none';
+            };
+        }
+
+        // Delete a bookmark
+        function deleteBookmark(url) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            updateBookmarksBar();
+        }
+
+        // Close right-click menu if clicked elsewhere
+        document.addEventListener('click', function() {
+            document.getElementById('rightClickMenu').style.display = 'none';
+        });
 
         function loadWebsite() {
             const siteInput = document.getElementById('siteInput').value.trim().toLowerCase();
