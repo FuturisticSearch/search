@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,7 +120,7 @@
             text-decoration: underline;
         }
 
-        /* Custom glowing cursor and trail */
+       
         .cursor {
             position: fixed;
             width: 20px;
@@ -153,6 +154,14 @@
                 transform: scale(2);
             }
         }
+
+        iframe {
+            width: 90%;
+            height: 80vh;
+            border: none;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body class="dark-theme">
@@ -166,6 +175,10 @@
     </select>
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
+
+    <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
+    <button onclick="loadWebsite()">Open Website</button>
+    <iframe id="siteViewer" title="Website Viewer"></iframe>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
@@ -197,7 +210,7 @@
             trail.style.left = `${event.clientX}px`;
             document.body.appendChild(trail);
 
-            setTimeout(() => trail.remove(), 600); // Remove the trail after animation
+            setTimeout(() => trail.remove(), 600);
         }
 
         function getRandomAPIConfig() {
@@ -262,6 +275,19 @@
                 document.body.classList.contains('light-theme')
                     ? 'Switch to Dark Mode'
                     : 'Switch to Light Mode';
+        }
+
+        function loadWebsite() {
+            const siteInput = document.getElementById('siteInput').value;
+            const siteViewer = document.getElementById('siteViewer');
+            if (siteInput.trim()) {
+                const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
+                    ? siteInput
+                    : `https://${siteInput}`;
+                siteViewer.src = url;
+            } else {
+                alert('Please enter a valid URL');
+            }
         }
     </script>
 </body>
