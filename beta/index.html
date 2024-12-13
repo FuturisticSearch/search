@@ -11,41 +11,32 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
             transition: background 0.3s ease, transform 0.3s ease;
             cursor: none; /* Hide the default cursor */
         }
 
+        body.dark-theme {
+            background: #000;
+            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        body.light-theme {
+            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
         .theme-switch {
-            position: fixed;
-            top: 10px;
-            right: 20px;
+            margin-bottom: 20px;
             font-size: 18px;
             color: #fff;
             cursor: pointer;
             transition: color 0.3s ease;
         }
 
-        #searchContainer {
-            text-align: center;
-            position: absolute;
-            transition: all 0.5s ease;
-        }
-
-        .futuristic-title {
-            font-size: 24px;
+        body.dark-theme .theme-switch:hover {
             color: #00e0ff;
-            margin-bottom: 20px;
-        }
-
-        .top-search {
-            top: 20px;
-            transform: translateY(0);
-            left: 50%;
-            transform: translate(-50%, 0);
         }
 
         input, button, select {
@@ -63,6 +54,27 @@
             transition: all 0.3s ease-in-out;
         }
 
+        input.light-theme, select.light-theme {
+            color: #202124;
+        }
+
+        input::placeholder, select {
+            color: #aaa;
+        }
+
+        select {
+            background: transparent;
+            border: 2px solid #00e0ff;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #00b8d4;
+            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
+        }
+
         button {
             background: #00e0ff;
             color: #121212;
@@ -71,6 +83,16 @@
             transition: all 0.3s ease-in-out;
             text-align: center;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        body.light-theme button {
+            background: #202124;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #00b8d4;
+            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
         }
 
         #results {
@@ -83,21 +105,82 @@
             background: rgba(0, 0, 0, 0.5);
             color: #fff;
         }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+
+       
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 224, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
+            z-index: 9999;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 224, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fade 0.6s ease-out forwards;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        iframe {
+            width: 90%;
+            height: 80vh;
+            border: none;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body class="dark-theme">
+    <h1>Future Search</h1>
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
-    <div id="searchContainer">
-        <h1 class="futuristic-title">Futuristic Search</h1>
-        <input type="text" id="searchBar" placeholder="Type a keyword...">
-        <select id="searchCategory">
-            <option value="web">Web</option>
-            <option value="image">Images</option>
-            <option value="news">News</option>
-        </select>
-        <button onclick="performSearch()">Search</button>
-    </div>
+    <input type="text" id="searchBar" placeholder="Type a keyword...">
+    <select id="searchCategory">
+        <option value="web">Web</option>
+        <option value="image">Images</option>
+        <option value="news">News</option>
+    </select>
+    <button onclick="performSearch()">Search</button>
     <div id="results"></div>
+
+    <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
+    <button onclick="loadWebsite()">Open Website</button>
+    <iframe id="siteViewer" title="Website Viewer"></iframe>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
 
     <script>
         const API_CSE_PAIRS = [
@@ -105,6 +188,33 @@
             { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
             { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
         ];
+
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            updateCursor(event);
+        });
+
+        function updateCursor(event) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.top = `${event.clientY}px`;
+            cursor.style.left = `${event.clientX}px`;
+
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.top = `${event.clientY}px`;
+            trail.style.left = `${event.clientX}px`;
+            document.body.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 600);
+        }
+
+        function getRandomAPIConfig() {
+            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        }
 
         async function performSearch() {
             const query = document.getElementById("searchBar").value;
@@ -117,14 +227,11 @@
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = '<div>Loading results...</div>';
 
-            const searchContainer = document.getElementById('searchContainer');
-            searchContainer.classList.add('top-search');
-
             let retryCount = 0;
             let success = false;
 
             while (retryCount < 6 && !success) {
-                const { apiKey, cseId } = API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+                const { apiKey, cseId } = getRandomAPIConfig();
                 let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
                 if (category === 'image') {
                     url += '&searchType=image';
@@ -167,6 +274,19 @@
                 document.body.classList.contains('light-theme')
                     ? 'Switch to Dark Mode'
                     : 'Switch to Light Mode';
+        }
+
+        function loadWebsite() {
+            const siteInput = document.getElementById('siteInput').value;
+            const siteViewer = document.getElementById('siteViewer');
+            if (siteInput.trim()) {
+                const url = siteInput.startsWith('http://') || siteInput.startsWith('https://')
+                    ? siteInput
+                    : `https://${siteInput}`;
+                siteViewer.src = url;
+            } else {
+                alert('Please enter a valid URL');
+            }
         }
     </script>
 </body>
