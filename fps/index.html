@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS Game - Select a Location and Play</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #game-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Map Container for selecting the location -->
+    <div id="map"></div>
+
+    <!-- 3D Game Container for the FPS -->
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+    </div>
+
+    <!-- Leaflet.js and Three.js Libraries -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Initialize the Map with Leaflet.js
+        const map = L.map('map').setView([51.505, -0.09], 13);  // Default location: London
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let selectedLat = 51.505, selectedLng = -0.09;  // Default selected coordinates (London)
+
+        // When the user clicks on the map, capture the location and switch to the 3D game view
+        map.on('click', function (event) {
+            selectedLat = event.latlng.lat;
+            selectedLng = event.latlng.lng;
+
+            // Hide map and show game container
+            document.getElementById('map').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+
+            initGame(selectedLat, selectedLng);  // Initialize the game with selected coordinates
+        });
+
+        // Initialize the 3D game using Three.js
+        function initGame(lat, lng) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas') });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Create a basic floor (a large plane)
+            const geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+            const floor = new THREE.Mesh(geometry, material);
+            floor.rotation.x = - Math.PI / 2;  // Rotate the floor to lie flat
+            scene.add(floor);
+
+            // Add a basic cube (this represents the player in FPS)
+            const playerGeometry = new THREE.BoxGeometry(1, 1, 1);
+            const playerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const player = new THREE.Mesh(playerGeometry, playerMaterial);
+            player.position.y = 0.5;  // Lift the player off the ground
+            scene.add(player);
+
+            // Set camera position
+            camera.position.z = 10;
+            camera.position.y = 5;
+
+            // Movement variables
+            let moveForward = false;
+            let moveBackward = false;
+            let moveLeft = false;
+            let moveRight = false;
+
+            // Keyboard controls for movement
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'w') moveForward = true;
+                if (e.key === 's') moveBackward = true;
+                if (e.key === 'a') moveLeft = true;
+                if (e.key === 'd') moveRight = true;
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (e.key === 'w') moveForward = false;
+                if (e.key === 's') moveBackward = false;
+                if (e.key === 'a') moveLeft = false;
+                if (e.key === 'd') moveRight = false;
+            });
+
+            // Render loop to update the game scene
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Player movement logic (simple FPS control)
+                if (moveForward) player.position.z -= 0.1;
+                if (moveBackward) player.position.z += 0.1;
+                if (moveLeft) player.position.x -= 0.1;
+                if (moveRight) player.position.x += 0.1;
+
+                // Update the camera to follow the player
+                camera.position.x = player.position.x;
+                camera.position.z = player.position.z + 10;
+                camera.position.y = player.position.y + 5;
+
+                // Render the scene
+                renderer.render(scene, camera);
+            }
+
+            animate();  // Start the animation loop
+        }
+
+        // Ensure the game canvas is responsive
+        window.addEventListener('resize', function () {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
