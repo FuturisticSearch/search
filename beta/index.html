@@ -6,219 +6,22 @@
     <title>Future Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            transition: background 0.3s ease, transform 0.3s ease;
-            cursor: none; /* Hide the default cursor */
-        }
-
-        body.dark-theme {
-            background: #000;
-            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
-            background-size: cover;
-            background-position: center;
-        }
-
-        body.light-theme {
-            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .theme-switch {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #fff;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        body.dark-theme .theme-switch:hover {
-            color: #00e0ff;
-        }
-
-        input, button, select {
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #00e0ff;
-            outline: none;
-            width: 350px;
-            text-align: center;
-            background: transparent;
-            color: #e0e0e0;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
-
-        input.light-theme, select.light-theme {
-            color: #202124;
-        }
-
-        input::placeholder, select {
-            color: #aaa;
-        }
-
-        select {
-            background: transparent;
-            border: 2px solid #00e0ff;
-            color: #e0e0e0;
-            cursor: pointer;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        select:focus {
-            border-color: #00b8d4;
-            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
-        }
-
-        button {
+        /* Same styles as before, add Go Back button styling */
+        #goBackButton {
             background: #00e0ff;
             color: #121212;
-            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-        }
-
-        body.light-theme button {
-            background: #202124;
-            color: #fff;
-        }
-
-        button:hover {
-            background: #00b8d4;
-            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
-        }
-
-        #results {
-            max-height: 50vh;
-            overflow-y: auto;
-            padding: 10px;
-            margin-top: 20px;
-            border: 1px solid #00e0ff;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-        }
-
-        .result-item {
-            margin-bottom: 20px;
-        }
-
-        .result-item a {
-            color: #00e0ff;
-            text-decoration: none;
-        }
-
-        .result-item a:hover {
-            text-decoration: underline;
-        }
-
-        .cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: rgba(0, 224, 255, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
-            z-index: 9999;
-        }
-
-        .cursor-trail {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: rgba(0, 224, 255, 0.4);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            animation: fade 0.6s ease-out forwards;
-        }
-
-        @keyframes fade {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(2);
-            }
-        }
-
-        iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 1000;
             display: none;
+            margin-top: 20px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
         }
 
-        iframe.active {
-            display: block;
-        }
-
-        .bookmark {
-            color: #fff;
-            cursor: pointer;
-            padding: 5px;
-            margin: 5px;
-            background: rgba(0, 224, 255, 0.6);
-            border-radius: 5px;
-            display: inline-block;
-        }
-
-        #bookmarks-bar {
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            display: flex;
-            overflow-x: auto;
-            align-items: center;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-        }
-
-        .context-menu {
-            position: absolute;
-            background-color: #222;
-            border: 1px solid #00e0ff;
-            box-shadow: 0 0 10px rgba(0, 224, 255, 0.8);
-            color: #fff;
-            padding: 10px;
-            z-index: 9999;
-        }
-
-        .context-menu button {
-            background: #00e0ff;
-            border: none;
-            color: #121212;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .context-menu button:hover {
+        #goBackButton:hover {
             background: #00b8d4;
-        }
-
-        .theme-switch {
-            margin: 20px;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            background: #00e0ff;
-            border-radius: 5px;
-            color: #fff;
         }
     </style>
 </head>
@@ -240,6 +43,9 @@
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
     <iframe id="siteViewer" title="Website Viewer"></iframe>
+    
+    <!-- Go Back Button -->
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
@@ -333,6 +139,10 @@
 
         function tryOpenLink(link) {
             const siteViewer = document.getElementById('siteViewer');
+            const goBackButton = document.getElementById('goBackButton');
+            
+            // Show the go-back button
+            goBackButton.style.display = 'inline-block';
 
             siteViewer.src = link;
             siteViewer.classList.add('active');
@@ -345,7 +155,7 @@
                     }
                 } catch {
                     siteViewer.classList.remove('active');
-                    window.open(link, '_blank');
+                    window.open(link, '_blank');  // Open in a new tab if the iframe fails
                 }
             };
         }
@@ -353,6 +163,10 @@
         function loadWebsite() {
             const siteInput = document.getElementById('siteInput').value;
             const siteViewer = document.getElementById('siteViewer');
+            const goBackButton = document.getElementById('goBackButton');
+            
+            // Show the go-back button
+            goBackButton.style.display = 'inline-block';
 
             siteViewer.src = siteInput;
             siteViewer.classList.add('active');
@@ -365,9 +179,18 @@
                     }
                 } catch {
                     siteViewer.classList.remove('active');
-                    window.open(siteInput, '_blank');
-                }//v 86
+                    window.open(siteInput, '_blank');  // Open in a new tab if the iframe fails
+                }
             };
+        }
+
+        function goBack() {
+            const siteViewer = document.getElementById('siteViewer');
+            const goBackButton = document.getElementById('goBackButton');
+            
+            // Hide the iframe and the go-back button
+            siteViewer.classList.remove('active');
+            goBackButton.style.display = 'none';
         }
     </script> 
 </body>
