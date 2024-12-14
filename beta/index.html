@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Future Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -12,7 +12,7 @@
             padding: 0;
             height: 100vh;
             transition: background 0.3s ease, transform 0.3s ease;
-            cursor: none; /* Hide the default cursor */
+            cursor: none; /* Hide the default cursor */ 
         }
 
         body.dark-theme {
@@ -277,33 +277,71 @@
             const category = document.getElementById("searchCategory").value;
 
             if (!query) {
-                return alert('Please enter a search term'); //idk
+                return alert('Please enter a search term');
             }
 
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = '<div>Loading results...</div>';
 
-            let retryCount = 0;
-            let success = false;
+            const { apiKey, cseId } = getRandomAPIConfig();
+            const searchType = category === 'image' ? '&searchType=image' : '';
+            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cseId}&q=${encodeURIComponent(query)}${searchType}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!data.items || data.items.length === 0) {
+                    resultsContainer.innerHTML = '<div>No results found.</div>';
+                    return;
+                }
+
+                resultsContainer.innerHTML = data.items.map(item => {
+                    return `<div class="result-item">
+                        <a href="${item.link}" target="_blank" onclick="handleResultClick(event, '${item.link}')">${item.title}</a>
+                        <p>${item.snippet}</p>
+                    </div>`;
+                }).join('');
+
+            } catch (error) {
+                console.error(error);
+                resultsContainer.innerHTML = '<div>Error loading results. Please try again later.</div>';
+            }
+        }
+
+        function handleResultClick(event, url) {
+            event.preventDefault();
+            const siteViewer = document.getElementById('siteViewer');
+
+            try {
+                siteViewer.src = url;
+                siteViewer.onload = () => {
+                    const hasContent = siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount > 0;
+                    if (!hasContent) {
+                        throw new Error('Blocked in iframe');
+                    }
+                };
+            } catch (error) {
+                window.open(url, '_blank');
+            }
         }
 
         function loadWebsite() {
             const siteInput = document.getElementById('siteInput').value;
-            const siteViewer = document.getElementById('siteViewer');
+            const siteViewer = document.getElementById('siteViewer'); //v 1000000000
 
             try {
                 siteViewer.src = siteInput;
-
                 siteViewer.onload = () => {
-                    if (siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount === 0) {
+                    const hasContent = siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount > 0; 
+                    if (!hasContent) {
                         throw new Error('Blocked in iframe');
                     }
                 };
-
             } catch (error) {
                 window.open(siteInput, '_blank');
             }
         }
     </script>
 </body>
-</html>
+</html> 
