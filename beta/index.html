@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -12,7 +12,7 @@
             padding: 0;
             height: 100vh;
             transition: background 0.3s ease, transform 0.3s ease;
-            cursor: none; /* Hide the default cursor */ 
+            cursor: none; /* Hide the default cursor */
         }
 
         body.dark-theme {
@@ -283,65 +283,79 @@
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = '<div>Loading results...</div>';
 
-            const { apiKey, cseId } = getRandomAPIConfig();
-            const searchType = category === 'image' ? '&searchType=image' : '';
-            const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cseId}&q=${encodeURIComponent(query)}${searchType}`;
+            let retryCount = 0;
+            let success = false;
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
+            while (retryCount < API_CSE_PAIRS.length && !success) {
+                try {
+                    const { apiKey, cseId } = getRandomAPIConfig();
+                    const response = await fetch(`https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${cseId}&key=${apiKey}`);
 
-                if (!data.items || data.items.length === 0) {
-                    resultsContainer.innerHTML = '<div>No results found.</div>';
-                    return;
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch search results');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        resultsContainer.innerHTML = '';
+
+                        data.items.forEach(item => {
+                            const resultItem = document.createElement('div');
+                            resultItem.className = 'result-item';
+                            resultItem.innerHTML = `
+                                <h3><a href="#" onclick="tryOpenLink('${item.link}')">${item.title}</a></h3>
+                                <p>${item.snippet}</p>
+                            `;
+                            resultsContainer.appendChild(resultItem);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = '<div>No results found.</div>';
+                    }
+
+                    success = true;
+                } catch (error) {
+                    retryCount++;
                 }
+            }
 
-                resultsContainer.innerHTML = data.items.map(item => {
-                    return `<div class="result-item">
-                        <a href="${item.link}" target="_blank" onclick="handleResultClick(event, '${item.link}')">${item.title}</a>
-                        <p>${item.snippet}</p>
-                    </div>`;
-                }).join('');
-
-            } catch (error) {
-                console.error(error);
-                resultsContainer.innerHTML = '<div>Error loading results. Please try again later.</div>';
+            if (!success) {
+                resultsContainer.innerHTML = '<div>Failed to fetch results. Please try again later.</div>';
             }
         }
 
-        function handleResultClick(event, url) {
-            event.preventDefault();
+        function tryOpenLink(link) {
             const siteViewer = document.getElementById('siteViewer');
 
             try {
-                siteViewer.src = url;
+                siteViewer.src = link;
                 siteViewer.onload = () => {
-                    const hasContent = siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount > 0;
-                    if (!hasContent) {
+                    if (siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount === 0) {
                         throw new Error('Blocked in iframe');
                     }
                 };
             } catch (error) {
-                window.open(url, '_blank');
+                window.open(link, '_blank');
             }
         }
 
         function loadWebsite() {
             const siteInput = document.getElementById('siteInput').value;
-            const siteViewer = document.getElementById('siteViewer'); //v 1000000000
+            const siteViewer = document.getElementById('siteViewer');
 
             try {
                 siteViewer.src = siteInput;
+
                 siteViewer.onload = () => {
-                    const hasContent = siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount > 0; 
-                    if (!hasContent) {
+                    if (siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount === 0) {
                         throw new Error('Blocked in iframe');
                     }
                 };
             } catch (error) {
-                window.open(siteInput, '_blank');
+                window.open(siteInput, '_blank'); //v 85
+                
             }
         }
     </script>
 </body>
-</html> 
+</html>
