@@ -12,7 +12,7 @@
             padding: 0;
             height: 100vh;
             transition: background 0.3s ease, transform 0.3s ease;
-            cursor: none;
+            cursor: none; /* Hide the default cursor */
         }
 
         body.dark-theme {
@@ -161,84 +161,78 @@
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        #arScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            z-index: 10000;
-            display: none;
-        }
-
-        #arModeButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #00e0ff;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 18px;
+        .bookmark {
+            color: #fff;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-        }
-
-        #arModeButton:hover {
-            background-color: #00b8d4;
-        }
-
-        #bookmarkBar {
-            background-color: lightblue;
-            padding: 10px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-        }
-
-        .bookmark-item {
-            background: purple;
-            color: white;
-            padding: 10px;
+            padding: 5px;
+            margin: 5px;
+            background: rgba(0, 224, 255, 0.6);
             border-radius: 5px;
+            display: inline-block;
+        }
+
+        #bookmarks-bar {
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            display: flex;
+            overflow-x: auto;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .context-menu {
+            position: absolute;
+            background-color: #222;
+            border: 1px solid #00e0ff;
+            box-shadow: 0 0 10px rgba(0, 224, 255, 0.8);
+            color: #fff;
+            padding: 10px;
+            z-index: 9999;
+        }
+
+        .context-menu button {
+            background: #00e0ff;
+            border: none;
+            color: #121212;
+            padding: 5px 10px;
             cursor: pointer;
+        }
+
+        .context-menu button:hover {
+            background: #00b8d4;
+        }
+
+        .theme-switch {
+            margin: 20px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            background: #00e0ff;
+            border-radius: 5px;
+            color: #fff;
         }
     </style>
 </head>
 <body class="dark-theme">
-    <div id="bookmarkBar"></div>
-    <h1 style="text-align: center; color: lightblue; text-shadow: 0 0 20px lightblue;">Future Search</h1>
+    <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
 
-    <div style="text-align: center; margin-top: 10px;">
-        <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
-        <input type="text" id="searchBar" placeholder="Type a keyword...">
-        <select id="searchCategory">
-            <option value="web">Web</option>
-            <option value="image">Images</option>
-            <option value="news">News</option>
-        </select>
-        <button onclick="performSearch()">Search</button>
-    </div>
+    <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
+    
+    <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
+    <input type="text" id="searchBar" placeholder="Type a keyword...">
+    <select id="searchCategory">
+        <option value="web">Web</option>
+        <option value="image">Images</option>
+        <option value="news">News</option>
+    </select>
+    <button onclick="performSearch()">Search</button>
     <div id="results"></div>
 
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
     <iframe id="siteViewer" title="Website Viewer"></iframe>
-
-    <!-- AR Mode Button -->
-    <button id="arModeButton" onclick="enterARMode()">Enter AR Mode</button>
-
-    <!-- AR Mode Screen -->
-    <div id="arScreen">
-        <button onclick="exitARMode()">Exit AR Mode</button>
-        <p>AR Mode: View your surroundings</p>
-    </div>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
@@ -250,8 +244,15 @@
             { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
         ];
 
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-        let mouseX = 0, mouseY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Track mouse movement for custom cursor
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            updateCursor(event);
+        });
 
         function updateCursor(event) {
             const cursor = document.getElementById('cursor');
@@ -267,81 +268,22 @@
             setTimeout(() => trail.remove(), 600);
         }
 
-        document.addEventListener('mousemove', updateCursor);
-
-        document.addEventListener('contextmenu', (event) => {
-            if (event.target.classList.contains('bookmark-item')) {
-                event.preventDefault();
-                const contextMenu = document.createElement('div');
-                contextMenu.style.position = 'absolute';
-                contextMenu.style.top = `${event.clientY}px`;
-                contextMenu.style.left = `${event.clientX}px`;
-                contextMenu.style.background = '#333';
-                contextMenu.style.color = '#fff';
-                contextMenu.style.padding = '10px';
-                contextMenu.style.borderRadius = '5px';
-                contextMenu.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
-                contextMenu.innerHTML = '<div onclick="deleteBookmark(event)">Delete Bookmark</div>';
-                document.body.appendChild(contextMenu);
-            }
-        });
-
-        function toggleTheme() {
-            const body = document.body;
-            const button = document.querySelector('.theme-switch');
-            if (body.classList.contains('dark-theme')) {
-                body.classList.remove('dark-theme');
-                body.classList.add('light-theme');
-                button.textContent = 'Switch to Dark Mode';
-            } else {
-                body.classList.remove('light-theme');
-                body.classList.add('dark-theme');
-                button.textContent = 'Switch to Light Mode';
-            }
+        function getRandomAPIConfig() {
+            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
         }
 
-        function performSearch() {
-            const query = document.getElementById('searchBar').value;
-            const category = document.getElementById('searchCategory').value;
+        async function performSearch() {
+            const query = document.getElementById("searchBar").value;
+            const category = document.getElementById("searchCategory").value;
+
             if (!query) {
-                alert('Please enter a search term.');
-                return;
+                return alert('Please enter a search term');
             }
 
-            let apiPair = API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
-            fetch(`https://www.googleapis.com/customsearch/v1?q=${query}&cx=${apiPair.cseId}&key=${apiPair.apiKey}`)
-                .then(response => response.json())
-                .then(data => {
-                    displayResults(data.items || []);
-                });
-        }
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = '<div>Loading results...</div>';
 
-        function displayResults(items) {
-            const resultsContainer = document.getElementById('results');
-            resultsContainer.innerHTML = '';
-            items.forEach(item => {
-                const resultElement = document.createElement('div');
-                resultElement.classList.add('result-item');
-                resultElement.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a><br>${item.snippet}`;
-                resultsContainer.appendChild(resultElement);
-            });
-        }
+            let retryCount = 0;
+            let success = false;
 
-        function loadWebsite() {
-            const siteUrl = document.getElementById('siteInput').value;
-            const siteViewer = document.getElementById('siteViewer');
-            siteViewer.src = siteUrl;
-        }
-
-        function enterARMode() {
-            const arScreen = document.getElementById('arScreen');
-            arScreen.style.display = 'flex';
-        }
-
-        function exitARMode() {
-            const arScreen = document.getElementById('arScreen');
-            arScreen.style.display = 'none';
-        }
-    </script>
-</body>
-</html>
+           
