@@ -46,7 +46,8 @@
             margin-bottom: 20px;
             border: 2px solid #00e0ff;
             outline: none;
-            width: 350px;
+            width: 100%;
+            max-width: 350px;
             text-align: center;
             background: transparent;
             color: #e0e0e0;
@@ -169,11 +170,85 @@
         .result-item a:hover {
             text-decoration: underline;
         }
+
+        .bookmark-button {
+            background-color: #00e0ff;
+            color: #121212;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .bookmark-button:hover {
+            background-color: #00b8d4;
+        }
+
+        .bookmarked {
+            background-color: #ff9900;
+        }
+
+        .bookmarks-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            overflow-x: auto;
+            z-index: 2000;
+            margin-bottom: 80px; /* Space for search bar */
+        }
+
+        .bookmark-item {
+            background-color: #00e0ff;
+            color: #121212;
+            padding: 8px 15px;
+            margin-right: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .bookmark-item:hover {
+            background-color: #00b8d4;
+        }
+
+        .bookmark-item.delete:hover {
+            background-color: #ff0000;
+        }
+
+        .bookmark-item:active {
+            background-color: #00b8d4;
+        }
+
+        .search-container {
+            padding-top: 80px; /* Adjust for bookmarks bar */
+            margin-top: 80px;
+        }
+
+        @media (max-width: 600px) {
+            input, select, button {
+                width: 90%;
+            }
+
+            iframe {
+                height: calc(100vh - 200px);
+            }
+        }
+
     </style>
 </head>
 <body class="dark-theme">
+    <!-- Bookmarks Bar -->
+    <div class="bookmarks-bar" id="bookmarksBar"></div>
+
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
-    
+
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     <input type="text" id="searchBar" placeholder="Type a keyword...">
     <select id="searchCategory">
@@ -182,7 +257,7 @@
         <option value="news">News</option>
     </select>
     <button onclick="performSearch()">Search</button>
-    <div id="results"></div>
+    <div id="results" class="search-container"></div>
 
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
@@ -253,6 +328,7 @@
                             resultItem.innerHTML = `
                                 <h3><a href="#" onclick="tryOpenLink('${item.link}')">${item.title}</a></h3>
                                 <p>${item.snippet}</p>
+                                <button class="bookmark-button" onclick="bookmarkResult('${item.link}', this)">Bookmark Site</button>
                             `;
                             resultsContainer.appendChild(resultItem);
                         });
@@ -269,6 +345,52 @@
             if (!success) {
                 resultsContainer.innerHTML = '<div>Failed to fetch results. Please try again later.</div>';
             }
+        }
+
+        function bookmarkResult(link, button) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            
+            if (!bookmarks.includes(link)) {
+                bookmarks.push(link);
+                button.classList.add('bookmarked');
+                button.innerHTML = 'Bookmarked';
+                updateBookmarksBar();
+            } else {
+                bookmarks = bookmarks.filter(bookmark => bookmark !== link);
+                button.classList.remove('bookmarked');
+                button.innerHTML = 'Bookmark Site';
+                updateBookmarksBar();
+            }
+            
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        }
+
+        function updateBookmarksBar() {
+            const bookmarksBar = document.getElementById('bookmarksBar');
+            bookmarksBar.innerHTML = '';
+
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+            bookmarks.forEach(link => {
+                const bookmarkItem = document.createElement('div');
+                bookmarkItem.className = 'bookmark-item';
+                bookmarkItem.textContent = link;
+                bookmarkItem.onclick = () => window.open(link, '_blank');
+                bookmarkItem.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    if (confirm('Do you want to delete this bookmark?')) {
+                        deleteBookmark(link);
+                    }
+                };
+                bookmarksBar.appendChild(bookmarkItem);
+            });
+        }
+
+        function deleteBookmark(link) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks = bookmarks.filter(bookmark => bookmark !== link);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            updateBookmarksBar();
         }
 
         function tryOpenLink(link) {
@@ -332,6 +454,9 @@
                 document.querySelector('.theme-switch').textContent = 'Switch to Light Mode';
             }
         }
+
+        // Initialize bookmarks bar
+        updateBookmarksBar();
     </script>
 </body>
 </html>
