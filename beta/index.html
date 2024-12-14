@@ -367,37 +367,17 @@
             const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
             bookmarksBar.innerHTML = bookmarks.map(bookmark => `
-                <div class="bookmark" oncontextmenu="showContextMenu(event, '${bookmark.url}')">
-                    <a href="${bookmark.url}" target="_blank">${bookmark.title}</a>
+                <div class="bookmark" onclick="openInIframe('${bookmark.url}')">
+                    ${bookmark.title}
                 </div>
             `).join('');
         }
 
-        function showContextMenu(event, url) {
+        function showContextMenu(event) {
             event.preventDefault();
-            const contextMenu = document.createElement('div');
-            contextMenu.className = 'context-menu';
-            contextMenu.innerHTML = `
-                <button onclick="deleteBookmark('${url}')">Delete Bookmark</button>
-            `;
-            document.body.appendChild(contextMenu);
-            contextMenu.style.top = `${event.clientY}px`;
-            contextMenu.style.left = `${event.clientX}px`;
-
-            // Remove the context menu after clicking elsewhere
-            document.addEventListener('click', () => {
-                contextMenu.remove();
-            });
         }
 
-        function deleteBookmark(url) {
-            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            displayBookmarks();
-        }
-
-        window.onload = displayBookmarks; /*vvv*/
+        window.onload = displayBookmarks;
     </script>
 </body>
 </html>
