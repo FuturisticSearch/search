@@ -213,6 +213,25 @@
             border-radius: 5px;
             color: #fff;
         }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #00e0ff;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            z-index: 10000;
+            display: none;
+        }
+
+        .back-button:hover {
+            background: #00b8d4;
+        }
     </style>
 </head>
 <body class="dark-theme">
@@ -232,6 +251,10 @@
 
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
+
+    <!-- Go Back Button -->
+    <button class="back-button" id="backButton" onclick="goBack()">Go Back</button>
+
     <iframe id="siteViewer" title="Website Viewer"></iframe>
 
     <!-- Custom Cursor -->
@@ -321,6 +344,14 @@
 
         function loadIframe(url) {
             document.getElementById("siteViewer").src = url;
+            document.getElementById("backButton").style.display = 'block'; // Show the Go Back button
+            document.getElementById("results").style.display = 'none'; // Hide search results
+        }
+
+        function goBack() {
+            document.getElementById("siteViewer").src = ''; // Clear iframe content
+            document.getElementById("backButton").style.display = 'none'; // Hide Go Back button
+            document.getElementById("results").style.display = 'block'; // Show search results
         }
 
         function toggleTheme() {
@@ -339,6 +370,7 @@
             const siteURL = document.getElementById("siteInput").value;
             const iframe = document.getElementById("siteViewer");
             iframe.src = siteURL;
+            document.getElementById("backButton").style.display = 'block'; // Show the Go Back button
         }
 
         function addBookmark(title, url) {
@@ -361,7 +393,7 @@
 
             bookmarksBar.innerHTML = bookmarks.map(bookmark => `
                 <div class="bookmark" oncontextmenu="showContextMenu(event, '${bookmark.url}')">
-                    <a href="${bookmark.url}" target="_blank">${bookmark.title}</a>
+                    <a href="#" onclick="loadIframe('${bookmark.url}')">${bookmark.title}</a>
                 </div>
             `).join('');
         }
