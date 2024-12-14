@@ -164,7 +164,7 @@
             left: 0;
             z-index: 9800;
             visibility: hidden; /* Initially hidden */
-            pointer-events: none; /* Allow mouse events to pass through */
+            pointer-events: none; /* Prevent interactions when hidden */
         }
 
         #backBtn {
@@ -324,6 +324,7 @@
         function openInIframe(url) {
             iframe.src = url;
             iframe.style.visibility = "visible";
+            iframe.style.pointerEvents = "auto"; // Enable pointer events
             backButton.style.display = "block";
 
             // Add an event listener to check for iframe load errors
@@ -347,6 +348,7 @@
             const siteURL = document.getElementById("siteInput").value;
             iframe.src = siteURL;
             iframe.style.visibility = "visible";
+            iframe.style.pointerEvents = "auto"; // Enable pointer events
             backButton.style.display = "block";
 
             // Add an event listener to check for iframe load errors
@@ -368,6 +370,7 @@
 
         function goBack() {
             iframe.style.visibility = "hidden";
+            iframe.style.pointerEvents = "none"; // Disable pointer events when hidden
             backButton.style.display = "none";
         }
 
