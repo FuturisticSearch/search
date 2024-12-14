@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -11,8 +11,8 @@
             margin: 0;
             padding: 0;
             height: 100vh;
-            transition: background 0.3s ease, transform 0.3s ease; /*idk*/
-            cursor: none; /* Hide the default cursor */
+            transition: background 0.3s ease, transform 0.3s ease;
+            cursor: none;
         }
 
         body.dark-theme {
@@ -95,32 +95,8 @@
             box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
         }
 
-        #results {
-            max-height: 50vh;
-            overflow-y: auto;
-            padding: 10px;
-            margin-top: 20px;
-            border: 1px solid #00e0ff;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-        }
-
-        .result-item {
-            margin-bottom: 20px;
-        }
-
-        .result-item a {
-            color: #00e0ff;
-            text-decoration: none;
-        }
-
-        .result-item a:hover {
-            text-decoration: underline;
-        }
-
         iframe {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -134,26 +110,6 @@
             display: block;
         }
 
-        #goBackButton {
-            background: #00e0ff;
-            color: #121212;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none; /* Hidden initially */
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
-        }
-
-        #goBackButton:hover {
-            background: #00b8d4;
-        }
-
-        /* Custom Cursor */
         .cursor {
             position: fixed;
             width: 20px;
@@ -188,11 +144,34 @@
             }
         }
 
+        #goBackButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px;
+            background-color: rgba(0, 224, 255, 0.6);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: none;
+            z-index: 2000;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="dark-theme">
-    <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
-
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
     
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
@@ -207,22 +186,16 @@
 
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
-    
-    <!-- Go Back Button -->
-    <button id="goBackButton" onclick="goBack()">Go Back</button>
 
     <iframe id="siteViewer" title="Website Viewer"></iframe>
+
+    <!-- Go Back Button -->
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
 
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
     <script>
-        const API_CSE_PAIRS = [
-            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
-            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
-            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
-        ];
-
         let mouseX = 0;
         let mouseY = 0;
 
@@ -247,10 +220,6 @@
             setTimeout(() => trail.remove(), 600);
         }
 
-        function getRandomAPIConfig() {
-            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
-        }
-
         async function performSearch() {
             const query = document.getElementById("searchBar").value;
             const category = document.getElementById("searchCategory").value;
@@ -265,10 +234,9 @@
             let retryCount = 0;
             let success = false;
 
-            while (retryCount < API_CSE_PAIRS.length && !success) {
+            while (retryCount < 3 && !success) {
                 try {
-                    const { apiKey, cseId } = getRandomAPIConfig();
-                    const response = await fetch(`https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${cseId}&key=${apiKey}`);
+                    const response = await fetch(`https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=YOUR_CSE_ID&key=YOUR_API_KEY`);
 
                     if (!response.ok) {
                         throw new Error('Failed to fetch search results');
@@ -309,7 +277,6 @@
             
             siteViewer.src = link;
             siteViewer.classList.add('active');
-            
             goBackButton.style.display = "none"; // Hide "Go Back" button initially.
 
             siteViewer.onload = () => {
@@ -332,7 +299,6 @@
 
             siteViewer.src = siteInput;
             siteViewer.classList.add('active');
-
             goBackButton.style.display = "none"; // Hide "Go Back" button initially.
 
             siteViewer.onload = () => {
@@ -356,16 +322,16 @@
 
         function toggleTheme() {
             const body = document.body;
-            body.classList.toggle('dark-theme');
-            body.classList.toggle('light-theme');
-
-            const button = document.querySelector('.theme-switch');
-            if (body.classList.contains('dark-theme')) {
-                button.textContent = 'Switch to Light Mode';
+            const currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
+            
+            if (currentTheme === 'dark') {
+                body.classList.replace('dark-theme', 'light-theme');
+                document.querySelector('.theme-switch').textContent = 'Switch to Dark Mode';
             } else {
-                button.textContent = 'Switch to Dark Mode';
+                body.classList.replace('light-theme', 'dark-theme');
+                document.querySelector('.theme-switch').textContent = 'Switch to Light Mode';
             }
         }
-    </script> 
+    </script>
 </body>
 </html>
