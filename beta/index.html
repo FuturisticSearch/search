@@ -285,5 +285,25 @@
 
             let retryCount = 0;
             let success = false;
+        }
 
-           
+        function loadWebsite() {
+            const siteInput = document.getElementById('siteInput').value;
+            const siteViewer = document.getElementById('siteViewer');
+
+            try {
+                siteViewer.src = siteInput;
+
+                siteViewer.onload = () => {
+                    if (siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount === 0) {
+                        throw new Error('Blocked in iframe');
+                    }
+                };
+
+            } catch (error) {
+                window.open(siteInput, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
