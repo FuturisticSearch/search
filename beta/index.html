@@ -326,22 +326,7 @@
             iframe.style.visibility = "visible";
             iframe.style.pointerEvents = "auto"; // Enable pointer events
             backButton.style.display = "block";
-
-            // Add an event listener to check for iframe load errors
-            iframe.onload = function() {
-                console.log("Iframe loaded successfully");
-            };
-
-            // Set a timeout for detecting if iframe fails to load
-            setTimeout(() => {
-                if (!iframe.contentWindow || iframe.contentWindow.location.href === 'about:blank') {
-                    // Iframe has failed to load the content
-                    alert("The content cannot be loaded in the iframe. Opening in a new tab...");
-                    window.open(url, '_blank'); // Open in new tab
-                    iframe.style.visibility = "hidden"; // Hide iframe after failed load
-                    backButton.style.display = "none"; // Hide back button
-                }
-            }, 3000); // Timeout after 3 seconds (adjust based on your needs)
+            document.getElementById('cursor').style.visibility = "hidden"; // Hide the cursor when iframe is visible
         }
 
         function loadWebsite() {
@@ -350,28 +335,14 @@
             iframe.style.visibility = "visible";
             iframe.style.pointerEvents = "auto"; // Enable pointer events
             backButton.style.display = "block";
-
-            // Add an event listener to check for iframe load errors
-            iframe.onload = function() {
-                console.log("Iframe loaded successfully");
-            };
-
-            // Set a timeout for detecting if iframe fails to load
-            setTimeout(() => {
-                if (!iframe.contentWindow || iframe.contentWindow.location.href === 'about:blank') {
-                    // Iframe has failed to load the content
-                    alert("The content cannot be loaded in the iframe. Opening in a new tab...");
-                    window.open(siteURL, '_blank'); // Open in new tab
-                    iframe.style.visibility = "hidden"; // Hide iframe after failed load
-                    backButton.style.display = "none"; // Hide back button
-                }
-            }, 3000); // Timeout after 3 seconds (adjust based on your needs)
+            document.getElementById('cursor').style.visibility = "hidden"; // Hide the cursor when iframe is visible
         }
 
         function goBack() {
             iframe.style.visibility = "hidden";
             iframe.style.pointerEvents = "none"; // Disable pointer events when hidden
             backButton.style.display = "none";
+            document.getElementById('cursor').style.visibility = "visible"; // Show the cursor again
         }
 
         function toggleTheme() {
