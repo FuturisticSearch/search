@@ -154,11 +154,18 @@
         }
 
         iframe {
-            width: 90%;
-            height: 80vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
-            margin-top: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        iframe.active {
+            display: block;
         }
 
         .bookmark {
@@ -327,35 +334,41 @@
         function tryOpenLink(link) {
             const siteViewer = document.getElementById('siteViewer');
 
-            try {
-                siteViewer.src = link;
-                siteViewer.onload = () => {
-                    if (siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount === 0) {
-                        throw new Error('Blocked in iframe');
+            siteViewer.src = link;
+            siteViewer.classList.add('active');
+
+            siteViewer.onload = () => {
+                try {
+                    const content = siteViewer.contentWindow.document;
+                    if (!content || content.body.childElementCount === 0) {
+                        throw new Error('Access blocked');
                     }
-                };
-            } catch (error) {
-                window.open(link, '_blank');
-            }
+                } catch {
+                    siteViewer.classList.remove('active');
+                    window.open(link, '_blank');
+                }
+            };
         }
 
         function loadWebsite() {
             const siteInput = document.getElementById('siteInput').value;
             const siteViewer = document.getElementById('siteViewer');
 
-            try {
-                siteViewer.src = siteInput;
+            siteViewer.src = siteInput;
+            siteViewer.classList.add('active');
 
-                siteViewer.onload = () => {
-                    if (siteViewer.contentDocument && siteViewer.contentDocument.body.childElementCount === 0) {
-                        throw new Error('Blocked in iframe');
+            siteViewer.onload = () => {
+                try {
+                    const content = siteViewer.contentWindow.document;
+                    if (!content || content.body.childElementCount === 0) {
+                        throw new Error('Access blocked');
                     }
-                };
-            } catch (error) {
-                window.open(siteInput, '_blank'); //v 85
-                
-            }
+                } catch {
+                    siteViewer.classList.remove('active');
+                    window.open(siteInput, '_blank');
+                }//v 86
+            };
         }
-    </script>
+    </script> 
 </body>
 </html>
