@@ -10,15 +10,16 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh; 
+            height: 100vh;
             overflow: hidden;
             transition: background 0.3s ease, transform 0.3s ease;
             cursor: none;
             z-index: 1;
         }
 
+        /* Custom cursor */
         .cursor {
-            position: fixed; 
+            position: fixed;
             width: 20px;
             height: 20px;
             background: rgba(0, 224, 255, 0.8);
@@ -26,7 +27,7 @@
             pointer-events: none;
             transform: translate(-50%, -50%);
             box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
-            z-index: 99999; 
+            z-index: 99999;
         }
 
         .cursor-trail {
@@ -38,8 +39,9 @@
             pointer-events: none;
             z-index: 99998;
             animation: fade 0.6s ease-out forwards;
-        } 
+        }
 
+        /* Main iframe styling */
         iframe {
             position: fixed;
             top: 0;
@@ -49,11 +51,32 @@
             border: none;
             z-index: 9800;
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            display: none; /* Initially hidden */
+            pointer-events: none; /* Disable interactions with the iframe */
         }
 
+        /* Go Back button styling */
+        #goBackButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #00e0ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 99999;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        #goBackButton:hover {
+            background-color: #00b8d4;
+        }
+
+        /* Form and search results styling */
         input, button, select {
             z-index: 100;
-            position: relative; 
+            position: relative;
         }
 
         button {
@@ -66,9 +89,9 @@
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        body.light-theme button { 
-            background: #202124; 
-            color: #fff; 
+        body.light-theme button {
+            background: #202124;
+            color: #fff;
         }
 
         button:hover {
@@ -174,6 +197,9 @@
 
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
+
+    <button id="goBackButton" onclick="goBack()">Go Back</button>
+
     <iframe id="siteViewer" title="Website Viewer"></iframe>
 
     <div class="cursor" id="cursor"></div>
@@ -184,6 +210,7 @@
         let searchCategory = document.getElementById('searchCategory');
         let searchButton = document.querySelector('button[onclick="performSearch()"]');
         let siteInput = document.getElementById('siteInput');
+        let goBackButton = document.getElementById('goBackButton');
 
         const API_CSE_PAIRS = [
             { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
@@ -278,12 +305,16 @@
             const url = siteInput.value;
             if (url) {
                 iframe.src = url;
+                iframe.style.display = 'block';  // Show iframe
+                iframe.style.pointerEvents = 'auto';  // Enable iframe interactions
                 toggleSearchVisibility(false);  // Hide search bar
             }
         }
 
         function goBack() {
             iframe.src = '';  // Clear iframe
+            iframe.style.display = 'none';  // Hide iframe
+            iframe.style.pointerEvents = 'none';  // Disable iframe interactions
             toggleSearchVisibility(true);  // Show search bar again
         }
 
@@ -291,7 +322,7 @@
             searchBar.style.display = isVisible ? 'block' : 'none';
             searchCategory.style.display = isVisible ? 'inline-block' : 'none';
             searchButton.style.display = isVisible ? 'inline-block' : 'none';
-            siteInput.style.display = isVisible ? 'block' : 'none'; /*1 */
+            siteInput.style.display = isVisible ? 'block' : 'none'; /*2*/
         }
     </script>
 </body>
