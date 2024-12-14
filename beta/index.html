@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             height: 100vh;
+            overflow: hidden; /* Prevent body overflow */
             transition: background 0.3s ease, transform 0.3s ease;
             cursor: none; /* Hide the default cursor */
         }
@@ -154,10 +155,13 @@
         }
 
         iframe {
-            width: 100%;
-            height: 100vh; /* Make the iframe cover the entire screen */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw; /* Full screen width */
+            height: 100vh; /* Full screen height */
             border: none;
-            margin-top: 0;
+            z-index: -1; /* Make sure iframe is in the background */
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
@@ -401,16 +405,20 @@
         function showContextMenu(event, url) {
             event.preventDefault();
 
-            const contextMenu = document.createElement('div');
-            contextMenu.classList.add('context-menu');
-            contextMenu.innerHTML = `
+            const menu = document.createElement('div');
+            menu.classList.add('context-menu');
+            menu.innerHTML = `
                 <button onclick="removeBookmark('${url}')">Remove Bookmark</button>
             `;
-            contextMenu.style.top = `${event.clientY}px`;
-            contextMenu.style.left = `${event.clientX}px`;
-            document.body.appendChild(contextMenu);
 
-            document.addEventListener('click', () => contextMenu.remove(), { once: true });
+            menu.style.top = `${event.clientY}px`;
+            menu.style.left = `${event.clientX}px`;
+
+            document.body.appendChild(menu);
+
+            document.addEventListener('click', () => {
+                menu.remove();
+            }, { once: true });
         }
 
         function removeBookmark(url) {
@@ -420,7 +428,9 @@
             displayBookmarks();
         }
 
-        displayBookmarks();
+        window.onload = function() {
+            displayBookmarks();
+        }
     </script>
 </body>
 </html>
