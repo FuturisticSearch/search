@@ -164,6 +164,7 @@
             left: 0;
             z-index: 9800;
             visibility: hidden; /* Initially hidden */
+            pointer-events: none; /* Allow mouse events to pass through */
         }
 
         #backBtn {
@@ -301,32 +302,45 @@
                         resultsContainer.innerHTML = data.items.map(item => `
                             <div class="result-item">
                                 <a href="#" onclick="openInIframe('${item.link}')">${item.title}</a>
-                                <p class="url">${item.link}</p>
-                                <p class="description">${item.snippet}</p>
-                                <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
+                                <p>${item.snippet}</p>
                             </div>
                         `).join('');
                         success = true;
                     } else {
-                        resultsContainer.innerHTML = '<p>No results found.</p>';
-                        success = true;
+                        resultsContainer.innerHTML = '<div>No results found</div>';
                     }
                 } catch (error) {
+                    console.error('Error fetching search results:', error);
                     retryCount++;
+                    if (retryCount < 6) {
+                        resultsContainer.innerHTML = '<div>Retrying...</div>';
+                    } else {
+                        resultsContainer.innerHTML = '<div>Failed to fetch results. Please try again later.</div>';
+                    }
                 }
             }
         }
 
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle("dark-theme");
-            body.classList.toggle("light-theme");
-            const button = document.querySelector(".theme-switch");
-            if (body.classList.contains("dark-theme")) {
-                button.innerText = "Switch to Light Mode";
-            } else {
-                button.innerText = "Switch to Dark Mode";
-            }
+        function openInIframe(url) {
+            iframe.src = url;
+            iframe.style.visibility = "visible";
+            backButton.style.display = "block";
+
+            // Add an event listener to check for iframe load errors
+            iframe.onload = function() {
+                console.log("Iframe loaded successfully");
+            };
+
+            // Set a timeout for detecting if iframe fails to load
+            setTimeout(() => {
+                if (!iframe.contentWindow || iframe.contentWindow.location.href === 'about:blank') {
+                    // Iframe has failed to load the content
+                    alert("The content cannot be loaded in the iframe. Opening in a new tab...");
+                    window.open(url, '_blank'); // Open in new tab
+                    iframe.style.visibility = "hidden"; // Hide iframe after failed load
+                    backButton.style.display = "none"; // Hide back button
+                }
+            }, 3000); // Timeout after 3 seconds (adjust based on your needs)
         }
 
         function loadWebsite() {
@@ -334,50 +348,40 @@
             iframe.src = siteURL;
             iframe.style.visibility = "visible";
             backButton.style.display = "block";
-        }
 
-        function openInIframe(url) {
-            iframe.src = url;
-            iframe.style.visibility = "visible";
-            backButton.style.display = "block";
+            // Add an event listener to check for iframe load errors
+            iframe.onload = function() {
+                console.log("Iframe loaded successfully");
+            };
+
+            // Set a timeout for detecting if iframe fails to load
+            setTimeout(() => {
+                if (!iframe.contentWindow || iframe.contentWindow.location.href === 'about:blank') {
+                    // Iframe has failed to load the content
+                    alert("The content cannot be loaded in the iframe. Opening in a new tab...");
+                    window.open(siteURL, '_blank'); // Open in new tab
+                    iframe.style.visibility = "hidden"; // Hide iframe after failed load
+                    backButton.style.display = "none"; // Hide back button
+                }
+            }, 3000); // Timeout after 3 seconds (adjust based on your needs)
         }
 
         function goBack() {
-            iframe.src = '';
             iframe.style.visibility = "hidden";
             backButton.style.display = "none";
         }
 
-        function addBookmark(title, url) {
-            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-
-            // Check if the site is already bookmarked
-            if (bookmarks.find(bookmark => bookmark.url === url)) {
-                alert("This site is already bookmarked.");
-                return;
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-theme');
+            body.classList.toggle('light-theme');
+            const themeSwitch = document.querySelector('.theme-switch');
+            if (body.classList.contains('dark-theme')) {
+                themeSwitch.textContent = 'Switch to Light Mode';
+            } else {
+                themeSwitch.textContent = 'Switch to Dark Mode';
             }
-
-            bookmarks.push({ title, url });
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            displayBookmarks();
         }
-
-        function displayBookmarks() {
-            const bookmarksBar = document.getElementById('bookmarks-bar');
-            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-
-            bookmarksBar.innerHTML = bookmarks.map(bookmark => `
-                <div class="bookmark" onclick="openInIframe('${bookmark.url}')">
-                    ${bookmark.title}
-                </div>
-            `).join('');
-        }
-
-        function showContextMenu(event) {
-            event.preventDefault();
-        }
-
-        window.onload = displayBookmarks; //b//
     </script>
 </body>
 </html>
