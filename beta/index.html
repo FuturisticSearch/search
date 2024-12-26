@@ -4,123 +4,349 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Your existing styles */
-        #results .result-item {
-            margin-bottom: 20px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border-radius: 5px;
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            transition: background 0.3s ease, transform 0.3s ease;
+            cursor: none; /* Hide the default cursor */
         }
 
-        #results .result-item button {
-            margin-top: 10px;
-            background: #00e0ff;
-            border: none;
-            padding: 10px;
+        body.dark-theme {
+            background: #000;
+            background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/webb_stars_space_2.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        body.light-theme {
+            background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .theme-switch {
+            margin-bottom: 20px;
+            font-size: 18px;
             color: #fff;
             cursor: pointer;
-            border-radius: 5px;
-            transition: background 0.3s ease;
+            transition: color 0.3s ease;
         }
 
-        #results .result-item button:hover {
+        body.dark-theme .theme-switch:hover {
+            color: #00e0ff;
+        }
+
+        input, button, select {
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #00e0ff;
+            outline: none;
+            width: 350px;
+            text-align: center;
+            background: transparent;
+            color: #e0e0e0;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        input.light-theme, select.light-theme {
+            color: #202124;
+        }
+
+        input::placeholder, select {
+            color: #aaa;
+        }
+
+        select {
+            background: transparent;
+            border: 2px solid #00e0ff;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        select:focus {
+            border-color: #00b8d4;
+            box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
+        }
+
+        button {
+            background: #00e0ff;
+            color: #121212;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        body.light-theme button {
+            background: #202124;
+            color: #fff;
+        }
+
+        button:hover {
             background: #00b8d4;
+            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
+        }
+
+        #results {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #00e0ff;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+        }
+
+        .result-item a {
+            color: #00e0ff;
+            text-decoration: none;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 224, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8), 0 0 30px rgba(0, 224, 255, 0.5);
+            z-index: 9999;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: rgba(0, 224, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fade 0.6s ease-out forwards;
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        iframe {
+            width: 90%;
+            height: 80vh;
+            border: none;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .bookmark {
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+            margin: 5px;
+            background: rgba(0, 224, 255, 0.6);
+            border-radius: 5px;
+            display: inline-block;
         }
 
         #bookmarks-bar {
             padding: 10px;
-            background: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.7);
             color: #fff;
             display: flex;
             overflow-x: auto;
             align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
 
-        .bookmark {
-            margin: 5px;
-            padding: 5px 10px;
-            background: #00e0ff;
-            border-radius: 5px;
+        .context-menu {
+            position: absolute;
+            background-color: #222;
+            border: 1px solid #00e0ff;
+            box-shadow: 0 0 10px rgba(0, 224, 255, 0.8);
             color: #fff;
+            padding: 10px;
+            z-index: 9999;
+        }
+
+        .context-menu button {
+            background: #00e0ff;
+            border: none;
+            color: #121212;
+            padding: 5px 10px;
             cursor: pointer;
         }
 
-        .bookmark:hover {
+        .context-menu button:hover {
             background: #00b8d4;
+        }
+
+        .theme-switch {
+            margin: 20px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            background: #00e0ff;
+            border-radius: 5px;
+            color: #fff;
         }
     </style>
 </head>
-<body>
-    <h1>Future Search</h1>
+<body class="dark-theme">
+    <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
+
+    <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
+    
+    <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
+    
+    <!-- Google Login Button -->
+    <button id="google-login-btn" onclick="googleLogin()">Login with Google</button>
+
     <input type="text" id="searchBar" placeholder="Type a keyword...">
+    <select id="searchCategory">
+        <option value="web">Web</option>
+        <option value="image">Images</option>
+        <option value="news">News</option>
+    </select>
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
-    <div id="bookmarks-bar"></div>
+
+    <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
+    <button onclick="loadWebsite()">Open Website</button>
+    <iframe id="siteViewer" title="Website Viewer"></iframe>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
 
     <script>
-        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || {};
+        const API_CSE_PAIRS = [
+            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
+            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
+            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
+        ];
 
-        function performSearch() {
-            const keyword = document.getElementById('searchBar').value.trim();
-            const resultsContainer = document.getElementById('results');
-            resultsContainer.innerHTML = ''; // Clear previous results
+        let mouseX = 0;
+        let mouseY = 0;
 
-            if (!keyword) {
-                alert("Please enter a keyword.");
-                return;
+        // Track mouse movement for custom cursor
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            updateCursor(event);
+        });
+
+        function updateCursor(event) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.top = `${event.clientY}px`;
+            cursor.style.left = `${event.clientX}px`;
+
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.top = `${event.clientY}px`;
+            trail.style.left = `${event.clientX}px`;
+            document.body.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 600);
+        }
+
+        function getRandomAPIConfig() {
+            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        }
+
+        async function performSearch() {
+            const query = document.getElementById("searchBar").value;
+            const category = document.getElementById("searchCategory").value;
+
+            if (!query) {
+                return alert('Please enter a search term');
             }
 
-            // Mock search results
-            const results = [
-                { title: `Result for "${keyword}"`, url: `https://example.com?q=${keyword}` },
-                { title: `Another result for "${keyword}"`, url: `https://example.com/search?q=${keyword}` }
-            ];
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = '<div>Loading results...</div>';
 
-            results.forEach(result => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
-                resultItem.innerHTML = `
-                    <a href="${result.url}" target="_blank">${result.title}</a>
-                `;
-                const bookmarkButton = document.createElement('button');
-                bookmarkButton.textContent = 'Bookmark Site';
-                bookmarkButton.onclick = () => bookmarkSite(result.title, result.url);
-                resultItem.appendChild(bookmarkButton);
-                resultsContainer.appendChild(resultItem);
-            });
-        }
+            let retryCount = 0;
+            let success = false;
 
-        function bookmarkSite(name, url) {
-            if (bookmarks[name]) {
-                alert("This site is already bookmarked.");
-                return;
-            }
+            while (retryCount < 6 && !success) {
+                const { apiKey, cseId } = getRandomAPIConfig();
+                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+                if (category === 'image') {
+                    url += '&searchType=image';
+                } else if (category === 'news') {
+                    url += '&searchType=news';
+                }
 
-            bookmarks[name] = url;
-            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-            addBookmarkToBar(name, url);
-        }
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
 
-        function addBookmarkToBar(name, url) {
-            const bookmarksBar = document.getElementById('bookmarks-bar');
-            const bookmark = document.createElement('div');
-            bookmark.className = 'bookmark';
-            bookmark.textContent = name;
-            bookmark.onclick = () => window.open(url, '_blank');
-            bookmarksBar.appendChild(bookmark);
-        }
-
-        function loadBookmarks() {
-            const bookmarksBar = document.getElementById('bookmarks-bar');
-            bookmarksBar.innerHTML = ''; // Clear existing bookmarks
-            for (const [name, url] of Object.entries(bookmarks)) {
-                addBookmarkToBar(name, url);
+                    if (data.items && data.items.length > 0) {
+                        resultsContainer.innerHTML = data.items.map(item => `
+                            <div class="result-item">
+                                <a href="${item.link}" target="_blank">${item.title}</a>
+                                <p class="url">${item.link}</p>
+                                <p class="description">${item.snippet}</p>
+                                <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
+                            </div>
+                        `).join('');
+                        success = true;
+                    } else {
+                        resultsContainer.innerHTML = '<p>No results found.</p>';
+                        success = true;
+                    }
+                } catch (error) {
+                    retryCount++;
+                }
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadBookmarks);
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle("dark-theme");
+            body.classList.toggle("light-theme");
+            const button = document.querySelector(".theme-switch");
+            if (body.classList.contains("dark-theme")) {
+                button.innerText = "Switch to Light Mode";
+            } else {
+                button.innerText = "Switch to Dark Mode";
+            }
+        }
+
+        function loadWebsite() {
+            const siteURL = document.getElementById("siteInput").value;
+            const iframe = document.getElementById("siteViewer");
+            iframe.src = siteURL;
+        }
+
+        function googleLogin() {
+            const clientId = "751599491869-su6oug0ighj38u185k99kos4q7biso0d.apps.googleusercontent.com"; // Your Google Client ID
+            const redirectUri = "https://futuresearch.netlify.app"; // Updated redirect URI
+
+            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=email%20profile`;
+        }
     </script>
 </body>
 </html>
