@@ -185,16 +185,6 @@
             background: #00b8d4;
         }
 
-        .bookmark {
-            color: #fff;
-            cursor: pointer;
-            padding: 5px;
-            margin: 5px;
-            background: rgba(0, 224, 255, 0.6);
-            border-radius: 5px;
-            display: inline-block;
-        }
-
         #bookmarks-bar {
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.7);
@@ -204,6 +194,44 @@
             align-items: center;
             justify-content: flex-start;
             flex-wrap: wrap;
+        }
+
+        .bookmark {
+            color: #fff;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin: 5px;
+            background: rgba(0, 224, 255, 0.6);
+            border-radius: 5px;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .bookmark:hover {
+            background: rgba(0, 224, 255, 0.8);
+        }
+
+        #custom-menu {
+            position: absolute;
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 10000;
+        }
+
+        #custom-menu button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #custom-menu button:hover {
+            color: #f00;
         }
     </style>
 </head>
@@ -220,10 +248,12 @@
         <option value="news">News</option>
     </select>
     <button onclick="performSearch()">Search</button>
+    <button onclick="bookmarkSite()">Bookmark Search</button>
     <div id="results"></div>
 
     <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
     <button onclick="loadWebsite()">Open Website</button>
+    <button onclick="bookmarkSite()">Bookmark Site</button>
     
     <!-- Go back button -->
     <button id="backBtn" onclick="goBack()">Go Back</button>
@@ -231,131 +261,74 @@
     <!-- iframe to load websites -->
     <iframe id="siteViewer" title="Website Viewer"></iframe>
 
+    <!-- Custom Context Menu -->
+    <div id="custom-menu">
+        <button id="delete-bookmark">Delete Bookmark</button>
+    </div>
+
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
     <script>
-        const API_CSE_PAIRS = [
-            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
-            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
-            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
-        ];
+        const bookmarksBar = document.getElementById('bookmarks-bar');
+        const customMenu = document.getElementById('custom-menu');
+        let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || {};
 
-        let mouseX = 0;
-        let mouseY = 0;
-        let iframe = document.getElementById('siteViewer');
-        let backButton = document.getElementById('backBtn');
-        
-        // Track mouse movement for custom cursor
-        document.addEventListener('mousemove', (event) => {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-            updateCursor(event);
+        document.addEventListener('DOMContentLoaded', loadBookmarks);
+
+        function bookmarkSite() {
+            const url = document.getElementById('siteInput').value || document.getElementById('siteViewer').src;
+            if (!url) return alert('No site to bookmark');
+
+            const name = prompt('Enter a name for the bookmark:');
+            if (!name) return;
+
+            bookmarks[name] = url;
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            addBookmark(name, url);
+        }
+
+        function addBookmark(name, url) {
+            const bookmark = document.createElement('div');
+            bookmark.className = 'bookmark';
+            bookmark.textContent = name;
+            bookmark.dataset.url = url;
+            bookmark.addEventListener('click', () => openInIframe(url));
+            bookmark.addEventListener('contextmenu', (e) => openContextMenu(e, name));
+            bookmarksBar.appendChild(bookmark);
+        }
+
+        function loadBookmarks() {
+            bookmarksBar.innerHTML = '';
+            for (const [name, url] of Object.entries(bookmarks)) {
+                addBookmark(name, url);
+            }
+        }
+
+        function openContextMenu(event, name) {
+            event.preventDefault();
+            customMenu.style.display = 'block';
+            customMenu.style.top = `${event.clientY}px`;
+            customMenu.style.left = `${event.clientX}px`;
+
+            const deleteButton = document.getElementById('delete-bookmark');
+            deleteButton.onclick = () => {
+                delete bookmarks[name];
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+                loadBookmarks();
+                customMenu.style.display = 'none';
+            };
+        }
+
+        document.addEventListener('click', () => {
+            customMenu.style.display = 'none';
         });
 
-        function updateCursor(event) {
-            const cursor = document.getElementById('cursor');
-            cursor.style.top = `${event.clientY}px`;
-            cursor.style.left = `${event.clientX}px`;
-
-            const trail = document.createElement('div');
-            trail.className = 'cursor-trail';
-            trail.style.top = `${event.clientY}px`;
-            trail.style.left = `${event.clientX}px`;
-            document.body.appendChild(trail);
-
-            setTimeout(() => trail.remove(), 600);
-        }
-
-        function getRandomAPIConfig() {
-            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
-        }
-
-        async function performSearch() {
-            const query = document.getElementById("searchBar").value;
-            const category = document.getElementById("searchCategory").value;
-
-            if (!query) {
-                return alert('Please enter a search term');
+        document.addEventListener('contextmenu', (e) => {
+            if (!e.target.classList.contains('bookmark')) {
+                customMenu.style.display = 'none';
             }
-
-            const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = '<div>Loading results...</div>';
-
-            let retryCount = 0;
-            let success = false;
-
-            while (retryCount < 6 && !success) {
-                const { apiKey, cseId } = getRandomAPIConfig();
-                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-                if (category === 'image') {
-                    url += '&searchType=image';
-                } else if (category === 'news') {
-                    url += '&searchType=news';
-                }
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (data.items && data.items.length > 0) {
-                        resultsContainer.innerHTML = data.items.map(item => `
-                            <div class="result-item">
-                                <a href="#" onclick="openInIframe('${item.link}')">${item.title}</a>
-                                <p>${item.snippet}</p>
-                            </div>
-                        `).join('');
-                        success = true;
-                    } else {
-                        resultsContainer.innerHTML = '<div>No results found</div>';
-                    }
-                } catch (error) {
-                    console.error('Error fetching search results:', error);
-                    retryCount++;
-                    if (retryCount < 6) {
-                        resultsContainer.innerHTML = '<div>Retrying...</div>';
-                    } else {
-                        resultsContainer.innerHTML = '<div>Failed to fetch results. Please try again later.</div>';
-                    }
-                }
-            }
-        }
-
-        function openInIframe(url) {
-            iframe.src = url;
-            iframe.style.visibility = "visible";
-            iframe.style.pointerEvents = "auto"; // Enable pointer events
-            backButton.style.display = "block";
-            document.getElementById('cursor').style.visibility = "hidden"; // Hide the cursor when iframe is visible
-        }
-
-        function loadWebsite() {
-            const siteURL = document.getElementById("siteInput").value;
-            iframe.src = siteURL;
-            iframe.style.visibility = "visible";
-            iframe.style.pointerEvents = "auto"; // Enable pointer events
-            backButton.style.display = "block";
-            document.getElementById('cursor').style.visibility = "hidden"; // Hide the cursor when iframe is visible
-        }
-
-        function goBack() {
-            iframe.style.visibility = "hidden";
-            iframe.style.pointerEvents = "none"; // Disable pointer events when hidden
-            backButton.style.display = "none";
-            document.getElementById('cursor').style.visibility = "visible"; // Show the cursor again
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('dark-theme');
-            body.classList.toggle('light-theme');
-            const themeSwitch = document.querySelector('.theme-switch');
-            if (body.classList.contains('dark-theme')) {
-                themeSwitch.textContent = 'Switch to Light Mode';
-            } else {
-                themeSwitch.textContent = 'Switch to Dark Mode';
-            }
-        }
+        });
     </script>
 </body>
 </html>
