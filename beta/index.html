@@ -213,6 +213,53 @@
             border-radius: 5px;
             color: #fff;
         }
+
+        #user-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #00e0ff;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8);
+            z-index: 9999;
+        }
+
+        .user-menu button {
+            background: #00e0ff;
+            color: #121212;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .user-menu button:hover {
+            background: #00b8d4;
+        }
+
+        .user-menu.open {
+            display: block;
+        }
     </style>
 </head>
 <body class="dark-theme">
@@ -222,8 +269,7 @@
     
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
     
-    <!-- Google Login Button -->
-    <button id="google-login-btn" onclick="googleLogin()">Login with Google</button>
+    <button id="loginButton" class="theme-switch" onclick="loginWithGoogle()">Log In with Google</button>
 
     <input type="text" id="searchBar" placeholder="Type a keyword...">
     <select id="searchCategory">
@@ -241,86 +287,59 @@
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
+    <!-- User Icon and Menu -->
+    <div id="user-icon" onclick="toggleUserMenu()">
+        <span id="user-icon-img"></span> <!-- User icon will be shown here -->
+    </div>
+
+    <div id="user-menu" class="user-menu">
+        <button onclick="addAccount()">Add Account</button>
+        <button onclick="switchAccount()">Switch Account</button>
+        <button onclick="logout()">Log Out</button>
+    </div>
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script>
-        const API_CSE_PAIRS = [
-            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
-            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
-            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
-        ];
+        let userProfile = null;
 
-        let mouseX = 0;
-        let mouseY = 0;
-
-        // Track mouse movement for custom cursor
-        document.addEventListener('mousemove', (event) => {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-            updateCursor(event);
-        });
-
-        function updateCursor(event) {
-            const cursor = document.getElementById('cursor');
-            cursor.style.top = `${event.clientY}px`;
-            cursor.style.left = `${event.clientX}px`;
-
-            const trail = document.createElement('div');
-            trail.className = 'cursor-trail';
-            trail.style.top = `${event.clientY}px`;
-            trail.style.left = `${event.clientX}px`;
-            document.body.appendChild(trail);
-
-            setTimeout(() => trail.remove(), 600);
+        // Handle Google login button
+        function loginWithGoogle() {
+            gapi.auth2.getAuthInstance().signIn().then(function(googleUser) {
+                userProfile = googleUser.getBasicProfile();
+                displayUserIcon();
+            });
         }
 
-        function getRandomAPIConfig() {
-            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        function displayUserIcon() {
+            if (userProfile) {
+                const userIconContainer = document.getElementById('user-icon-img');
+                userIconContainer.style.backgroundImage = `url(${userProfile.getImageUrl()})`;
+                userIconContainer.style.backgroundSize = 'cover';
+                userIconContainer.style.backgroundPosition = 'center';
+                userIconContainer.style.width = '100%';
+                userIconContainer.style.height = '100%';
+            }
         }
 
-        async function performSearch() {
-            const query = document.getElementById("searchBar").value;
-            const category = document.getElementById("searchCategory").value;
+        function toggleUserMenu() {
+            const menu = document.getElementById('user-menu');
+            menu.classList.toggle('open');
+        }
 
-            if (!query) {
-                return alert('Please enter a search term');
-            }
+        function addAccount() {
+            alert('Add account functionality');
+        }
 
-            const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = '<div>Loading results...</div>';
+        function switchAccount() {
+            alert('Switch account functionality');
+        }
 
-            let retryCount = 0;
-            let success = false;
-
-            while (retryCount < 6 && !success) {
-                const { apiKey, cseId } = getRandomAPIConfig();
-                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-                if (category === 'image') {
-                    url += '&searchType=image';
-                } else if (category === 'news') {
-                    url += '&searchType=news';
-                }
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (data.items && data.items.length > 0) {
-                        resultsContainer.innerHTML = data.items.map(item => `
-                            <div class="result-item">
-                                <a href="${item.link}" target="_blank">${item.title}</a>
-                                <p class="url">${item.link}</p>
-                                <p class="description">${item.snippet}</p>
-                                <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
-                            </div>
-                        `).join('');
-                        success = true;
-                    } else {
-                        resultsContainer.innerHTML = '<p>No results found.</p>';
-                        success = true;
-                    }
-                } catch (error) {
-                    retryCount++;
-                }
-            }
+        function logout() {
+            gapi.auth2.getAuthInstance().signOut().then(function() {
+                userProfile = null;
+                document.getElementById('user-icon-img').style.backgroundImage = '';
+                alert('Logged out');
+            });
         }
 
         function toggleTheme() {
@@ -335,18 +354,16 @@
             }
         }
 
-        function loadWebsite() {
-            const siteURL = document.getElementById("siteInput").value;
-            const iframe = document.getElementById("siteViewer");
-            iframe.src = siteURL;
+        // Google API client initialization
+        function initGoogleAuth() {
+            gapi.load('auth2', function() {
+                gapi.auth2.init({
+                    client_id: '751599491869-su6oug0ighj38u185k99kos4q7biso0d.apps.googleusercontent.com'
+                });
+            });
         }
 
-        function googleLogin() {
-            const clientId = "751599491869-su6oug0ighj38u185k99kos4q7biso0d.apps.googleusercontent.com"; // Your Google Client ID
-            const redirectUri = "https://futuresearch.netlify.app"; // Updated redirect URI
-
-            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token&scope=email%20profile`;
-        }
+        initGoogleAuth();
     </script>
 </body>
 </html>
