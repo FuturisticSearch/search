@@ -1,0 +1,84 @@
+<html>
+<head>
+<style>
+.titletext{
+color:white;
+display:block;
+position:absolute;
+font-size:50px;
+width:1000px;
+margin-left:150px;
+margin-right:200px;
+}
+.nametext{
+color:white;
+display:block;
+position:absolute;
+font-size:30px;
+width:600px;
+margin-left:500px;
+margin-right:200px;
+margin-top:600px;
+}
+.earthphoto{
+display:block;
+position:absolute;
+margin-left:400px;
+margin-top:150px;
+}
+</style>
+</head>
+<body onload="update()">
+<script type="text/javascript">
+document.body.style.background="black";
+var changescene=function(){
+var allvariables=Object.keys( window );
+if(page===1){
+}
+page++;
+};
+var page=1;
+var x=0;
+var update=function(){
+if(page===1){
+document.body.innerHTML="";
+var text=document.createElement("p");
+var textclass = document.createAttribute("class");
+textclass.value="titletext";
+text.setAttributeNode(textclass);
+text.appendChild(document.createTextNode("Welcome to Mikey's Google Earth Presentation!"));
+document.body.appendChild(text);
+var text2=document.createElement("p");
+text2class=document.createAttribute("class");
+text2class.value="nametext";
+text2.setAttributeNode(text2class);
+text2.appendChild(document.createTextNode("By Mikey Richards"));
+document.body.appendChild(text2);
+googleearthimage=document.createElement("img");
+googleearthimage.setAttribute("src","EARTH.png");
+googleearthimage.setAttribute("class","earthphoto");
+document.body.appendChild(googleearthimage);
+var music=document.createElement("audio");
+var musiclink=document.createElement("source");
+musiclink.src="Test.mp3";
+music.appendChild(musiclink);
+var musicclass=document.createAttribute("id");
+musicclass.value="sound1";
+music.setAttributeNode(musicclass);
+document.body.appendChild(music);
+if(x===0){
+document.getElementById("sound1").play();
+x++;
+}
+if(document.getElementById("sound1").duration===document.getElementById("sound1").currentTime){
+changescene();
+}
+}
+else if(page===2){
+document.body.innerHTML="";
+}
+update();
+}
+</script>
+</body>
+</html>
