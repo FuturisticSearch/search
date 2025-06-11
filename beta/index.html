@@ -41,20 +41,78 @@
             color: #00e0ff;
         }
 
-        input, button, select {
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #00e0ff;
-            outline: none;
-            width: 350px;
-            text-align: center;
-            background: transparent;
-            color: #e0e0e0;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
+.theme-switch {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    background: #00e0ff;
+    border-radius: 5px;
+    color: #fff;
+    width: fit-content;
+}
+
+/* Flexbox container pro input, button a select */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto 30px auto;
+    width: fit-content;
+}
+
+/* Input pole širší */
+#searchBar {
+    width: 300px;
+    padding: 15px 15px;
+    font-size: 18px;
+    border-radius: 10px 0 0 10px;
+    border: 2px solid #00e0ff;
+    outline: none;
+    background: transparent;
+    color: #e0e0e0;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    text-align: left;
+}
+
+/* Select menší a vpravo */
+#searchCategory {
+    width: 150px;
+    padding: 15px 15px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 2px solid #00e0ff;
+    background: transparent;
+    color: #e0e0e0;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Tlačítko lupa vedle inputu */
+#searchBtn {
+    width: 50px;
+    padding: 0;
+    border: 2px solid #00e0ff;
+    border-left: none;
+    border-radius: 0 10px 10px 0;
+    background: #00e0ff;
+    color: #121212;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#searchBtn:hover {
+    background: #00b8d4;
+    box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
+}
+
 
         input.light-theme, select.light-theme {
             color: #202124;
@@ -232,14 +290,17 @@
 
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
     
-    <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
-    <input type="text" id="searchBar" placeholder="Type a keyword...">
-    <select id="searchCategory">
-        <option value="web">Web</option>
-        <option value="image">Images</option>
-        <option value="news">News</option>
-    </select>
-    <button onclick="performSearch()">Search</button>
+<button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
+
+<div class="search-container">
+  <input type="text" id="searchBar" placeholder="Type a keyword...">
+  <button id="searchBtn" onclick="performSearch()" aria-label="Search">🔍</button>
+  <select id="searchCategory">
+    <option value="web">Web</option>
+    <option value="image">Images</option>
+    <option value="news">News</option>
+  </select>
+</div>
     <div id="results"></div>
 
     <!-- Custom Cursor -->
