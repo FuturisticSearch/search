@@ -29,32 +29,109 @@
             background-size: cover;
         }
 
-        .theme-switch {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #fff;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
+
+.theme-switch {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    padding: 10px 14px;
+    font-size: 22px;
+    background: #00e0ff;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    color: #121212;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10000;
+}
+
+.theme-switch:hover {
+    background: #00b8d4;
+    box-shadow: 0 0 20px rgba(0, 184, 212, 0.9);
+}
 
         body.dark-theme .theme-switch:hover {
             color: #00e0ff;
         }
 
-        input, button, select {
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #00e0ff;
-            outline: none;
-            width: 350px;
-            text-align: center;
-            background: transparent;
-            color: #e0e0e0;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-            transition: all 0.3s ease-in-out;
-        }
+.theme-switch {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    background: #00e0ff;
+    border-radius: 5px;
+    color: #fff;
+    width: fit-content;
+}
+
+/* Flexbox container pro input, button a select */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto 30px auto;
+    width: fit-content;
+}
+
+/* Input pole širší */
+#searchBar {
+    width: 300px;
+    padding: 15px 15px;
+    font-size: 18px;
+    border-radius: 10px 0 0 10px;
+    border: 2px solid #00e0ff;
+    outline: none;
+    background: transparent;
+    color: #e0e0e0;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    text-align: left;
+}
+
+/* Select menší a vpravo */
+#searchCategory {
+    width: 150px;
+    padding: 15px 15px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 2px solid #00e0ff;
+    background: transparent;
+    color: #e0e0e0;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Tlačítko lupa vedle inputu */
+#searchBtn {
+    width: 50px;
+    padding: 0;
+    border: 2px solid #00e0ff;
+    border-left: none;
+    border-radius: 0 10px 10px 0;
+    background: #00e0ff;
+    color: #121212;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#searchBtn:hover {
+    background: #00b8d4;
+    box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
+}
+
 
         input.light-theme, select.light-theme {
             color: #202124;
@@ -232,14 +309,18 @@
 
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
     
-    <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
-    <input type="text" id="searchBar" placeholder="Type a keyword...">
-    <select id="searchCategory">
-        <option value="web">Web</option>
-        <option value="image">Images</option>
-        <option value="news">News</option>
-    </select>
-    <button onclick="performSearch()">Search</button>
+<button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+
+
+<div class="search-container">
+  <input type="text" id="searchBar" placeholder="Type a keyword...">
+  <button id="searchBtn" onclick="performSearch()" aria-label="Search">🔍</button>
+  <select id="searchCategory">
+    <option value="web">Web</option>
+    <option value="image">Images</option>
+    <option value="news">News</option>
+  </select>
+</div>
     <div id="results"></div>
 
     <!-- Custom Cursor -->
@@ -343,17 +424,22 @@ async function performSearch(fromURL = false) {
 
 
 
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle("dark-theme");
-            body.classList.toggle("light-theme");
-            const button = document.querySelector(".theme-switch");
-            if (body.classList.contains("dark-theme")) {
-                button.innerText = "Switch to Light Mode";
-            } else {
-                button.innerText = "Switch to Dark Mode";
-            }
-        }
+function toggleTheme() {
+    const body = document.body;
+    const button = document.getElementById('themeToggleBtn');
+
+    body.classList.toggle("dark-theme");
+    body.classList.toggle("light-theme");
+
+    if (body.classList.contains("dark-theme")) {
+        button.innerText = "🌙";  // měsíc pro tmavý režim
+        button.title = "Switch to Light Mode";
+    } else {
+        button.innerText = "☀️";  // sluníčko pro světlý režim
+        button.title = "Switch to Dark Mode";
+    }
+}
+
 
         function loadWebsite() {
             const siteURL = document.getElementById("siteInput").value;
@@ -410,15 +496,40 @@ async function performSearch(fromURL = false) {
             displayBookmarks();
         }
 
-        // Load bookmarks on page load
-        window.onload = displayBookmarks;
-        // Auto-perform search if URL contains query parameters
-window.addEventListener('DOMContentLoaded', () => {
+// Funkce na načtení záložek
+function displayBookmarks() {
+    const bookmarksBar = document.getElementById('bookmarks-bar');
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+    bookmarksBar.innerHTML = bookmarks.map(bookmark => `
+        <div class="bookmark" oncontextmenu="showContextMenu(event, '${bookmark.url}')">
+            <a href="${bookmark.url}" target="_blank">${bookmark.title}</a>
+        </div>
+    `).join('');
+}
+
+// Načtení záložek, nastavení ikony tématu a případné spuštění vyhledávání
+window.addEventListener('load', () => {
+    displayBookmarks();
+
+    // Nastavení ikony přepínače tématu podle aktuálního motivu
+    const button = document.getElementById('themeToggleBtn');
+    if (document.body.classList.contains('dark-theme')) {
+        button.innerText = "🌙";
+        button.title = "Switch to Light Mode";
+    } else {
+        button.innerText = "☀️";
+        button.title = "Switch to Dark Mode";
+    }
+
+    // Pokud je v URL parametr q, automaticky spustit vyhledávání
     const params = new URLSearchParams(window.location.search);
     if (params.get('q')) {
         performSearch(true);
     }
 });
+
+
 
     </script>
 </body>
