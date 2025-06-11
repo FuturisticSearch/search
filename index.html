@@ -98,14 +98,23 @@
         }
 
 #results {
-    height: calc(100vh - 300px); /* Adjust this value based on how tall your header/inputs are */
+    height: 0;
+    overflow: hidden;
+    padding: 0 20px; /* zachová padding horizontálně, vertikálně zrušíme na 0 */
+    margin-top: 0;
+    border: none;
+    background: transparent;
+    color: #fff;
+    transition: height 0.5s ease, padding 0.3s ease, margin-top 0.3s ease, border 0.3s ease, background 0.3s ease;
+}
+        
+#results.expanded {
+    height: calc(100vh - 300px);
     overflow-y: auto;
     padding: 20px;
     margin-top: 20px;
     border: 1px solid #00e0ff;
-    border-radius: 10px;
     background: rgba(0, 0, 0, 0.5);
-    color: #fff;
 }
 
 
@@ -277,7 +286,6 @@ async function performSearch(fromURL = false) {
     let query = queryInput.value;
     let category = categorySelect.value;
 
-    // If loading from URL, get values from the URL
     if (fromURL) {
         const params = new URLSearchParams(window.location.search);
         query = params.get('q') || '';
@@ -285,15 +293,20 @@ async function performSearch(fromURL = false) {
         queryInput.value = query;
         categorySelect.value = category;
     } else {
-        // Update URL to reflect search
         const newURL = `${window.location.pathname}?q=${encodeURIComponent(query)}&category=${category}`;
         window.history.pushState({}, '', newURL);
     }
 
-    if (!query) return alert('Please enter a search term');
-
     const resultsContainer = document.getElementById("results");
+
+    if (!query) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.classList.remove('expanded');  // schová výsledky, když není dotaz
+        return alert('Please enter a search term');
+    }
+
     resultsContainer.innerHTML = '<div>Loading results...</div>';
+    resultsContainer.classList.add('expanded'); // rozbalí oblast výsledků
 
     let retryCount = 0;
     let success = false;
@@ -327,6 +340,7 @@ async function performSearch(fromURL = false) {
         }
     }
 }
+
 
 
         function toggleTheme() {
