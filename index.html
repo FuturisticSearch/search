@@ -269,52 +269,63 @@
             return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
         }
 
-        async function performSearch() {
-            const query = document.getElementById("searchBar").value;
-            const category = document.getElementById("searchCategory").value;
+async function performSearch(fromURL = false) {
+    const queryInput = document.getElementById("searchBar");
+    const categorySelect = document.getElementById("searchCategory");
+    let query = queryInput.value;
+    let category = categorySelect.value;
 
-            if (!query) {
-                return alert('Please enter a search term');
+    // If loading from URL, get values from the URL
+    if (fromURL) {
+        const params = new URLSearchParams(window.location.search);
+        query = params.get('q') || '';
+        category = params.get('category') || 'web';
+        queryInput.value = query;
+        categorySelect.value = category;
+    } else {
+        // Update URL to reflect search
+        const newURL = `${window.location.pathname}?q=${encodeURIComponent(query)}&category=${category}`;
+        window.history.pushState({}, '', newURL);
+    }
+
+    if (!query) return alert('Please enter a search term');
+
+    const resultsContainer = document.getElementById("results");
+    resultsContainer.innerHTML = '<div>Loading results...</div>';
+
+    let retryCount = 0;
+    let success = false;
+
+    while (retryCount < 6 && !success) {
+        const { apiKey, cseId } = getRandomAPIConfig();
+        let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+        if (category === 'image') url += '&searchType=image';
+        else if (category === 'news') url += '&searchType=news';
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.items && data.items.length > 0) {
+                resultsContainer.innerHTML = data.items.map(item => `
+                    <div class="result-item">
+                        <a href="${item.link}" target="_blank">${item.title}</a>
+                        <p class="url">${item.link}</p>
+                        <p class="description">${item.snippet}</p>
+                        <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
+                    </div>
+                `).join('');
+                success = true;
+            } else {
+                resultsContainer.innerHTML = '<p>No results found.</p>';
+                success = true;
             }
-
-            const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = '<div>Loading results...</div>';
-
-            let retryCount = 0;
-            let success = false;
-
-            while (retryCount < 6 && !success) {
-                const { apiKey, cseId } = getRandomAPIConfig();
-                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-                if (category === 'image') {
-                    url += '&searchType=image';
-                } else if (category === 'news') {
-                    url += '&searchType=news';
-                }
-
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    if (data.items && data.items.length > 0) {
-                        resultsContainer.innerHTML = data.items.map(item => `
-                            <div class="result-item">
-                                <a href="${item.link}" target="_blank">${item.title}</a>
-                                <p class="url">${item.link}</p>
-                                <p class="description">${item.snippet}</p>
-                                <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
-                            </div>
-                        `).join('');
-                        success = true;
-                    } else {
-                        resultsContainer.innerHTML = '<p>No results found.</p>';
-                        success = true;
-                    }
-                } catch (error) {
-                    retryCount++;
-                }
-            }
+        } catch (error) {
+            retryCount++;
         }
+    }
+}
+
 
         function toggleTheme() {
             const body = document.body;
@@ -385,6 +396,14 @@
 
         // Load bookmarks on page load
         window.onload = displayBookmarks;
+        // Auto-perform search if URL contains query parameters
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('q')) {
+        performSearch(true);
+    }
+});
+
     </script>
 </body>
 </html>
