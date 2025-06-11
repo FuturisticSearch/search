@@ -97,7 +97,7 @@
         }
 
 #results {
-    height: calc(100vh - 300px); /* Adjust this value based on how tall your header/inputs are */
+    height: calc(100vh - 300px);
     overflow-y: auto;
     padding: 20px;
     margin-top: 20px;
@@ -105,8 +105,8 @@
     border-radius: 10px;
     background: rgba(0, 0, 0, 0.5);
     color: #fff;
+    display: none; /* Hide by default */
 }
-
 
         .result-item {
             margin-bottom: 20px;
@@ -293,6 +293,8 @@ async function performSearch(fromURL = false) {
 
     const resultsContainer = document.getElementById("results");
     resultsContainer.innerHTML = '<div>Loading results...</div>';
+    resultsContainer.style.display = 'block';
+
 
     let retryCount = 0;
     let success = false;
