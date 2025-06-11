@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -213,53 +214,6 @@
             border-radius: 5px;
             color: #fff;
         }
-
-        #user-icon {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background-color: #00e0ff;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            overflow: hidden;
-        }
-
-        .user-menu {
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            background-color: #222;
-            color: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
-            box-shadow: 0 0 15px rgba(0, 224, 255, 0.8);
-            z-index: 9999;
-        }
-
-        .user-menu button {
-            background: #00e0ff;
-            color: #121212;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .user-menu button:hover {
-            background: #00b8d4;
-        }
-
-        .user-menu.open {
-            display: block;
-        }
     </style>
 </head>
 <body class="dark-theme">
@@ -268,9 +222,6 @@
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
     
     <button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
-    
-    <button id="loginButton" class="theme-switch" onclick="loginWithGoogle()">Log In with Google</button>
-
     <input type="text" id="searchBar" placeholder="Type a keyword...">
     <select id="searchCategory">
         <option value="web">Web</option>
@@ -280,66 +231,89 @@
     <button onclick="performSearch()">Search</button>
     <div id="results"></div>
 
-    <input type="text" id="siteInput" placeholder="Enter website URL (e.g., https://example.com)">
-    <button onclick="loadWebsite()">Open Website</button>
-    <iframe id="siteViewer" title="Website Viewer"></iframe>
-
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
-    <!-- User Icon and Menu -->
-    <div id="user-icon" onclick="toggleUserMenu()">
-        <span id="user-icon-img"></span> <!-- User icon will be shown here -->
-    </div>
-
-    <div id="user-menu" class="user-menu">
-        <button onclick="addAccount()">Add Account</button>
-        <button onclick="switchAccount()">Switch Account</button>
-        <button onclick="logout()">Log Out</button>
-    </div>
-
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script>
-        let userProfile = null;
+        const API_CSE_PAIRS = [
+            { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
+            { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
+            { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
+        ];
 
-        // Handle Google login button
-        function loginWithGoogle() {
-            gapi.auth2.getAuthInstance().signIn().then(function(googleUser) {
-                userProfile = googleUser.getBasicProfile();
-                displayUserIcon();
-            });
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Track mouse movement for custom cursor
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+            updateCursor(event);
+        });
+
+        function updateCursor(event) {
+            const cursor = document.getElementById('cursor');
+            cursor.style.top = `${event.clientY}px`;
+            cursor.style.left = `${event.clientX}px`;
+
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.top = `${event.clientY}px`;
+            trail.style.left = `${event.clientX}px`;
+            document.body.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 600);
         }
 
-        function displayUserIcon() {
-            if (userProfile) {
-                const userIconContainer = document.getElementById('user-icon-img');
-                userIconContainer.style.backgroundImage = `url(${userProfile.getImageUrl()})`;
-                userIconContainer.style.backgroundSize = 'cover';
-                userIconContainer.style.backgroundPosition = 'center';
-                userIconContainer.style.width = '100%';
-                userIconContainer.style.height = '100%';
+        function getRandomAPIConfig() {
+            return API_CSE_PAIRS[Math.floor(Math.random() * API_CSE_PAIRS.length)];
+        }
+
+        async function performSearch() {
+            const query = document.getElementById("searchBar").value;
+            const category = document.getElementById("searchCategory").value;
+
+            if (!query) {
+                return alert('Please enter a search term');
             }
-        }
 
-        function toggleUserMenu() {
-            const menu = document.getElementById('user-menu');
-            menu.classList.toggle('open');
-        }
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = '<div>Loading results...</div>';
 
-        function addAccount() {
-            alert('Add account functionality');
-        }
+            let retryCount = 0;
+            let success = false;
 
-        function switchAccount() {
-            alert('Switch account functionality');
-        }
+            while (retryCount < 6 && !success) {
+                const { apiKey, cseId } = getRandomAPIConfig();
+                let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+                if (category === 'image') {
+                    url += '&searchType=image';
+                } else if (category === 'news') {
+                    url += '&searchType=news';
+                }
 
-        function logout() {
-            gapi.auth2.getAuthInstance().signOut().then(function() {
-                userProfile = null;
-                document.getElementById('user-icon-img').style.backgroundImage = '';
-                alert('Logged out');
-            });
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.items && data.items.length > 0) {
+                        resultsContainer.innerHTML = data.items.map(item => `
+                            <div class="result-item">
+                                <a href="${item.link}" target="_blank">${item.title}</a>
+                                <p class="url">${item.link}</p>
+                                <p class="description">${item.snippet}</p>
+                                <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
+                            </div>
+                        `).join('');
+                        success = true;
+                    } else {
+                        resultsContainer.innerHTML = '<p>No results found.</p>';
+                        success = true;
+                    }
+                } catch (error) {
+                    retryCount++;
+                }
+            }
         }
 
         function toggleTheme() {
@@ -354,16 +328,63 @@
             }
         }
 
-        // Google API client initialization
-        function initGoogleAuth() {
-            gapi.load('auth2', function() {
-                gapi.auth2.init({
-                    client_id: '751599491869-su6oug0ighj38u185k99kos4q7biso0d.apps.googleusercontent.com'
-                });
+        function loadWebsite() {
+            const siteURL = document.getElementById("siteInput").value;
+            const iframe = document.getElementById("siteViewer");
+            iframe.src = siteURL;
+        }
+
+        function addBookmark(title, url) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+            // Check if the site is already bookmarked
+            if (bookmarks.find(bookmark => bookmark.url === url)) {
+                alert("This site is already bookmarked.");
+                return;
+            }
+
+            bookmarks.push({ title, url });
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            displayBookmarks();
+        }
+
+        function displayBookmarks() {
+            const bookmarksBar = document.getElementById('bookmarks-bar');
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+            bookmarksBar.innerHTML = bookmarks.map(bookmark => `
+                <div class="bookmark" oncontextmenu="showContextMenu(event, '${bookmark.url}')">
+                    <a href="${bookmark.url}" target="_blank">${bookmark.title}</a>
+                </div>
+            `).join('');
+        }
+
+        function showContextMenu(event, url) {
+            event.preventDefault();
+            const contextMenu = document.createElement('div');
+            contextMenu.className = 'context-menu';
+            contextMenu.innerHTML = `
+                <button onclick="deleteBookmark('${url}')">Delete Bookmark</button>
+            `;
+            document.body.appendChild(contextMenu);
+            contextMenu.style.top = `${event.clientY}px`;
+            contextMenu.style.left = `${event.clientX}px`;
+
+            // Remove the context menu after clicking elsewhere
+            document.addEventListener('click', () => {
+                contextMenu.remove();
             });
         }
 
-        initGoogleAuth();
+        function deleteBookmark(url) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks = bookmarks.filter(bookmark => bookmark.url !== url);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            displayBookmarks();
+        }
+
+        // Load bookmarks on page load
+        window.onload = displayBookmarks;
     </script>
 </body>
 </html>
