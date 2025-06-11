@@ -396,6 +396,14 @@ async function performSearch(fromURL = false) {
 
         // Load bookmarks on page load
         window.onload = displayBookmarks;
+        // Auto-perform search if URL contains query parameters
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('q')) {
+        performSearch(true);
+    }
+});
+
     </script>
 </body>
 </html>
