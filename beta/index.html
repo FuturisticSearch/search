@@ -276,7 +276,6 @@ async function performSearch(fromURL = false) {
     let query = queryInput.value;
     let category = categorySelect.value;
 
-    // If loading from URL, get values from the URL
     if (fromURL) {
         const params = new URLSearchParams(window.location.search);
         query = params.get('q') || '';
@@ -284,17 +283,18 @@ async function performSearch(fromURL = false) {
         queryInput.value = query;
         categorySelect.value = category;
     } else {
-        // Update URL to reflect search
         const newURL = `${window.location.pathname}?q=${encodeURIComponent(query)}&category=${category}`;
         window.history.pushState({}, '', newURL);
     }
 
-    if (!query) return alert('Please enter a search term');
+    if (!query) {
+        document.getElementById("results").style.display = 'none';
+        return alert('Please enter a search term');
+    }
 
     const resultsContainer = document.getElementById("results");
     resultsContainer.innerHTML = '<div>Loading results...</div>';
     resultsContainer.style.display = 'block';
-
 
     let retryCount = 0;
     let success = false;
@@ -328,6 +328,7 @@ async function performSearch(fromURL = false) {
         }
     }
 }
+
 
 
         function toggleTheme() {
