@@ -29,13 +29,32 @@
             background-size: cover;
         }
 
-        .theme-switch {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #fff;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
+
+.theme-switch {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    padding: 10px 14px;
+    font-size: 22px;
+    background: #00e0ff;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    color: #121212;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10000;
+}
+
+.theme-switch:hover {
+    background: #00b8d4;
+    box-shadow: 0 0 20px rgba(0, 184, 212, 0.9);
+}
 
         body.dark-theme .theme-switch:hover {
             color: #00e0ff;
@@ -290,7 +309,8 @@
 
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
     
-<button class="theme-switch" onclick="toggleTheme()">Switch to Light Mode</button>
+<button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+
 
 <div class="search-container">
   <input type="text" id="searchBar" placeholder="Type a keyword...">
@@ -404,17 +424,22 @@ async function performSearch(fromURL = false) {
 
 
 
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle("dark-theme");
-            body.classList.toggle("light-theme");
-            const button = document.querySelector(".theme-switch");
-            if (body.classList.contains("dark-theme")) {
-                button.innerText = "Switch to Light Mode";
-            } else {
-                button.innerText = "Switch to Dark Mode";
-            }
-        }
+function toggleTheme() {
+    const body = document.body;
+    const button = document.getElementById('themeToggleBtn');
+
+    body.classList.toggle("dark-theme");
+    body.classList.toggle("light-theme");
+
+    if (body.classList.contains("dark-theme")) {
+        button.innerText = "🌙";  // měsíc pro tmavý režim
+        button.title = "Switch to Light Mode";
+    } else {
+        button.innerText = "☀️";  // sluníčko pro světlý režim
+        button.title = "Switch to Dark Mode";
+    }
+}
+
 
         function loadWebsite() {
             const siteURL = document.getElementById("siteInput").value;
@@ -471,15 +496,40 @@ async function performSearch(fromURL = false) {
             displayBookmarks();
         }
 
-        // Load bookmarks on page load
-        window.onload = displayBookmarks;
-        // Auto-perform search if URL contains query parameters
-window.addEventListener('DOMContentLoaded', () => {
+// Funkce na načtení záložek
+function displayBookmarks() {
+    const bookmarksBar = document.getElementById('bookmarks-bar');
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+    bookmarksBar.innerHTML = bookmarks.map(bookmark => `
+        <div class="bookmark" oncontextmenu="showContextMenu(event, '${bookmark.url}')">
+            <a href="${bookmark.url}" target="_blank">${bookmark.title}</a>
+        </div>
+    `).join('');
+}
+
+// Načtení záložek, nastavení ikony tématu a případné spuštění vyhledávání
+window.addEventListener('load', () => {
+    displayBookmarks();
+
+    // Nastavení ikony přepínače tématu podle aktuálního motivu
+    const button = document.getElementById('themeToggleBtn');
+    if (document.body.classList.contains('dark-theme')) {
+        button.innerText = "🌙";
+        button.title = "Switch to Light Mode";
+    } else {
+        button.innerText = "☀️";
+        button.title = "Switch to Dark Mode";
+    }
+
+    // Pokud je v URL parametr q, automaticky spustit vyhledávání
     const params = new URLSearchParams(window.location.search);
     if (params.get('q')) {
         performSearch(true);
     }
 });
+
+
 
     </script>
 </body>
