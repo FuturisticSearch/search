@@ -397,15 +397,16 @@ async function performSearch(fromURL = false) {
             displayBookmarks();
         }
 
-        // Load bookmarks on page load
-        window.onload = displayBookmarks;
-        // Auto-perform search if URL contains query parameters
-window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('q')) {
-        performSearch(true);
+// Load bookmarks on page load
+window.onload = displayBookmarks;
+
+// 👉 Add this just before </script>
+    document.getElementById("searchBar").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        performSearch();
     }
 });
+
 
     </script>
 </body>
