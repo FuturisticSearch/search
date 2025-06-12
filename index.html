@@ -395,7 +395,6 @@
   <select id="searchCategory">
     <option value="web">Web</option>
     <option value="image">Images</option>
-    <option value="news">News</option>
   </select>
 </div>
     <div id="results"></div>
@@ -473,7 +472,7 @@ async function performSearch(fromURL = false) {
         const { apiKey, cseId } = getRandomAPIConfig();
         let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
         if (category === 'image') url += '&searchType=image';
-        else if (category === 'news') url += '&searchType=news';
+       // else if (category === 'news') url += '&searchType=news';
 
         try {
             const response = await fetch(url);
