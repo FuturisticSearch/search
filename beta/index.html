@@ -470,7 +470,7 @@ async function performSearch(fromURL = false) {
     // --- AI část (Puter.com API) ---
     try {
         // Předpokládám, že máš načtený Puter.js SDK skript na stránce
-        const puterResponse = await puter.ai.ask({ prompt: query });
+        const puterResponse = await puter.ai.chat({ prompt: query });
 
         let aiText = puterResponse.answer || "No AI response available.";
 
