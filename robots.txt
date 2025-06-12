@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /crash
+Disallow: /fps
+Disallow: /panel
+Disallow: /admin
+Disallow: /zohoverify
+Disallow: /%00
