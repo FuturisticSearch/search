@@ -302,6 +302,83 @@
             border-radius: 5px;
             color: #fff;
         }
+    /* Přidám na konec tvého CSS */
+
+@media (max-width: 600px) {
+    body {
+        font-size: 16px; /* větší text */
+        cursor: auto; /* zobrazit systémový kurzor */
+    }
+
+    .search-container {
+        flex-direction: column;
+        gap: 15px;
+        width: 90%;
+        margin: 0 auto 30px auto;
+    }
+
+    #searchBar {
+        width: 100%;
+        font-size: 20px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: none;
+        text-align: center;
+    }
+
+    #searchCategory {
+        width: 100%;
+        font-size: 18px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    #searchBtn {
+        width: 100%;
+        padding: 15px;
+        font-size: 24px;
+        border-radius: 10px;
+        box-shadow: none;
+    }
+
+    #results.expanded {
+        height: auto;
+        max-height: 60vh;
+        padding: 10px;
+        margin-top: 15px;
+    }
+
+    .cursor, .cursor-trail {
+        display: none; /* schovej vlastní kurzor a trail na mobilu */
+    }
+
+    #bookmarks-bar {
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        padding: 5px;
+        gap: 8px;
+    }
+
+    .bookmark {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    button.theme-switch {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        padding: 0;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        z-index: 10000;
+    }
+}
+
+    
     </style>
 </head>
 <body class="dark-theme">
@@ -526,18 +603,6 @@ window.addEventListener('load', () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('q')) {
         performSearch(true);
-    }
-
-    // ✅ Posluchač na Enter v poli pro vyhledávání – ale jen pokud existuje
-    const input = document.getElementById('searchBar');
-    if (input) {
-        input.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                performSearch();
-            }
-        });
-    } else {
-        console.warn("Element s ID 'searchBar' nebyl nalezen.");
     }
 });
 
