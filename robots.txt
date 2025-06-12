@@ -5,3 +5,5 @@ Disallow: /panel
 Disallow: /admin
 Disallow: /zohoverify
 Disallow: /%00
+
+Sitemap: https://futuresearch.netlify.app/sitemap.xml
