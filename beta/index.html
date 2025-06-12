@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://js.puter.com/v2/"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Future Search</title>
@@ -395,7 +396,7 @@
   <select id="searchCategory">
     <option value="web">Web</option>
     <option value="image">Images</option>
-    <option value="news">News</option>
+          <option value="ai">AI Overview</option> <!-- NOVÁ KATEGORIE -->
   </select>
 </div>
     <div id="results"></div>
@@ -459,13 +460,32 @@ async function performSearch(fromURL = false) {
 
     if (!query) {
         resultsContainer.innerHTML = '';
-        resultsContainer.classList.remove('expanded');  // schová výsledky, když není dotaz
+        resultsContainer.classList.remove('expanded');
         return alert('Please enter a search term');
     }
 
     resultsContainer.innerHTML = '<div>Loading results...</div>';
-    resultsContainer.classList.add('expanded'); // rozbalí oblast výsledků
+    resultsContainer.classList.add('expanded');
 
+    // --- AI část (Puter.com API) ---
+    try {
+        // Předpokládám, že máš načtený Puter.js SDK skript na stránce
+        const puterResponse = await puter.ai.ask({ prompt: query });
+
+        let aiText = puterResponse.answer || "No AI response available.";
+
+        resultsContainer.innerHTML = `
+            <div class="ai-overview" style="border: 2px solid #4caf50; padding: 10px; margin-bottom: 20px;">
+                <h3>AI Overview:</h3>
+                <p>${aiText}</p>
+            </div>
+            <div class="classic-results">Loading classic results...</div>
+        `;
+    } catch (error) {
+        resultsContainer.innerHTML = `<p>Error fetching AI response: ${error.message}</p><div class="classic-results">Loading classic results...</div>`;
+    }
+
+    // --- Google Custom Search část ---
     let retryCount = 0;
     let success = false;
 
@@ -473,14 +493,16 @@ async function performSearch(fromURL = false) {
         const { apiKey, cseId } = getRandomAPIConfig();
         let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
         if (category === 'image') url += '&searchType=image';
-        else if (category === 'news') url += '&searchType=news';
+        // else if (category === 'news') url += '&searchType=news';
 
         try {
             const response = await fetch(url);
             const data = await response.json();
 
+            const classicResultsContainer = resultsContainer.querySelector('.classic-results');
+
             if (data.items && data.items.length > 0) {
-                resultsContainer.innerHTML = data.items.map(item => `
+                classicResultsContainer.innerHTML = data.items.map(item => `
                     <div class="result-item">
                         <a href="${item.link}" target="_blank">${item.title}</a>
                         <p class="url">${item.link}</p>
@@ -490,7 +512,7 @@ async function performSearch(fromURL = false) {
                 `).join('');
                 success = true;
             } else {
-                resultsContainer.innerHTML = '<p>No results found.</p>';
+                classicResultsContainer.innerHTML = '<p>No results found.</p>';
                 success = true;
             }
         } catch (error) {
