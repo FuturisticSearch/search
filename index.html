@@ -20,6 +20,14 @@
 <meta property="og:image" content="https://futuresearch.netlify.app/favicon.png" />
 
   <script type="module">
+      if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('Service Worker registered with scope:', registration.scope);
+    }).catch((err) => {
+      console.error('Service Worker registration failed:', err);
+    });
+      }
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-messaging.js";
 
