@@ -147,7 +147,48 @@
     color: #fff;
     width: fit-content;
 }
+#tabs-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    margin: 15px auto;
+    width: 90%;
+}
 
+.tab-button {
+    background: #00e0ff;
+    color: #121212;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 224, 255, 0.5);
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    background: #00b8d4;
+    box-shadow: 0 0 15px rgba(0, 184, 212, 0.8);
+}
+
+body.light-theme #tabs-bar {
+    background: rgba(32, 33, 36, 0.7);
+}
+
+body.light-theme .tab-button {
+    background: #202124;
+    color: #fff;
+}
+
+body.light-theme .tab-button:hover {
+    background: #444;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
 /* Flexbox container pro input, button a select */
 .search-container {
     display: flex;
@@ -466,6 +507,7 @@
     </style>
 </head>
 <body class="dark-theme">
+  <div id="tabs-bar"></div>
     <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
 
     <h1 style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff;">Future Search</h1>
@@ -548,40 +590,36 @@ async function performSearch(fromURL = false) {
         window.history.pushState({}, '', newURL);
     }
 
-    const resultsContainer = document.getElementById("results");
-
-    // Check if input is a URL
+    // Check if input looks like a URL
     const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
     if (urlPattern.test(query)) {
         let url = query.startsWith("http") ? query : "https://" + query;
-        openInTab(url); // Function that opens the URL in your tab/iframe system
-        resultsContainer.innerHTML = '';
-        resultsContainer.classList.remove('expanded');
+        addTab(url, query);      // Add to tab bar
+        window.open(url, "_blank"); // Open in new browser tab
         return;
     }
 
-    // If not a URL, perform normal search
+    // Otherwise, perform normal search using your existing API logic
+    const resultsContainer = document.getElementById("results");
     resultsContainer.innerHTML = '<div>Loading results...</div>';
     resultsContainer.classList.add('expanded');
-
-    }
 
     let retryCount = 0;
     let success = false;
 
     while (retryCount < 6 && !success) {
-        const { apiKey, cseId } = getRandomAPIConfig();
-        let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-        if (category === 'image') url += '&searchType=image';
-
         try {
+            const { apiKey, cseId } = getRandomAPIConfig(); // Keep your existing function
+            let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
+            if (category === 'image') url += '&searchType=image';
+
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.items && data.items.length > 0) {
                 resultsContainer.innerHTML = data.items.map(item => `
                     <div class="result-item">
-                        <a href="#" onclick="openInTab('${item.link}')">${item.title}</a>
+                        <a href="${item.link}" target="_blank" onclick="addTab('${item.link}', '${item.title}')">${item.title}</a>
                         <p class="url">${item.link}</p>
                         <p class="description">${item.snippet}</p>
                         <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
@@ -596,23 +634,19 @@ async function performSearch(fromURL = false) {
             retryCount++;
         }
     }
-         }
-function toggleTheme() {
-    const body = document.body;
-    const button = document.getElementById('themeToggleBtn');
-
-    body.classList.toggle("dark-theme");
-    body.classList.toggle("light-theme");
-
-    if (body.classList.contains("dark-theme")) {
-        button.innerText = "🌙";  // měsíc pro tmavý režim
-        button.title = "Switch to Light Mode";
-    } else {
-        button.innerText = "☀️";  // sluníčko pro světlý režim
-        button.title = "Switch to Dark Mode";
-    }
 }
 
+// Tab system function
+function addTab(url, title) {
+    const tabsContainer = document.getElementById("tabs-bar");
+    if (!tabsContainer) return;
+
+    const tab = document.createElement("button");
+    tab.className = "tab-button";
+    tab.textContent = title;
+    tab.onclick = () => window.open(url, "_blank");
+    tabsContainer.appendChild(tab);
+}
 
         function loadWebsite() {
             const siteURL = document.getElementById("siteInput").value;
