@@ -1,169 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: #121212;
-            color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+<h1>FutureSearch Push Panel</h1>
+<input id="title" placeholder="Title"><br><br>
+<textarea id="body" placeholder="Message"></textarea><br><br>
+<button onclick="sendNotification()">Send</button>
 
-        h1 {
-            color: #00e0ff;
-        }
+<script>
+async function sendNotification() {
+  const title = document.getElementById("title").value;
+  const body = document.getElementById("body").value;
 
-        .panel-container {
-            width: 90%;
-            max-width: 800px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00e0ff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-        }
+  await fetch("/.netlify/functions/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, body })
+  });
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        input, select, textarea, button {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 2px solid #00e0ff;
-            background: transparent;
-            color: #e0e0e0;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease-in-out;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #00b8d4;
-            box-shadow: 0 0 10px rgba(0, 184, 212, 0.8);
-        }
-
-        button {
-            background: #00e0ff;
-            color: #121212;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background: #00b8d4;
-            box-shadow: 0 0 20px rgba(0, 184, 212, 0.8);
-        }
-
-        .log-container {
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 20px;
-            border: 1px solid #00e0ff;
-        }
-
-        .log {
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Admin Panel</h1>
-    <div class="panel-container">
-        <div class="form-group">
-            <label for="apiKeys">Manage API Keys</label>
-            <textarea id="apiKeys" rows="5" placeholder="Enter API Keys, one per line..."></textarea>
-            <button onclick="saveApiKeys()">Save API Keys</button>
-        </div>
-        <div class="form-group">
-            <label for="theme">Default Theme</label>
-            <select id="theme">
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
-            </select>
-            <button onclick="saveDefaultTheme()">Save Theme</button>
-        </div>
-        <div class="form-group">
-            <label for="logs">View Logs</label>
-            <div class="log-container" id="logs">
-                <div class="log">[12/07/2024 12:34:56] User searched for "Future technology"</div>
-                <div class="log">[12/07/2024 12:36:10] API key updated</div>
-            </div>
-        </div>
-        <button onclick="clearLogs()">Clear Logs</button>
-    </div>
-
-    <script>
-        const apiUrl = "futuresearch.netlify.app"; // Replace with your backend URL
-
-        function saveApiKeys() {
-            const apiKeys = document.getElementById("apiKeys").value.split('\n');
-            fetch(`${apiUrl}/admin/api-keys`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ keys: apiKeys }),
-            }).then(response => response.json())
-              .then(data => alert(data.message || 'API Keys saved successfully'))
-              .catch(error => alert('Error saving API Keys: ' + error));
-        }
-
-        function saveDefaultTheme() {
-            const theme = document.getElementById("theme").value;
-            fetch(`${apiUrl}/admin/theme`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ theme }),
-            }).then(response => response.json())
-              .then(data => alert(data.message || 'Default theme saved successfully'))
-              .catch(error => alert('Error saving theme: ' + error));
-        }
-
-        function clearLogs() {
-            fetch(`${apiUrl}/admin/logs/clear`, {
-                method: 'DELETE',
-            }).then(response => response.json())
-              .then(data => {
-                  alert(data.message || 'Logs cleared successfully');
-                  document.getElementById("logs").innerHTML = '';
-              })
-              .catch(error => alert('Error clearing logs: ' + error));
-        }
-
-        // Optionally fetch logs or other admin settings on page load
-        function fetchLogs() {
-            fetch(`${apiUrl}/admin/logs`)
-                .then(response => response.json())
-                .then(data => {
-                    const logsContainer = document.getElementById("logs");
-                    logsContainer.innerHTML = data.logs.map(log => `<div class="log">${log}</div>`).join('');
-                })
-                .catch(error => console.error('Error fetching logs:', error));
-        }
-
-        // Initialize admin panel (e.g., fetch logs)
-        fetchLogs();
-    </script>
-</body>
-</html>
+  alert("Notification sent!");
+}
+</script>
