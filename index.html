@@ -466,11 +466,15 @@
 <body class="dark-theme">
     <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
 
- <h1 
-  style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff; cursor:pointer; text-decoration:none;" 
-  onclick="window.location.href='https://futuresearch.netlify.app'">
+<h1 
+  style="text-align:center; color: lightblue; text-shadow: 0 0 10px #00e0ff; 
+         cursor:pointer; text-decoration:none; -webkit-tap-highlight-color: transparent;
+         transition: transform 0.2s ease;"
+  onclick="window.location.href='https://futuresearch.netlify.app'"
+  onmouseover="this.style.transform='scale(1.1)'" 
+  onmouseout="this.style.transform='scale(1)'">
   Future Search
- </h1>
+</h1>
     
 <button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
 
