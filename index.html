@@ -553,23 +553,24 @@ async function performSearch(fromURL = false) {
         window.history.pushState({}, '', newURL);
     }
 
-    // If input is a URL, open it directly
-    if (/^(https?:\/\/|www\.)/i.test(query)) {
+    // Check if input looks like a URL
+    const urlPattern = /^((https?:\/\/)?([\w-]+\.)+[\w-]{2,})(\/.*)?$/i;
+    if (urlPattern.test(query)) {
         const url = query.startsWith('http') ? query : 'https://' + query;
         window.open(url, '_blank');
-        return; // Stop further search
+        return; // stop further search
     }
 
     const resultsContainer = document.getElementById("results");
 
     if (!query) {
         resultsContainer.innerHTML = '';
-        resultsContainer.classList.remove('expanded');  // schová výsledky, když není dotaz
+        resultsContainer.classList.remove('expanded');
         return alert('Please enter a search term');
     }
 
     resultsContainer.innerHTML = '<div>Loading results...</div>';
-    resultsContainer.classList.add('expanded'); // rozbalí oblast výsledků
+    resultsContainer.classList.add('expanded');
 
     let retryCount = 0;
     let success = false;
@@ -602,7 +603,6 @@ async function performSearch(fromURL = false) {
         }
     }
 }
-
 
 function toggleTheme() {
     const body = document.body;
