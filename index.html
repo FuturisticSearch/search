@@ -3,6 +3,29 @@
 <html lang="en">
 <head>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "db5ff4b3-1170-45f0-8b54-2afc9e626f44",
+      
+      // 🔔 enable the little bell
+      notifyButton: {
+        enable: true,
+      },
+
+      // 📢 show the permission popup
+      promptOptions: {
+        slidedown: {
+          enabled: true,
+          actionMessage: "We’d like to send you updates!",
+          acceptButtonText: "Yes, notify me",
+          cancelButtonText: "No thanks"
+        }
+      }
+    });
+  });
+    </script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
