@@ -482,6 +482,15 @@
     <option value="image">Images</option>
   </select>
 </div>
+  <!-- Tabs bar -->
+<div id="tabsBar" style="display:flex; justify-content:center; gap:10px; margin:20px 0;">
+  <!-- Tabs will be inserted here dynamically -->
+</div>
+
+<!-- Iframe container for tabs -->
+<div id="tabContainer" style="width:90%; height:60vh; margin:0 auto;">
+  <iframe id="activeTab" src="" style="width:100%; height:100%; border:none; border-radius:10px; box-shadow:0 0 15px rgba(0,255,255,0.5);"></iframe>
+</div>
     <div id="results"></div>
 
     <!-- Custom Cursor -->
@@ -525,7 +534,7 @@
 async function performSearch(fromURL = false) {
     const queryInput = document.getElementById("searchBar");
     const categorySelect = document.getElementById("searchCategory");
-    let query = queryInput.value;
+    let query = queryInput.value.trim();
     let category = categorySelect.value;
 
     if (fromURL) {
@@ -541,14 +550,21 @@ async function performSearch(fromURL = false) {
 
     const resultsContainer = document.getElementById("results");
 
-    if (!query) {
+    // Check if input is a URL
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
+    if (urlPattern.test(query)) {
+        let url = query.startsWith("http") ? query : "https://" + query;
+        openInTab(url); // Function that opens the URL in your tab/iframe system
         resultsContainer.innerHTML = '';
-        resultsContainer.classList.remove('expanded');  // schová výsledky, když není dotaz
-        return alert('Please enter a search term');
+        resultsContainer.classList.remove('expanded');
+        return;
     }
 
+    // If not a URL, perform normal search
     resultsContainer.innerHTML = '<div>Loading results...</div>';
-    resultsContainer.classList.add('expanded'); // rozbalí oblast výsledků
+    resultsContainer.classList.add('expanded');
+
+    }
 
     let retryCount = 0;
     let success = false;
@@ -557,7 +573,6 @@ async function performSearch(fromURL = false) {
         const { apiKey, cseId } = getRandomAPIConfig();
         let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
         if (category === 'image') url += '&searchType=image';
-       // else if (category === 'news') url += '&searchType=news';
 
         try {
             const response = await fetch(url);
@@ -566,7 +581,7 @@ async function performSearch(fromURL = false) {
             if (data.items && data.items.length > 0) {
                 resultsContainer.innerHTML = data.items.map(item => `
                     <div class="result-item">
-                        <a href="${item.link}" target="_blank">${item.title}</a>
+                        <a href="#" onclick="openInTab('${item.link}')">${item.title}</a>
                         <p class="url">${item.link}</p>
                         <p class="description">${item.snippet}</p>
                         <button class="book-site-btn" onclick="addBookmark('${item.title}', '${item.link}')">Book Site</button>
@@ -581,10 +596,7 @@ async function performSearch(fromURL = false) {
             retryCount++;
         }
     }
-}
-
-
-
+         }
 function toggleTheme() {
     const body = document.body;
     const button = document.getElementById('themeToggleBtn');
