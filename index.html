@@ -38,7 +38,7 @@
 
     Notification.requestPermission().then(permission => {
       if (permission === "granted") {
-        getToken(messaging, { vapidKey: "YOUR_PUBLIC_VAPID_KEY" })
+        getToken(messaging, { vapidKey: "BM1H0Mzew-VIVuaTlQIUSDRW_axrqL_4LScckPnEbg0nvGKD1qj4QyaaLTZe-d5si5Gjpp99zn23nQaUfZi1CRc" })
           .then(token => {
             console.log("FCM Token:", token);
             // Send token to Netlify backend
