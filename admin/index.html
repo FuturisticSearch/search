@@ -1,19 +1,18 @@
-<h1>FutureSearch Push Panel</h1>
-<input id="title" placeholder="Title"><br><br>
-<textarea id="body" placeholder="Message"></textarea><br><br>
-<button onclick="sendNotification()">Send</button>
+<input id="title" placeholder="Title">
+<input id="body" placeholder="Message">
+<button id="send">Send</button>
 
 <script>
-async function sendNotification() {
+document.getElementById("send").addEventListener("click", () => {
   const title = document.getElementById("title").value;
   const body = document.getElementById("body").value;
 
-  await fetch("/.netlify/functions/send", {
+  fetch("/.netlify/functions/send-notification", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, body })
+  }).then(res => res.json()).then(data => {
+    alert(`Notifications sent! Success: ${data.success}, Fail: ${data.failure}`);
   });
-
-  alert("Notification sent!");
-}
+});
 </script>
