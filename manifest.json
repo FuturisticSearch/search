@@ -1,11 +1,242 @@
-{
-  "name": "Future Search",
-  "theme_color": "#000000",
-  "background_color": "#000000",
-  "short_name": "Future search",
-  "id": "FS",
-  "description": "FutureSearch is a next-generation search tool designed to give you quick, accurate, and distraction-free results. Unlike traditional search engines, FutureSearch focuses on speed, simplicity, and privacy — helping you find what you need without endless ads or clutter.\n\n✨ Features:\n\n🔍 Fast &amp; reliable search across the web\n\n🧠 AI-powered results for smarter answers\n\n🎯 Minimal, ad-free interface for distraction-free browsing\n\n🔒 Privacy first — no tracking or data selling\n\n🌐 Works on mobile, tablet, and desktop\n\n\nWhether you’re looking for information, resources, or quick answers, FutureSearch makes it simple and efficient.",
-  "categories": [
-    "utilities"
-  ]
-}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    android:compileSdkVersion="35"
+    android:compileSdkVersionCodename="15"
+    package="com.futuresearch.app"
+    platformBuildVersionCode="35"
+    platformBuildVersionName="15"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Umožňuje aplikaci vytvářet síťové sokety a používat vlastní síťové protokoly. K odesílání údajů na internet toto oprávnění není nutné, protože údaje lze na internet odesílat prostřednictvím prohlížečů a dalších aplikací. -->
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+    <!-- Umožňuje aplikaci zápis obsahu do sdíleného úložiště. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <!-- Tato aplikace může pomocí fotoaparátu během svého používání pořídit snímek nebo nahrát video. -->
+    <uses-permission
+        android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.CAMERA2" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+	<uses-permission
+ 		android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission
+        android:name="android.permission.MICROPHONE" />
+    <!-- Umožňuje aplikaci změnit globální nastavení zvuku, například hlasitost či reproduktor pro zvukový výstup. -->
+    <uses-permission
+        android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Tato aplikace může pomocí mikrofonu během svého používání zaznamenat zvuk. -->
+    <uses-permission
+        android:name="android.permission.RECORD_AUDIO" />
+    <!-- Když tuto aplikaci používáte, může pomocí služeb určování polohy získat vaši přibližnou polohu. Aby ji mohla zjistit, musí být na zařízení zapnuté služby určování polohy. -->
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Když tuto aplikaci používáte, může pomocí služeb určování polohy získat vaši přesnou polohu. Aby ji mohla zjistit, musí být na zařízení zapnuté služby určování polohy. Tato funkce může vést k rychlejšímu vybíjení baterie. -->
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Umožňuje aplikaci zabránit přechodu telefonu do režimu spánku. -->
+    <uses-permission
+        android:name="android.permission.WAKE_LOCK" />
+    <!-- Povolte aplikaci využívání služeb na popředí. -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Umožňuje aplikaci používat služby v popředí typu „mediaPlayback“ -->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <queries>
+        <intent>
+            <action
+                android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+    <!-- Umožňuje aplikaci čtení obsahu sdíleného úložiště. -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <!-- Umožňuje aplikaci čtení zvukových souborů ze sdíleného úložiště. -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!-- Umožňuje aplikaci zobrazit informace o síťových připojeních, například o tom, které sítě jsou k dispozici a které jsou připojené. -->
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <permission
+        android:name="com.futuresearch.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+    <uses-permission
+        android:name="com.futuresearch.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <application
+        android:label="Future Search"
+        android:icon="@mipmap/ic_launcher"
+        android:name="android.app.Application"
+        android:extractNativeLibs="true"
+        android:usesCleartextTraffic="true"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:requestLegacyExternalStorage="true">
+        <activity
+            android:theme="@style/LaunchTheme"
+            android:name="com.futuresearch.app.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:windowSoftInputMode="adjustResize"
+            android:hardwareAccelerated="true">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+            <intent-filter>
+                <action
+                    android:name="android.intent.action.MAIN" />
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+        <provider
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.InAppWebViewFileProvider"
+            android:exported="false"
+            android:authorities="com.futuresearch.app.flutter_inappwebview_android.fileprovider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+        <service
+            android:name="com.ryanheise.audioservice.AudioService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action
+                    android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
+        <receiver
+            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+        <provider
+            android:name="dev.fluttercommunity.plus.share.ShareFileProvider"
+            android:exported="false"
+            android:authorities="com.futuresearch.app.flutter.share_provider"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/flutter_share_file_paths" />
+        </provider>
+        <receiver
+            android:name="dev.fluttercommunity.plus.share.SharePlusPendingIntent"
+            android:exported="false">
+            <intent-filter>
+                <action
+                    android:name="EXTRA_CHOSEN_COMPONENT" />
+            </intent-filter>
+        </receiver>
+        <activity
+            android:theme="@style/AppTheme"
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.in_app_browser.InAppBrowserActivity"
+            android:exported="false"
+            android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|orientation|screenLayout|screenSize" />
+        <activity
+            android:theme="@style/ThemeTransparent"
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.ChromeCustomTabsActivity"
+            android:exported="false" />
+        <activity
+            android:theme="@style/ThemeTransparent"
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.TrustedWebActivity"
+            android:exported="false" />
+        <activity
+            android:theme="@style/ThemeTransparent"
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.ChromeCustomTabsActivitySingleInstance"
+            android:exported="false"
+            android:launchMode="singleInstance" />
+        <activity
+            android:theme="@style/ThemeTransparent"
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.TrustedWebActivitySingleInstance"
+            android:exported="false"
+            android:launchMode="singleInstance" />
+        <receiver
+            android:name="com.pichillilorenzo.flutter_inappwebview_android.chrome_custom_tabs.ActionBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <meta-data
+            android:name="io.flutter.embedded_views_preview"
+            android:value="true" />
+        <provider
+            android:name="com.crazecoder.openfile.FileProvider"
+            android:exported="false"
+            android:authorities="com.futuresearch.app.fileProvider.com.crazecoder.openfile"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+        <service
+            android:name="com.baseflow.geolocator.GeolocatorLocationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+        <activity
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
+            android:exported="false" />
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+            android:exported="false" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            android:authorities="com.futuresearch.app.androidx-startup">
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+        <uses-library
+            android:name="androidx.window.extensions"
+            android:required="false" />
+        <uses-library
+            android:name="androidx.window.sidecar"
+            android:required="false" />
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:permission="android.permission.DUMP"
+            android:enabled="true"
+            android:exported="true"
+            android:directBootAware="false">
+            <intent-filter>
+                <action
+                    android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action
+                    android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action
+                    android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action
+                    android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
