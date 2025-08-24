@@ -1,38 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin Panel - Send Notifications</title>
-</head>
-<body>
-  <h2>Send Notification to All Users</h2>
-  <input id="title" placeholder="Title" style="width:300px; margin-bottom:10px;"><br>
-  <input id="body" placeholder="Message" style="width:300px; margin-bottom:10px;"><br>
-  <button id="send">Send</button>
+<input id="title" placeholder="Title" style="width:300px;"><br>
+<input id="body" placeholder="Message" style="width:300px;"><br>
+<button id="send">Send</button>
 
-  <script>
-    document.getElementById('send').addEventListener('click', async () => {
-      const title = document.getElementById('title').value;
-      const body = document.getElementById('body').value;
+<script>
+document.getElementById('send').addEventListener('click', async () => {
+  const title = document.getElementById('title').value;
+  const body = document.getElementById('body').value;
 
-      if (!title || !body) {
-        alert("Please enter both title and message.");
-        return;
-      }
+  if (!title || !body) return alert("Enter title and message");
 
-      try {
-        const res = await fetch("/.netlify/functions/send-notification", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, body })
-        });
+  const res = await fetch("/.netlify/functions/send-notification", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, body })
+  });
 
-        const data = await res.json();
-        alert(`Notifications sent! Success: ${data.success}, Fail: ${data.failure}`);
-      } catch (err) {
-        alert("Error sending notifications: " + err);
-      }
-    });
-  </script>
-</body>
-</html>
+  const data = await res.json();
+  alert(`Success: ${data.success}, Fail: ${data.failure}`);
+});
+</script>
