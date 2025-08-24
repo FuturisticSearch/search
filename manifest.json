@@ -1,0 +1,11 @@
+{
+  "name": "Future Search",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "short_name": "Future search",
+  "id": "FS",
+  "description": "FutureSearch is a next-generation search tool designed to give you quick, accurate, and distraction-free results. Unlike traditional search engines, FutureSearch focuses on speed, simplicity, and privacy — helping you find what you need without endless ads or clutter.\n\n✨ Features:\n\n🔍 Fast &amp; reliable search across the web\n\n🧠 AI-powered results for smarter answers\n\n🎯 Minimal, ad-free interface for distraction-free browsing\n\n🔒 Privacy first — no tracking or data selling\n\n🌐 Works on mobile, tablet, and desktop\n\n\nWhether you’re looking for information, resources, or quick answers, FutureSearch makes it simple and efficient.",
+  "categories": [
+    "utilities"
+  ]
+}
