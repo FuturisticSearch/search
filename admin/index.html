@@ -116,12 +116,12 @@
 
       <div class="divider"></div>
 
-      <!-- Credentials (never store key in code) -->
+      <!-- Credentials -->
       <div class="grid">
         <div>
           <label>OneSignal REST API Key <span class="pill danger">required / secret</span></label>
           <input id="apiKey" type="password" placeholder="Paste your OneSignal REST API Key"/>
-          <div class="note">We only use it in your browser for this send; it is not saved.</div>
+          <div class="note">We only use it in your browser for this send; it is not saved server-side.</div>
         </div>
         <div>
           <label>OneSignal App ID</label>
@@ -190,7 +190,19 @@
       s.textContent += (s.textContent ? '\n' : '') + msg;
     }
 
+    // ---- LOCAL STORAGE FOR API KEY ----
+    const apiKeyInput = document.getElementById('apiKey');
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('apiKey');
+      if (savedKey) apiKeyInput.value = savedKey;
+    });
+    apiKeyInput.addEventListener('input', () => {
+      localStorage.setItem('apiKey', apiKeyInput.value);
+    });
+
+    // ---- DEMO PREFILL ----
     function prefillDemo(){
+      const savedApiKey = apiKeyInput.value; // Preserve saved API key
       document.getElementById('title').value = 'Hello from Future Search';
       document.getElementById('message').value = 'Quick update — thanks for subscribing!';
       document.getElementById('launchUrl').value = 'https://futuresearch.netlify.app';
@@ -198,11 +210,13 @@
       document.getElementById('imageUrl').value = '';
       document.getElementById('buttonsJson').value =
         '[{"id":"open","text":"Open","url":"https://futuresearch.netlify.app"}]';
+      apiKeyInput.value = savedApiKey; // restore API key
       out('Demo values filled.', false);
     }
 
+    // ---- SEND PUSH ----
     async function sendPush(){
-      const apiKey   = document.getElementById('apiKey').value.trim();
+      const apiKey   = apiKeyInput.value.trim();
       const appId    = document.getElementById('appId').value.trim();
       const title    = document.getElementById('title').value.trim();
       const message  = document.getElementById('message').value.trim();
@@ -218,18 +232,15 @@
       if(!title){ out('❌ Title is required.'); return; }
       if(!message){ out('❌ Message is required.'); return; }
 
-      // Build payload per OneSignal Notifications API
       const body = {
         app_id: appId,
         included_segments: ['All'],
         headings: { en: title },
         contents: { en: message }
       };
-
       if(launchUrl) body.url = launchUrl;
       if(iconUrl)   body.chrome_web_icon = iconUrl;
       if(imageUrl)  body.chrome_web_image = imageUrl;
-
       if(buttons){
         try{
           const parsed = JSON.parse(buttons);
@@ -244,7 +255,7 @@
         const res = await fetch('https://api.onesignal.com/notifications', {
           method: 'POST',
           headers: {
-            'Authorization': 'Basic ' + apiKey,          // REST API Key
+            'Authorization': 'Basic ' + apiKey,
             'Content-Type': 'application/json; charset=utf-8'
           },
           body: JSON.stringify(body)
@@ -259,7 +270,6 @@
             out('❌ Error ('+res.status+'): ' + (json.errors || text));
           }
         }catch{
-          // non-JSON response
           if(res.ok){
             out('✅ Sent! (non-JSON response)\n' + text);
           }else{
