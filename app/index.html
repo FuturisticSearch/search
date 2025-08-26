@@ -606,18 +606,75 @@ async function performSearch(fromURL = false) {
 function toggleTheme() {
     const body = document.body;
     const button = document.getElementById('themeToggleBtn');
+<!-- Theme Toggle Button -->
+<button id="themeToggleBtn" class="theme-switch" aria-label="Toggle theme">🌙</button>
 
-    body.classList.toggle("dark-theme");
-    body.classList.toggle("light-theme");
-
-    if (body.classList.contains("dark-theme")) {
-        button.innerText = "🌙";  // měsíc pro tmavý režim
-        button.title = "Switch to Light Mode";
-    } else {
-        button.innerText = "☀️";  // sluníčko pro světlý režim
-        button.title = "Switch to Dark Mode";
-    }
+<style>
+/* Button style and remove mobile blue glow */
+button.theme-switch {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    border: none;
+    background: #00e0ff;
+    color: #121212;
+    font-size: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 10000;
+    transition: background 0.3s ease;
 }
+
+button.theme-switch:active {
+    transform: scale(0.9);
+}
+
+/* Smooth theme transition */
+body {
+    transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* Dark and Light themes */
+body.dark-theme {
+    background: #000;
+    color: #fff;
+}
+
+body.light-theme {
+    background: #fff;
+    color: #000;
+}
+</style>
+
+<script>
+// Theme toggle functionality
+const button = document.getElementById('themeToggleBtn');
+
+// Load saved theme
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.body.classList.add(savedTheme + '-theme');
+button.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+// Toggle theme on click
+button.addEventListener('click', () => {
+    if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.replace('dark-theme', 'light-theme');
+        button.textContent = '☀️';
+        localStorage.setItem('theme', 'light');
+    } else {
+        document.body.classList.replace('light-theme', 'dark-theme');
+        button.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+    }
+});
+</script>
 
 
         function loadWebsite() {
