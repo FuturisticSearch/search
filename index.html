@@ -466,7 +466,8 @@
       const params = new URLSearchParams(window.location.search);
       const query = params.get('q') || '';
       if (query) {
-        document.title = `${query} – Future Search`;
+         const formattedQuery = query.charAt(0).toUpperCase() + query.slice(1);
+         document.title = `${formattedQuery} – Future Search`;
       }
     </script>
 </head>
@@ -558,7 +559,8 @@ async function performSearch(fromURL = false) {
     } else {
         const newURL = `${window.location.pathname}?q=${encodeURIComponent(query)}&category=${category}`;
         window.history.pushState({}, '', newURL);
-        document.title = `${query} – Future Search`;
+        const formattedQuery = query.charAt(0).toUpperCase() + query.slice(1);
+        document.title = `${formattedQuery} – Future Search`;
 
     }
 
