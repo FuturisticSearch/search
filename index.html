@@ -462,6 +462,13 @@
 
     
     </style>
+        <script>
+      const params = new URLSearchParams(window.location.search);
+      const query = params.get('q') || '';
+      if (query) {
+        document.title = `${query} – Future Search`;
+      }
+    </script>
 </head>
 <body class="dark-theme">
     <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
@@ -551,6 +558,8 @@ async function performSearch(fromURL = false) {
     } else {
         const newURL = `${window.location.pathname}?q=${encodeURIComponent(query)}&category=${category}`;
         window.history.pushState({}, '', newURL);
+        document.title = `${query} – Future Search`;
+
     }
 
     // Check if input looks like a URL
