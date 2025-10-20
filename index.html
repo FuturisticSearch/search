@@ -463,13 +463,35 @@
     
     </style>
         <script>
-      const params = new URLSearchParams(window.location.search);
-      const query = params.get('q') || '';
-      if (query) {
-         const formattedQuery = query.charAt(0).toUpperCase() + query.slice(1);
-         document.title = `${formattedQuery} – Future Search`;
-      }
-    </script>
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get('q') || '';
+
+  if (query) {
+    const formattedQuery = query.charAt(0).toUpperCase() + query.slice(1);
+    const description = `Výsledky vyhledávání pro '${formattedQuery}' na Future Search.`;
+
+    // Nastaví title
+    document.title = `${formattedQuery} – Future Search`;
+
+    // Nastaví meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = description;
+
+    // Přidá canonical tag (aby Google viděl správnou URL)
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = `https://futuresearch.netlify.app/?q=${encodeURIComponent(query)}`;
+  }
+        </script>
 </head>
 <body class="dark-theme">
     <div id="bookmarks-bar"></div> <!-- Bookmarks bar -->
@@ -729,5 +751,9 @@ window.addEventListener('load', () => {
 
 
     </script>
+    <div class="seo-text">
+  Future Search — výsledky vyhledávání online. 
+  Vyzkoušej vyhledávač Future Search pro dotazy jako pes, kočka, technologie, počasí, hry a další.
+    </div>
 </body>
 </html>
