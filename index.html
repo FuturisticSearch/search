@@ -25,50 +25,10 @@
     <link rel="canonical" href="https://futuresearch.netlify.app/" />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
-    <meta name="google-site-verification" content="Wzm471_osSeQHTRM3eED9rHwFNBmovnNmK26oh5Gz9k" />
-    <meta property="og:title" content="Future Search" />
-    <meta property="og:description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání." />
-    <meta property="og:url" content="https://futuresearch.netlify.app/" />
-    <meta property="og:site_name" content="Future Search" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://futuresearch.netlify.app/favicon.png" />
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Future Search",
-      "url": "https://futuresearch.netlify.app/",
-      "applicationCategory": "SearchApplication",
-      "operatingSystem": "All",
-      "description": "Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5",
-        "reviewCount": "1"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://futuresearch.netlify.app/?q={search_term_string}&category=web",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Future Search",
-      "url": "https://futuresearch.netlify.app/"
-    }
-    </script>
     <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* --- keep your existing styles --- */
         body { font-family: 'Roboto', sans-serif; margin:0; padding:0; height:100vh; transition: background 0.3s ease, transform 0.3s ease; cursor:none; }
         body.dark-theme { background:#000; background-size:cover; background-position:center; }
         body.light-theme { background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
@@ -77,20 +37,14 @@
         #searchBar { width:300px; padding:15px; font-size:18px; border-radius:10px 0 0 10px; border:2px solid #00e0ff; outline:none; background:transparent; color:#e0e0e0; }
         #searchCategory { width:150px; padding:15px; font-size:18px; border-radius:10px; border:2px solid #00e0ff; background:transparent; color:#e0e0e0; cursor:pointer; }
         #searchBtn { width:50px; border:2px solid #00e0ff; border-left:none; border-radius:0 10px 10px 0; background:#00e0ff; color:#121212; font-size:22px; cursor:pointer; display:flex; justify-content:center; align-items:center; }
-        #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff; transition: padding 0.3s ease, margin-top 0.3s ease, border 0.3s ease, background 0.3s ease; }
-        #results.expanded{padding:20px;margin-top:20px;border:none;background:rgba(0,0,0,0.5);word-wrap:break-word;}.result-item{margin-bottom:20px;overflow-wrap:break-word;}.result-item p.description,.result-item p.url{margin:5px 0;}
-        .result-item { margin-bottom:20px; }
+        #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff; transition: padding 0.3s ease, margin-top 0.3s ease, border 0.3s ease, background 0.3s ease; max-height:70vh; overflow-y:auto; }
+        #results.expanded{padding:20px;margin-top:20px;border:none;background:rgba(0,0,0,0.5);word-wrap:break-word;}
+        .result-item{margin-bottom:20px;overflow-wrap:break-word;}
         .result-item a { color:#00e0ff; text-decoration:none; }
         .result-item a:hover { text-decoration:underline; }
         .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%, -50%); box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
         .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
         @keyframes fade { 0% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(2); } }
-        iframe { width:90%; height:80vh; border:none; margin-top:20px; box-shadow:0 0 15px rgba(0,255,255,0.5); }
-        .bookmark { color:#fff; cursor:pointer; padding:5px; margin:5px; background:rgba(0,224,255,0.6); border-radius:5px; display:inline-block; }
-        #bookmarks-bar { padding:10px; background-color:rgba(0,0,0,0.7); color:#fff; display:flex; overflow-x:auto; align-items:center; justify-content:flex-start; flex-wrap:wrap; }
-        .context-menu { position:absolute; background-color:#222; border:1px solid #00e0ff; box-shadow:0 0 10px rgba(0,224,255,0.8); color:#fff; padding:10px; z-index:9999; }
-        .context-menu button { background:#00e0ff; border:none; color:#121212; padding:5px 10px; cursor:pointer; }
-        .context-menu button:hover { background:#00b8d4; }
         @media (max-width: 600px) {
           body { font-size:16px; cursor:auto; }
           .search-container { flex-direction:column; gap:15px; width:90%; margin:0 auto 30px auto; }
@@ -99,20 +53,13 @@
           #searchBtn { width:100%; padding:15px; font-size:24px; border-radius:10px; }
           #results.expanded { height:auto; max-height:60vh; padding:10px; margin-top:15px; }
           .cursor, .cursor-trail { display:none; }
-          #bookmarks-bar { flex-wrap:nowrap; overflow-x:scroll; padding:5px; gap:8px; }
-          .bookmark { font-size:14px; padding:8px 12px; }
-          button.theme-switch { position:fixed; top:10px; right:10px; width:40px; height:40px; font-size:20px; padding:0; border-radius:50%; }
-          .seo-text { position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
         }
     </style>
 </head>
 <body class="dark-theme">
 <div id="bookmarks-bar"></div>
 <div style="text-align:center;">
-  <h1 onclick="window.location.href='https://futuresearch.netlify.app'"
-      style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;transition:transform 0.2s ease;display:inline-block;"
-      onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
-      ontouchstart="this.style.transform='scale(1.1)'" ontouchend="this.style.transform='scale(1)'">
+  <h1 onclick="window.location.href='https://futuresearch.netlify.app'" style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">
     Future Search
   </h1>
 </div>
@@ -130,62 +77,90 @@
 <script>
 const API_CSE_PAIRS = [
   { apiKey: 'AIzaSyDWNsfBSjfD7a9fnroxndZgA2XjnU_Zpe4', cseId: '84d63b08624fe419d' },
-  { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' },
-  { apiKey: 'AIzaSyAKfhY8WEQEFL6R4JuXHwM4MXWSDJQRS2U', cseId: 'e023febf3db504733' }
+  { apiKey: 'AIzaSyChwIVUmzhhnkP_Ut0xQyRvhHkLtMYbyyc', cseId: 'f3d0ff734a1e84bc7' }
 ];
+
 let mouseX=0, mouseY=0;
 document.addEventListener('mousemove',(e)=>{mouseX=e.clientX; mouseY=e.clientY; updateCursor(e);});
-function updateCursor(e){const c=document.getElementById('cursor');c.style.top=e.clientY+'px'; c.style.left=e.clientX+'px'; const t=document.createElement('div');t.className='cursor-trail';t.style.top=e.clientY+'px';t.style.left=e.clientX+'px'; document.body.appendChild(t); setTimeout(()=>t.remove(),600);}
+function updateCursor(e){
+    const c=document.getElementById('cursor');
+    c.style.top=e.clientY+'px'; c.style.left=e.clientX+'px';
+    const t=document.createElement('div'); t.className='cursor-trail';
+    t.style.top=e.clientY+'px'; t.style.left=e.clientX+'px';
+    document.body.appendChild(t); setTimeout(()=>t.remove(),600);
+}
+
 function getRandomAPIConfig(){return API_CSE_PAIRS[Math.floor(Math.random()*API_CSE_PAIRS.length)];}
 function getQueryFromPath(){const path=window.location.pathname; if(path.startsWith('/q/')) return decodeURIComponent(path.replace('/q/','')); return '';}
 
-async function performSearch(fromURL=false){
+// --- infinite scroll with limit ---
+let currentStart = 1;
+let currentQuery = '';
+let currentCategory = '';
+
+async function performSearch(fromURL=false, append=false){
   const queryInput=document.getElementById("searchBar");
   const categorySelect=document.getElementById("searchCategory");
-  let query=queryInput.value.trim();
-  let category=categorySelect.value;
   if(fromURL){
-    query=getQueryFromPath();
-    category=new URLSearchParams(window.location.search).get('category')||'web';
-    queryInput.value=query;
-    categorySelect.value=category;
-  } else {
-    const newURL=`/q/${encodeURIComponent(query)}?category=${category}`;
+    currentQuery=getQueryFromPath();
+    currentCategory=new URLSearchParams(window.location.search).get('category')||'web';
+    queryInput.value=currentQuery;
+    categorySelect.value=currentCategory;
+    currentStart = 1;
+  } else if(!append){
+    currentQuery=queryInput.value.trim();
+    currentCategory=categorySelect.value;
+    currentStart = 1;
+    const newURL=`/q/${encodeURIComponent(currentQuery)}?category=${currentCategory}`;
     window.history.pushState({},'',newURL);
-    document.title=query.charAt(0).toUpperCase()+query.slice(1)+' – Future Search';
+    document.title=currentQuery.charAt(0).toUpperCase()+currentQuery.slice(1)+' – Future Search';
+    document.getElementById("results").innerHTML=''; // clear old results
   }
-  const urlPattern=/^((https?:\/\/)?([\w-]+\.)+[\w-]{2,})(\/.*)?$/i;
-  if(urlPattern.test(query)){const url=query.startsWith('http')?query:'https://'+query; window.open(url,'_blank'); return;}
+
+  if(!currentQuery){alert('Please enter a search term'); return;}
+  if(currentStart > 50){console.log('Reached max results'); return;} // max 50 results
+
   const resultsContainer=document.getElementById("results");
-  if(!query){resultsContainer.innerHTML=''; resultsContainer.classList.remove('expanded'); return alert('Please enter a search term');}
-  resultsContainer.innerHTML='<div>Loading results...</div>'; resultsContainer.classList.add('expanded');
-  let retryCount=0, success=false;
-  while(retryCount<6 && !success){
-    const {apiKey,cseId}=getRandomAPIConfig();
-    let url=`https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cseId}`;
-    if(category==='image') url+='&searchType=image';
-    try{
-      const response=await fetch(url);
-      const data=await response.json();
-      if(data.items && data.items.length>0){
-        resultsContainer.innerHTML=data.items.map(item=>`<div class="result-item"><a href="${item.link}" target="_blank">${item.title}</a><p class="url">${item.link}</p><p class="description">${item.snippet}</p><button class="book-site-btn" onclick="addBookmark('${item.title}','${item.link}')">Book Site</button></div>`).join('');
-        success=true;
-      } else {resultsContainer.innerHTML='<p>No results found.</p>'; success=true;}
-    } catch(e){retryCount++;}
-  }
+  resultsContainer.classList.add('expanded');
+  resultsContainer.innerHTML += '<div>Loading more results...</div>';
+
+  const {apiKey,cseId}=getRandomAPIConfig();
+  let url=`https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(currentQuery)}&key=${apiKey}&cx=${cseId}&start=${currentStart}`;
+  if(currentCategory==='image') url+='&searchType=image';
+
+  try{
+    const response=await fetch(url);
+    const data=await response.json();
+    if(data.items && data.items.length>0){
+      resultsContainer.innerHTML = append ? resultsContainer.innerHTML.replace('Loading more results...','') : '';
+      resultsContainer.innerHTML += data.items.map(item=>
+        `<div class="result-item">
+          <a href="${item.link}" target="_blank">${item.title}</a>
+          <p class="url">${item.link}</p>
+          <p class="description">${item.snippet}</p>
+          <button onclick="addBookmark('${item.title}','${item.link}')">Book Site</button>
+        </div>`).join('');
+      currentStart += data.items.length;
+    } else if(!append){ resultsContainer.innerHTML='<p>No results found.</p>'; }
+  } catch(e){console.error(e);}
+
 }
 
-function toggleTheme(){const body=document.body; const btn=document.getElementById('themeToggleBtn'); body.classList.toggle("dark-theme"); body.classList.toggle("light-theme"); if(body.classList.contains("dark-theme")){btn.innerText="🌙"; btn.title="Switch to Light Mode";} else {btn.innerText="☀️"; btn.title="Switch to Dark Mode";}}
+// --- detect scroll near bottom ---
+document.getElementById("results").addEventListener('scroll',()=>{
+  const el=document.getElementById("results");
+  if(el.scrollTop + el.clientHeight >= el.scrollHeight - 50){
+    performSearch(false,true); // append more results
+  }
+});
 
-function addBookmark(title,url){let bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[]; if(bookmarks.find(b=>b.url===url)){alert("This site is already bookmarked."); return;} bookmarks.push({title,url}); localStorage.setItem('bookmarks',JSON.stringify(bookmarks)); displayBookmarks();}
-function displayBookmarks(){const bar=document.getElementById('bookmarks-bar'); const bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[]; bar.innerHTML=bookmarks.map(b=>`<div class="bookmark" oncontextmenu="showContextMenu(event,'${b.url}')"><a href="${b.url}" target="_blank">${b.title}</a></div>`).join('');}
-function showContextMenu(e,url){e.preventDefault(); const menu=document.createElement('div'); menu.className='context-menu'; menu.innerHTML=`<button onclick="deleteBookmark('${url}')">Delete Bookmark</button>`; document.body.appendChild(menu); menu.style.top=e.clientY+'px'; menu.style.left=e.clientX+'px'; document.addEventListener('click',()=>menu.remove());}
-function deleteBookmark(url){let bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[]; bookmarks=bookmarks.filter(b=>b.url!==url); localStorage.setItem('bookmarks',JSON.stringify(bookmarks)); displayBookmarks();}
+function toggleTheme(){const body=document.body; const btn=document.getElementById('themeToggleBtn'); body.classList.toggle("dark-theme"); body.classList.toggle("light-theme"); btn.innerText=body.classList.contains("dark-theme")?"🌙":"☀️";}
+
+function addBookmark(title,url){let bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[]; if(bookmarks.find(b=>b.url===url)){alert("Already bookmarked"); return;} bookmarks.push({title,url}); localStorage.setItem('bookmarks',JSON.stringify(bookmarks)); displayBookmarks();}
+function displayBookmarks(){const bar=document.getElementById('bookmarks-bar'); const bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[]; bar.innerHTML=bookmarks.map(b=>`<div class="bookmark"><a href="${b.url}" target="_blank">${b.title}</a></div>`).join('');}
 
 window.addEventListener('load',()=>{
   displayBookmarks();
-  const btn=document.getElementById('themeToggleBtn');
-  if(document.body.classList.contains('dark-theme')){btn.innerText="🌙"; btn.title="Switch to Light Mode";} else {btn.innerText="☀️"; btn.title="Switch to Dark Mode";}
   const pathQuery=getQueryFromPath();
   if(pathQuery) performSearch(true);
 });
