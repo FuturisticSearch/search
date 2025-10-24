@@ -1,5 +1,14 @@
+<htm<!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Search</title>
+  <meta name="description" content="Future Search – moderní vyhledávač s podporou webu a obrázků.">
+  <link rel="canonical" href="https://futuresearch.netlify.app/">
+  <link rel="icon" href="favicon.png">
+
+  <!-- OneSignal -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -10,71 +19,140 @@
       });
     });
   </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Future Search</title>
-  <meta name="description" content="Future Search – moderní vyhledávač s podporou webu a obrázků.">
-  <link rel="canonical" href="https://futuresearch.netlify.app/">
-  <link rel="icon" href="favicon.png">
+
+  <!-- Google CSE -->
+  <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
+
   <style>
-    body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh;
-      transition: background 0.3s ease; cursor:none; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      transition: background 0.3s ease;
+      cursor: none;
+    }
     body.dark-theme { background:#000; }
-    body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
-    .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px;
-      background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212;
-      z-index:10000; display:flex; justify-content:center; align-items:center; }
-    .search-container { display:flex; justify-content:center; align-items:center; gap:10px;
-      margin:0 auto 30px auto; width:fit-content; }
-    #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff;
-      transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease;
-      max-height:70vh; overflow-y:auto; }
-    #results.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
-    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8);
-      border-radius:50%; pointer-events:none; transform:translate(-50%,-50%);
-      box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
-    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4);
-      border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
-    @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
+    body.light-theme {
+      background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    /* Theme toggle */
+    .theme-switch {
+      position: fixed;
+      top: 15px; right: 15px;
+      padding: 10px; font-size: 22px;
+      background: #00e0ff; border-radius: 50%; border: none;
+      cursor: pointer; color: #121212; z-index: 10000;
+      display: flex; justify-content: center; align-items: center;
+    }
+
+    /* Search container */
+    .search-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto;
+      width: fit-content;
+    }
+
+    /* CSE results overrides */
+    .gsc-results .gsc-webResult {
+      background: rgba(0,0,0,0.5);
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+    .gsc-webResult a.gs-title {
+      color: #00e0ff !important;
+      text-decoration: none !important;
+    }
+    .gsc-webResult .gs-snippet {
+      color: #fff !important;
+    }
+    .gsc-webResult:hover {
+      background: rgba(0,224,255,0.2);
+    }
+
+    /* Cursor */
+    .cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: rgba(0,224,255,0.8);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5);
+      z-index: 9999;
+    }
+    .cursor-trail {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: rgba(0,224,255,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      animation: fade 0.6s ease-out forwards;
+    }
+    @keyframes fade {
+      0%{opacity:1;transform:scale(1);}
+      100%{opacity:0;transform:scale(2);}
+    }
+
     @media (max-width:600px){
-      body{cursor:auto;}
-      .cursor,.cursor-trail{display:none;}
+      body { cursor:auto; }
+      .cursor,.cursor-trail { display:none; }
+    }
+
+    /* Header */
+    h1 {
+      color: lightblue;
+      text-shadow: 0 0 10px #00e0ff;
+      cursor: pointer;
+      text-align: center;
     }
   </style>
 </head>
 <body class="dark-theme">
-  <div style="text-align:center;">
-    <h1 onclick="window.location.href='https://futuresearch.netlify.app'" 
-        style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">Future Search</h1>
-  </div>
 
+  <!-- Header -->
+  <h1 onclick="window.location.href='https://futuresearch.netlify.app'">Future Search</h1>
+
+  <!-- Theme toggle -->
   <button class="theme-switch" id="themeToggleBtn">🌙</button>
 
-  <!-- ✅ Google CSE search box -->
+  <!-- Search box -->
   <div class="search-container">
-    <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
-    <div class="gcse-searchbox-only" id="cseWidget"></div>
+    <div class="gcse-searchbox-only"></div>
   </div>
 
-  <div id="results" class="expanded"></div>
+  <!-- Search results -->
+  <div class="gcse-searchresults-only"></div>
+
+  <!-- Cursor -->
   <div class="cursor" id="cursor"></div>
 
-  <!-- Hidden Google CSE results container -->
-  <div style="display:none">
-    <div class="gcse-searchresults-only" id="hiddenCSE"></div>
-  </div>
-
+  <!-- Scripts -->
   <script>
     // Cursor animation
-    document.addEventListener('mousemove',(e)=>{
-      const c=document.getElementById('cursor');
-      c.style.top=e.clientY+'px'; c.style.left=e.clientX+'px';
-      const t=document.createElement('div'); t.className='cursor-trail';
-      t.style.top=e.clientY+'px'; t.style.left=e.clientX+'px';
-      document.body.appendChild(t); setTimeout(()=>t.remove(),600);
+    document.addEventListener('mousemove', e => {
+      const c = document.getElementById('cursor');
+      c.style.top = e.clientY + 'px';
+      c.style.left = e.clientX + 'px';
+
+      const t = document.createElement('div');
+      t.className = 'cursor-trail';
+      t.style.top = e.clientY + 'px';
+      t.style.left = e.clientX + 'px';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 600);
     });
 
-    // Theme toggle with localStorage persistence
+    // Theme toggle with localStorage
     document.addEventListener("DOMContentLoaded", () => {
       const savedTheme = localStorage.getItem("theme");
       if(savedTheme){
@@ -100,27 +178,24 @@
       }
     });
 
-    // Wait for CSE
-    function waitForCSE(){
-      return new Promise(resolve=>{
-        const check=()=>{
-          if(window.google && google.search && google.search.cse && google.search.cse.element){
-            resolve();
-          } else setTimeout(check,200);
-        };
-        check();
-      });
-    }
-
-    function getQueryParam(param){
+    // Pre-fill ?q= parameter
+    window.onload = () => {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
+      const query = urlParams.get("q");
+      if(query){
+        const input = document.querySelector("input.gsc-input");
+        const button = document.querySelector("button.gsc-search-button");
+        if(input && button){
+          input.value = query;
+          button.click();
+        }
+      }
+    };
 
+    // Detect URL input in search box
     function isURL(str){
       return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str);
     }
-
     function formatURL(url){
       if(!/^https?:\/\//i.test(url)){
         return "https://" + url;
@@ -128,22 +203,13 @@
       return url;
     }
 
-    waitForCSE().then(()=>{
-      const cseInput = document.querySelector("input.gsc-input");
-      const cseButton = document.querySelector("button.gsc-search-button");
-
-      // Prefill ?q= parameter
-      const initialQuery = getQueryParam("q");
-      if(initialQuery && cseInput && cseButton){
-        cseInput.value = initialQuery;
-        cseButton.click();
-      }
-
-      // Detect URL input
-      if(cseInput){
-        cseInput.addEventListener("keydown", e=>{
+    setTimeout(() => {
+      const input = document.querySelector("input.gsc-input");
+      const button = document.querySelector("button.gsc-search-button");
+      if(input){
+        input.addEventListener("keydown", e=>{
           if(e.key === "Enter"){
-            const query = cseInput.value.trim();
+            const query = input.value.trim();
             if(isURL(query)){
               e.preventDefault();
               window.open(formatURL(query), "_blank");
@@ -151,11 +217,8 @@
           }
         });
       }
-    });
+    }, 1000); // Wait for widget to load
   </script>
 
-  <div class="seo-text">
-    Future Search — výsledky vyhledávání online. Vyzkoušej vyhledávač Future Search pro dotazy jako pes, kočka, technologie, počasí, hry a další.
-  </div>
 </body>
 </html>
