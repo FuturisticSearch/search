@@ -17,15 +17,24 @@
   <link rel="canonical" href="https://futuresearch.netlify.app/">
   <link rel="icon" href="favicon.png">
   <style>
-    body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh; transition: background 0.3s ease; cursor:none; }
+    body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh;
+      transition: background 0.3s ease; cursor:none; }
     body.dark-theme { background:#000; }
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
-    .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
-    .search-container { display:flex; justify-content:center; align-items:center; gap:10px; margin:0 auto 30px auto; width:fit-content; }
-    #resultsContainer { padding:0 20px; margin-top:20px; max-height:70vh; overflow-y:auto; color:#fff; transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease; background:transparent; }
-    #resultsContainer.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
-    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
-    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
+    .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px;
+      background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212;
+      z-index:10000; display:flex; justify-content:center; align-items:center; }
+    .search-container { display:flex; justify-content:center; align-items:center; gap:10px;
+      margin:0 auto 30px auto; width:fit-content; }
+    #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff;
+      transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease;
+      max-height:70vh; overflow-y:auto; }
+    #results.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
+    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8);
+      border-radius:50%; pointer-events:none; transform:translate(-50%,-50%);
+      box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
+    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4);
+      border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
     @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
     @media (max-width:600px){
       body{cursor:auto;}
@@ -40,20 +49,21 @@
         style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">Future Search</h1>
   </div>
 
-  <button class="theme-switch" id="themeToggleBtn">🌙</button>
+  <button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
 
-  <!-- Search Box -->
+  <!-- Replaced search box with Google CSE widget -->
   <div class="search-container">
-    <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
-    <div class="gcse-searchbox" id="cseWidget"></div>
+    <div id="cseWidget" style="width:100%; max-width:350px;"></div>
   </div>
 
-  <!-- Results container -->
-  <div id="resultsContainer" class="expanded">
-    <div class="gcse-searchresults-only" id="cseResults"></div>
+  <div id="results" class="expanded">
+    <div id="cseResults"></div>
   </div>
 
   <div class="cursor" id="cursor"></div>
+
+  <!-- Google CSE -->
+  <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
 
   <script>
     // Cursor animation
@@ -65,85 +75,66 @@
       document.body.appendChild(t); setTimeout(()=>t.remove(),600);
     });
 
-    // Theme toggle with persistence
-    document.addEventListener("DOMContentLoaded", () => {
-      const savedTheme = localStorage.getItem("theme");
-      if(savedTheme){
-        document.body.classList.remove("dark-theme","light-theme");
-        document.body.classList.add(savedTheme);
-        const btn = document.getElementById("themeToggleBtn");
-        btn.innerText = savedTheme === "dark-theme" ? "🌙" : "☀️";
-      }
-    });
+    // Theme toggle with save
+    function toggleTheme(){
+      const body=document.body, btn=document.getElementById('themeToggleBtn');
+      body.classList.toggle("dark-theme"); body.classList.toggle("light-theme");
+      const dark = body.classList.contains("dark-theme");
+      btn.innerText = dark?"🌙":"☀️";
+      localStorage.setItem("theme", dark?"dark":"light");
+    }
+    // Load saved theme
+    const savedTheme = localStorage.getItem("theme");
+    if(savedTheme){
+      document.body.classList.remove("dark-theme","light-theme");
+      document.body.classList.add(savedTheme+"-theme");
+      document.getElementById("themeToggleBtn").innerText = savedTheme==="dark"?"🌙":"☀️";
+    }
 
-    document.getElementById("themeToggleBtn").addEventListener("click", () => {
-      const body = document.body, btn = document.getElementById("themeToggleBtn");
-      if(body.classList.contains("dark-theme")){
-        body.classList.remove("dark-theme");
-        body.classList.add("light-theme");
-        localStorage.setItem("theme","light-theme");
-        btn.innerText = "☀️";
-      } else {
-        body.classList.remove("light-theme");
-        body.classList.add("dark-theme");
-        localStorage.setItem("theme","dark-theme");
-        btn.innerText = "🌙";
-      }
-    });
-
-    // CSE handling
-    function waitForCSE(){
-      return new Promise(resolve=>{
-        const check=()=>{
-          if(window.google && google.search && google.search.cse && google.search.cse.element){
+    // Wait for CSE to be ready
+    function waitForCSE() {
+      return new Promise(resolve => {
+        const check = () => {
+          if (window.google && google.search && google.search.cse && google.search.cse.element) {
             resolve();
-          } else setTimeout(check,200);
+          } else setTimeout(check, 200);
         };
         check();
       });
     }
 
-    function getQueryParam(param){
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
-
-    function isURL(str){
-      return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str);
-    }
-
-    function formatURL(url){
-      if(!/^https?:\/\//i.test(url)){
-        return "https://" + url;
-      }
-      return url;
-    }
-
-    waitForCSE().then(()=>{
-      // Render search results in the container
+    waitForCSE().then(() => {
+      // Render search box
       google.search.cse.element.render({
-        div: "cseResults",
-        tag: 'searchresults-only'
+        div: "cseWidget",
+        tag: "searchbox"
       });
 
-      const cseInput = document.querySelector("input.gsc-input");
-      const cseButton = document.querySelector("button.gsc-search-button");
+      // Render search results
+      google.search.cse.element.render({
+        div: "cseResults",
+        tag: "searchresults-only"
+      });
 
-      // Prefill ?q= parameter
-      const initialQuery = getQueryParam("q");
-      if(initialQuery && cseInput && cseButton){
-        cseInput.value = initialQuery;
-        cseButton.click();
+      // Prefill query from ?q= parameter if exists
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+      if (query) {
+        const boxElement = google.search.cse.element.getElement("cseWidget");
+        const resultsElement = google.search.cse.element.getElement("cseResults");
+        if (boxElement) boxElement.setValue(query);
+        if (resultsElement) resultsElement.execute(query);
       }
 
-      // Detect URL input
-      if(cseInput){
-        cseInput.addEventListener("keydown", e=>{
-          if(e.key === "Enter"){
-            const query = cseInput.value.trim();
-            if(isURL(query)){
+      // Detect URLs typed and open in a new tab
+      const boxInput = document.querySelector("#cseWidget input.gsc-input");
+      if (boxInput) {
+        boxInput.addEventListener("keydown", e => {
+          if (e.key === "Enter") {
+            const val = boxInput.value.trim();
+            if (/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(val)) {
               e.preventDefault();
-              window.open(formatURL(query), "_blank");
+              window.open(/^https?:\/\//i.test(val) ? val : "https://" + val, "_blank");
             }
           }
         });
