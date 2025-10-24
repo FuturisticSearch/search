@@ -17,27 +17,19 @@
   <link rel="canonical" href="https://futuresearch.netlify.app/">
   <link rel="icon" href="favicon.png">
   <style>
-    body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh;
-      transition: background 0.3s ease; cursor:none; }
+    body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh; transition: background 0.3s ease; cursor:none; }
     body.dark-theme { background:#000; }
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
-    .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px;
-      background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212;
-      z-index:10000; display:flex; justify-content:center; align-items:center; }
-    .search-container { display:flex; justify-content:center; align-items:center; gap:10px;
-      margin:0 auto 30px auto; width:fit-content; }
-    #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff;
-      transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease;
-      max-height:70vh; overflow-y:auto; }
-    #results.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
-    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8);
-      border-radius:50%; pointer-events:none; transform:translate(-50%,-50%);
-      box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
-    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4);
-      border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
+    .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
+    .search-container { display:flex; justify-content:center; align-items:center; gap:10px; margin:0 auto 30px auto; width:fit-content; }
+    #resultsContainer { padding:0 20px; margin-top:20px; max-height:70vh; overflow-y:auto; color:#fff; transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease; background:transparent; }
+    #resultsContainer.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
+    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
+    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
     @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
     @media (max-width:600px){
       body{cursor:auto;}
+      .search-container{flex-direction:column;gap:15px;width:90%;margin:0 auto 30px auto;}
       .cursor,.cursor-trail{display:none;}
     }
   </style>
@@ -50,19 +42,18 @@
 
   <button class="theme-switch" id="themeToggleBtn">🌙</button>
 
-  <!-- ✅ Google CSE search box -->
+  <!-- Search Box -->
   <div class="search-container">
     <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
-    <div class="gcse-searchbox-only" id="cseWidget"></div>
+    <div class="gcse-searchbox" id="cseWidget"></div>
   </div>
 
-  <div id="results" class="expanded"></div>
+  <!-- Results container -->
+  <div id="resultsContainer" class="expanded">
+    <div class="gcse-searchresults-only" id="cseResults"></div>
+  </div>
+
   <div class="cursor" id="cursor"></div>
-
-  <!-- Hidden Google CSE results container -->
-  <div style="display:none">
-    <div class="gcse-searchresults-only" id="hiddenCSE"></div>
-  </div>
 
   <script>
     // Cursor animation
@@ -74,7 +65,7 @@
       document.body.appendChild(t); setTimeout(()=>t.remove(),600);
     });
 
-    // Theme toggle with localStorage persistence
+    // Theme toggle with persistence
     document.addEventListener("DOMContentLoaded", () => {
       const savedTheme = localStorage.getItem("theme");
       if(savedTheme){
@@ -100,7 +91,7 @@
       }
     });
 
-    // Wait for CSE
+    // CSE handling
     function waitForCSE(){
       return new Promise(resolve=>{
         const check=()=>{
@@ -129,6 +120,12 @@
     }
 
     waitForCSE().then(()=>{
+      // Render search results in the container
+      google.search.cse.element.render({
+        div: "cseResults",
+        tag: 'searchresults-only'
+      });
+
       const cseInput = document.querySelector("input.gsc-input");
       const cseButton = document.querySelector("button.gsc-search-button");
 
