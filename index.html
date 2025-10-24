@@ -63,11 +63,12 @@
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
     h1 { color:lightblue; text-shadow:0 0 10px #00e0ff; cursor:pointer; text-align:center; margin:20px 0; }
     .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
-    .search-container { display:flex; justify-content:center; margin-bottom:20px; gap:10px; }
+    .search-wrapper { width:100%; display:flex; justify-content:center; }
+    #cse-container { display:inline-block; text-align:left; max-width:800px; width:100%; }
     .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8),0 0 30px rgba(0,224,255,0.5); z-index:9999; }
     .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
     @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
-    @media (max-width:600px){ body { cursor:auto; } .cursor,.cursor-trail{ display:none; } }
+    @media (max-width:600px){ body { cursor:auto; } .cursor,.cursor-trail{ display:none; } #cse-container{width:95%;} }
   </style>
 </head>
 <body class="dark-theme">
@@ -75,10 +76,11 @@
   <h1 onclick="window.location.href='https://futuresearch.netlify.app'">Future Search</h1>
   <button class="theme-switch" id="themeToggleBtn">🌙</button>
 
-  <div class="search-container" id="cse-container">
-    <!-- CSE will inject search box and results here -->
-    <div class="gcse-searchbox"></div>
-    <div class="gcse-searchresults"></div>
+  <div class="search-wrapper">
+    <div id="cse-container">
+      <div class="gcse-searchbox"></div>
+      <div class="gcse-searchresults"></div>
+    </div>
   </div>
 
   <div class="cursor" id="cursor"></div>
@@ -91,16 +93,17 @@
       document.body.appendChild(t); setTimeout(()=>t.remove(),600);
     });
 
-    // Load CSE based on theme
-    function loadCSE(cx){ 
-      const s=document.createElement('script'); 
-      s.src="https://cse.google.com/cse.js?cx="+cx; s.async=true; 
-      document.head.appendChild(s); 
+    // Load CSE
+    function loadCSE(cx){
+      const s=document.createElement('script');
+      s.src="https://cse.google.com/cse.js?cx="+cx;
+      s.async=true;
+      document.head.appendChild(s);
     }
 
     function updateCSETheme(){
-      const cxDark="12d541be710094451"; // your dark CSE
-      const cxLight="a1ef681a86c0942ad"; // your light CSE
+      const cxDark="12d541be710094451"; // Dark
+      const cxLight="a1ef681a86c0942ad"; // Light
       document.getElementById("cse-container").innerHTML='<div class="gcse-searchbox"></div><div class="gcse-searchresults"></div>';
       loadCSE(document.body.classList.contains('dark-theme')? cxDark: cxLight);
     }
