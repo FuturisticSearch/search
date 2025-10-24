@@ -118,12 +118,15 @@
     });
 
     document.getElementById("themeToggleBtn").addEventListener("click", ()=>{
-      const body=document.body;
-      body.classList.toggle("dark-theme"); body.classList.toggle("light-theme");
-      localStorage.setItem("theme", body.classList.contains("dark-theme")?"dark-theme":"light-theme");
-      document.getElementById("themeToggleBtn").innerText=body.classList.contains("dark-theme")?"🌙":"☀️";
-      updateCSETheme();
+      const body = document.body;
+      body.classList.toggle("dark-theme"); 
+      body.classList.toggle("light-theme");
+      localStorage.setItem("theme", body.classList.contains("dark-theme") ? "dark-theme" : "light-theme");
+      // Reload page after theme change
+      location.reload()
     });
+
+
 
     // Prefill ?q=
     window.onload=()=>{
