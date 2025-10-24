@@ -14,39 +14,65 @@
       await OneSignal.init({
         appId: "db5ff4b3-1170-45f0-8b54-2afc9e626f44",
         notifyButton: { enable: true },
+        promptOptions: {
+          slidedown: {
+            enabled: true,
+            actionMessage: "We’d like to send you updates!",
+            acceptButtonText: "Yes, notify me",
+            cancelButtonText: "No thanks"
+          }
+        }
       });
     });
+  </script>
+
+  <!-- SEO & OG -->
+  <meta name="description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.">
+  <link rel="canonical" href="https://futuresearch.netlify.app/" />
+  <meta name="google-site-verification" content="Wzm471_osSeQHTRM3eED9rHwFNBmovnNmK26oh5Gz9k" />
+  <meta property="og:title" content="Future Search" />
+  <meta property="og:description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání." />
+  <meta property="og:url" content="https://futuresearch.netlify.app/" />
+  <meta property="og:site_name" content="Future Search" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://futuresearch.netlify.app/favicon.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Future Search",
+    "url": "https://futuresearch.netlify.app/",
+    "applicationCategory": "SearchApplication",
+    "operatingSystem": "All",
+    "description": "Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+    "potentialAction": { "@type": "SearchAction", "target": "https://futuresearch.netlify.app/?q={search_term_string}&category=web", "query-input": "required name=search_term_string" }
+  }
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "WebSite", "name": "Future Search", "url": "https://futuresearch.netlify.app/" }
   </script>
 
   <!-- Google CSE -->
   <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
 
+  <!-- Fonts & Styles -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       height: 100vh;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, transform 0.3s ease;
       cursor: none;
     }
-    body.dark-theme { background: #000; }
+    body.dark-theme { background:#000; }
     body.light-theme {
       background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
       background-size: cover;
     }
-
-    /* Theme toggle */
-    .theme-switch {
-      position: fixed;
-      top: 15px; right: 15px;
-      padding: 10px; font-size: 22px;
-      background: #00e0ff; border-radius: 50%; border: none;
-      cursor: pointer; color: #121212; z-index: 10000;
-      display: flex; justify-content: center; align-items: center;
-    }
-
-    /* Header */
     h1 {
       color: lightblue;
       text-shadow: 0 0 10px #00e0ff;
@@ -54,15 +80,12 @@
       text-align: center;
       margin: 20px 0;
     }
-
-    /* Search container */
-    .search-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
+    .theme-switch {
+      position: fixed; top:15px; right:15px; padding:10px; font-size:22px;
+      background:#00e0ff; border-radius:50%; border:none; cursor:pointer;
+      color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center;
     }
-
-    /* CSE results */
+    .search-container { display:flex; justify-content:center; margin-bottom:20px; gap:10px; }
     .gsc-results .gsc-webResult {
       background: rgba(0,0,0,0.5);
       margin-bottom: 15px;
@@ -70,42 +93,13 @@
       border-radius: 10px;
       transition: background 0.3s;
     }
-    .gsc-webResult a.gs-title {
-      color: #00e0ff !important;
-      text-decoration: none !important;
-    }
-    .gsc-webResult .gs-snippet {
-      color: #fff !important;
-    }
-    .gsc-webResult:hover {
-      background: rgba(0,224,255,0.2);
-    }
+    .gsc-webResult a.gs-title { color:#00e0ff !important; text-decoration:none !important; }
+    .gsc-webResult .gs-snippet { color:#fff !important; }
+    .gsc-webResult:hover { background: rgba(0,224,255,0.2); }
 
-    /* Cursor */
-    .cursor {
-      position: fixed;
-      width: 20px;
-      height: 20px;
-      background: rgba(0,224,255,0.8);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5);
-      z-index: 9999;
-    }
-    .cursor-trail {
-      position: fixed;
-      width: 10px; height: 10px;
-      background: rgba(0,224,255,0.4);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      animation: fade 0.6s ease-out forwards;
-    }
-    @keyframes fade {
-      0%{opacity:1;transform:scale(1);}
-      100%{opacity:0;transform:scale(2);}
-    }
+    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8),0 0 30px rgba(0,224,255,0.5); z-index:9999; }
+    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
+    @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
 
     @media (max-width:600px){
       body { cursor:auto; }
@@ -126,7 +120,7 @@
     <div class="gcse-searchbox"></div>
   </div>
 
-  <!-- Results container -->
+  <!-- Results -->
   <div class="gcse-searchresults"></div>
 
   <!-- Cursor -->
@@ -148,70 +142,51 @@
       setTimeout(() => t.remove(), 600);
     });
 
-    // Theme toggle with localStorage
+    // Theme toggle
     document.addEventListener("DOMContentLoaded", () => {
       const savedTheme = localStorage.getItem("theme");
       if(savedTheme){
         document.body.classList.remove("dark-theme","light-theme");
         document.body.classList.add(savedTheme);
-        const btn = document.getElementById("themeToggleBtn");
-        btn.innerText = savedTheme === "dark-theme" ? "🌙" : "☀️";
+        document.getElementById("themeToggleBtn").innerText = savedTheme === "dark-theme" ? "🌙" : "☀️";
       }
     });
-
     document.getElementById("themeToggleBtn").addEventListener("click", () => {
       const body = document.body, btn = document.getElementById("themeToggleBtn");
       if(body.classList.contains("dark-theme")){
-        body.classList.remove("dark-theme");
-        body.classList.add("light-theme");
-        localStorage.setItem("theme","light-theme");
-        btn.innerText = "☀️";
+        body.classList.remove("dark-theme"); body.classList.add("light-theme");
+        localStorage.setItem("theme","light-theme"); btn.innerText="☀️";
       } else {
-        body.classList.remove("light-theme");
-        body.classList.add("dark-theme");
-        localStorage.setItem("theme","dark-theme");
-        btn.innerText = "🌙";
+        body.classList.remove("light-theme"); body.classList.add("dark-theme");
+        localStorage.setItem("theme","dark-theme"); btn.innerText="🌙";
       }
     });
 
-    // Prefill ?q= parameter
+    // Prefill query from URL
     window.onload = () => {
       const query = new URLSearchParams(window.location.search).get("q");
       if(query){
         const input = document.querySelector("input.gsc-input");
         const button = document.querySelector("button.gsc-search-button");
-        if(input && button){
-          input.value = query;
-          button.click();
-        }
+        if(input && button){ input.value=query; button.click(); }
       }
     };
 
-    // Detect if user types a URL
-    function isURL(str){
-      return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str);
-    }
-    function formatURL(url){
-      if(!/^https?:\/\//i.test(url)){
-        return "https://" + url;
-      }
-      return url;
-    }
+    // Detect URL input
+    function isURL(str){ return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str); }
+    function formatURL(url){ if(!/^https?:\/\//i.test(url)) return "https://"+url; return url; }
 
     setTimeout(() => {
       const input = document.querySelector("input.gsc-input");
       if(input){
         input.addEventListener("keydown", e=>{
-          if(e.key === "Enter"){
+          if(e.key==="Enter"){
             const query = input.value.trim();
-            if(isURL(query)){
-              e.preventDefault();
-              window.open(formatURL(query), "_blank");
-            }
+            if(isURL(query)){ e.preventDefault(); window.open(formatURL(query),"_blank"); }
           }
         });
       }
-    }, 1000); // Wait for widget to load
+    }, 1000);
   </script>
 
 </body>
