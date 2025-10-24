@@ -7,29 +7,18 @@
       await OneSignal.init({
         appId: "db5ff4b3-1170-45f0-8b54-2afc9e626f44",
         notifyButton: { enable: true },
-        promptOptions: {
-          slidedown: {
-            enabled: true,
-            actionMessage: "We’d like to send you updates!",
-            acceptButtonText: "Yes, notify me",
-            cancelButtonText: "No thanks"
-          }
-        }
       });
     });
   </script>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Future Search</title>
-  <meta name="description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.">
-  <link rel="canonical" href="https://futuresearch.netlify.app/" />
-  <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
+  <meta name="description" content="Future Search – moderní vyhledávač s podporou webu a obrázků.">
+  <link rel="canonical" href="https://futuresearch.netlify.app/">
+  <link rel="icon" href="favicon.png">
   <style>
     body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh;
-      transition: background 0.3s ease, transform 0.3s ease; cursor:none; }
+      transition: background 0.3s ease; cursor:none; }
     body.dark-theme { background:#000; }
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
     .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px;
@@ -39,13 +28,13 @@
       margin:0 auto 30px auto; width:fit-content; }
     #searchBar { width:300px; padding:15px; font-size:18px; border-radius:10px 0 0 10px;
       border:2px solid #00e0ff; outline:none; background:transparent; color:#e0e0e0; }
-    #searchCategory { width:150px; padding:15px; font-size:18px; border-radius:10px;
-      border:2px solid #00e0ff; background:transparent; color:#e0e0e0; cursor:pointer; }
     #searchBtn { width:50px; border:2px solid #00e0ff; border-left:none;
       border-radius:0 10px 10px 0; background:#00e0ff; color:#121212; font-size:22px;
       cursor:pointer; display:flex; justify-content:center; align-items:center; }
-    #results { padding:20px; margin-top:20px; border:none; background:rgba(0,0,0,0.5);
-      color:#fff; transition:padding 0.3s ease; max-height:70vh; overflow-y:auto; }
+    #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff;
+      transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease;
+      max-height:70vh; overflow-y:auto; }
+    #results.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
     .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8);
       border-radius:50%; pointer-events:none; transform:translate(-50%,-50%);
       box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
@@ -55,65 +44,34 @@
     @media (max-width:600px){
       body{cursor:auto;}
       .search-container{flex-direction:column;gap:15px;width:90%;margin:0 auto 30px auto;}
-      #searchBar,#searchCategory,#searchBtn{width:100%;border-radius:10px;}
+      #searchBar,#searchBtn{width:100%;border-radius:10px;}
       .cursor,.cursor-trail{display:none;}
-    }
-    /* Make the Google widget match your look */
-    .gsc-control-cse, .gsc-control-cse-en {
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
-    }
-    .gsc-webResult, .gsc-result {
-      background: rgba(0,0,0,0.3) !important;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-    .gs-title, .gs-title a {
-      color: #00e0ff !important;
-      text-decoration: none !important;
-    }
-    .gs-title a:hover {
-      text-decoration: underline !important;
-    }
-    .gsc-url-top, .gsc-url-bottom {
-      color: #ccc !important;
-    }
-    .gsc-results-wrapper-visible {
-      color: white !important;
     }
   </style>
 </head>
-
 <body class="dark-theme">
   <div style="text-align:center;">
-    <h1 onclick="window.location.href='https://futuresearch.netlify.app'"
-        style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">
-      Future Search
-    </h1>
+    <h1 onclick="window.location.href='https://futuresearch.netlify.app'" 
+        style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">Future Search</h1>
   </div>
 
   <button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
 
   <div class="search-container">
-    <input type="text" id="searchBar" placeholder="Type a keyword..." onkeydown="if(event.key==='Enter') doSearch()">
-    <button id="searchBtn" onclick="doSearch()">🔍</button>
-    <select id="searchCategory">
-      <option value="web">Web</option>
-      <option value="image">Images</option>
-    </select>
+    <input type="text" id="searchBar" placeholder="Type a keyword...">
+    <button id="searchBtn" onclick="performSearch()">🔍</button>
   </div>
 
-  <!-- The visible results box -->
-  <div id="results" class="expanded">
-    <!-- Google Search widget will appear here -->
-    <div class="gcse-search" data-enableImageSearch="true" data-autoSearchOnLoad="false"></div>
-  </div>
-
+  <div id="results" class="expanded"></div>
   <div class="cursor" id="cursor"></div>
 
+  <!-- Load Google CSE -->
   <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
+
+  <!-- Hidden Google results container -->
+  <div id="hiddenCSE" style="display:none;">
+    <div class="gcse-searchresults-only" data-queryParameterName="q"></div>
+  </div>
 
   <script>
     // Cursor animation
@@ -125,31 +83,54 @@
       document.body.appendChild(t); setTimeout(()=>t.remove(),600);
     });
 
+    // Theme toggle
     function toggleTheme(){
       const body=document.body, btn=document.getElementById('themeToggleBtn');
       body.classList.toggle("dark-theme"); body.classList.toggle("light-theme");
       btn.innerText=body.classList.contains("dark-theme")?"🌙":"☀️";
     }
 
-    // Wait until Google CSE is loaded, then run a search
-    function doSearch(){
-      const q=document.getElementById("searchBar").value.trim();
-      if(!q){alert("Please enter a search term");return;}
-      const category=document.getElementById("searchCategory").value;
-      const searchElement=document.querySelector('.gsc-input input');
-      if(searchElement){
-        searchElement.value=q;
-        const form=document.querySelector('form.gsc-search-box');
-        if(form){
-          if(category==='image'){
-            document.querySelector('.gcse-search').setAttribute('data-enableImageSearch','true');
-          } else {
-            document.querySelector('.gcse-search').removeAttribute('data-enableImageSearch');
-          }
-          form.dispatchEvent(new Event('submit',{bubbles:true}));
-        }
-      }
+    // Wait until CSE is fully ready
+    function waitForCSE(){
+      return new Promise(resolve=>{
+        const check=()=>{
+          if(window.google && google.search && google.search.cse && google.search.cse.element){
+            resolve();
+          } else setTimeout(check,150);
+        };
+        check();
+      });
     }
+
+    async function performSearch(){
+      const query=document.getElementById("searchBar").value.trim();
+      if(!query){alert("Please enter a search term");return;}
+      const resultsContainer=document.getElementById("results");
+      resultsContainer.innerHTML="<div>Loading...</div>";
+
+      await waitForCSE();
+
+      // Ensure hidden element exists & execute
+      google.search.cse.element.render({div:"hiddenCSE", tag:"searchresults-only"});
+      const cseElement=google.search.cse.element.getElement("hiddenCSE");
+      if(cseElement){
+        cseElement.execute(query);
+      }
+
+      // Watch for CSE content and copy it into your custom results div
+      const observer=new MutationObserver(()=>{
+        const cseRoot=document.querySelector('#hiddenCSE .gsc-resultsRoot');
+        if(cseRoot && cseRoot.innerHTML.trim().length>0){
+          resultsContainer.innerHTML=cseRoot.innerHTML;
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.querySelector('#hiddenCSE'),{childList:true,subtree:true});
+    }
+
+    document.getElementById("searchBar").addEventListener("keydown",e=>{
+      if(e.key==="Enter") performSearch();
+    });
   </script>
 
   <div class="seo-text">
