@@ -1,233 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Future Search</title>
-<link rel="icon" href="favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Search</title>
+  <link rel="icon" href="favicon.png">
 
-<!-- OneSignal -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "db5ff4b3-1170-45f0-8b54-2afc9e626f44",
-      notifyButton: { enable: true },
-      promptOptions: {
-        slidedown: {
-          enabled: true,
-          actionMessage: "We’d like to send you updates!",
-          acceptButtonText: "Yes, notify me",
-          cancelButtonText: "No thanks"
+  <!-- OneSignal -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "db5ff4b3-1170-45f0-8b54-2afc9e626f44",
+        notifyButton: { enable: true },
+        promptOptions: {
+          slidedown: {
+            enabled: true,
+            actionMessage: "We’d like to send you updates!",
+            acceptButtonText: "Yes, notify me",
+            cancelButtonText: "No thanks"
+          }
         }
-      }
+      });
     });
-  });
-</script>
+  </script>
 
-<!-- SEO / Structured Data -->
-<meta name="description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.">
-<link rel="canonical" href="https://futuresearch.netlify.app/" />
-<meta property="og:title" content="Future Search" />
-<meta property="og:description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání." />
-<meta property="og:url" content="https://futuresearch.netlify.app/" />
-<meta property="og:site_name" content="Future Search" />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="https://futuresearch.netlify.app/favicon.png" />
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Future Search",
-  "url": "https://futuresearch.netlify.app/",
-  "applicationCategory": "SearchApplication",
-  "operatingSystem": "All",
-  "description": "Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "5",
-    "reviewCount": "1"
-  },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://futuresearch.netlify.app/?q={search_term_string}&category=web",
-    "query-input": "required name=search_term_string"
+  <!-- SEO & OG -->
+  <meta name="description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.">
+  <link rel="canonical" href="https://futuresearch.netlify.app/" />
+  <meta name="google-site-verification" content="Wzm471_osSeQHTRM3eED9rHwFNBmovnNmK26oh5Gz9k" />
+  <meta property="og:title" content="Future Search" />
+  <meta property="og:description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání." />
+  <meta property="og:url" content="https://futuresearch.netlify.app/" />
+  <meta property="og:site_name" content="Future Search" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://futuresearch.netlify.app/favicon.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Future Search",
+    "url": "https://futuresearch.netlify.app/",
+    "applicationCategory": "SearchApplication",
+    "operatingSystem": "All",
+    "description": "Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+    "potentialAction": { "@type": "SearchAction", "target": "https://futuresearch.netlify.app/?q={search_term_string}&category=web", "query-input": "required name=search_term_string" }
   }
-}
-</script>
+  </script>
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "WebSite", "name": "Future Search", "url": "https://futuresearch.netlify.app/" }
+  </script>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Future Search",
-  "url": "https://futuresearch.netlify.app/"
-}
-</script>
-
-<!-- Fonts -->
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
-
-<style>
-body { font-family: 'Roboto', sans-serif; margin:0; padding:0; height:100vh; transition: background 0.3s ease; cursor:none; }
-body.dark-theme { background:#000; }
-body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
-
-.theme-switch { position: fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
-
-h1 { color: lightblue; text-shadow: 0 0 10px #00e0ff; cursor: pointer; text-align: center; margin: 20px 0; }
-
-#cse-container { display:flex; justify-content:center; margin-bottom:20px; }
-
-.cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%, -50%); box-shadow:0 0 15px rgba(0,224,255,0.8),0 0 30px rgba(0,224,255,0.5); z-index:9999; }
-.cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
-@keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
-
-#bookmarks-bar { padding:10px; background-color:rgba(0,0,0,0.7); color:#fff; display:flex; overflow-x:auto; flex-wrap:wrap; }
-.bookmark { color:#fff; cursor:pointer; padding:5px; margin:5px; background:rgba(0,224,255,0.6); border-radius:5px; display:inline-block; }
-.context-menu { position:absolute; background-color:#222; border:1px solid #00e0ff; box-shadow:0 0 10px rgba(0,224,255,0.8); color:#fff; padding:10px; z-index:9999; }
-.context-menu button { background:#00e0ff; border:none; color:#121212; padding:5px 10px; cursor:pointer; }
-.context-menu button:hover { background:#00b8d4; }
-
-.seo-text { position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
-
-@media (max-width:600px){
-  body { cursor:auto; font-size:16px; }
-  .cursor, .cursor-trail { display:none; }
-  #cse-container { width:90%; margin:0 auto; }
-  #bookmarks-bar { flex-wrap:nowrap; overflow-x:scroll; padding:5px; gap:8px; }
-  .bookmark { font-size:14px; padding:8px 12px; }
-  button.theme-switch { top:10px; right:10px; width:40px; height:40px; font-size:20px; padding:0; border-radius:50%; }
-}
-</style>
+  <!-- Fonts & Styles -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
+  <style>
+    body { font-family: 'Roboto', sans-serif; margin:0; padding:0; height:100vh; transition: background 0.3s ease; cursor:none; }
+    body.dark-theme { background:#000; }
+    body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
+    h1 { color:lightblue; text-shadow:0 0 10px #00e0ff; cursor:pointer; text-align:center; margin:20px 0; }
+    .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
+    .search-container { display:flex; justify-content:center; margin-bottom:20px; gap:10px; }
+    .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8),0 0 30px rgba(0,224,255,0.5); z-index:9999; }
+    .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
+    @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
+    @media (max-width:600px){ body { cursor:auto; } .cursor,.cursor-trail{ display:none; } }
+  </style>
 </head>
 <body class="dark-theme">
 
-<div id="bookmarks-bar"></div>
+  <h1 onclick="window.location.href='https://futuresearch.netlify.app'">Future Search</h1>
+  <button class="theme-switch" id="themeToggleBtn">🌙</button>
 
-<h1 onclick="window.location.href='https://futuresearch.netlify.app'" 
-    onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-Future Search</h1>
+  <div class="search-container" id="cse-container">
+    <!-- CSE will inject search box and results here -->
+    <div class="gcse-searchbox"></div>
+    <div class="gcse-searchresults"></div>
+  </div>
 
-<button class="theme-switch" id="themeToggleBtn">🌙</button>
+  <div class="cursor" id="cursor"></div>
 
-<div id="cse-container">
-  <!-- CSE search box will load here -->
-</div>
+  <script>
+    // Cursor
+    document.addEventListener('mousemove', e=>{
+      const c=document.getElementById('cursor'); c.style.top=e.clientY+'px'; c.style.left=e.clientX+'px';
+      const t=document.createElement('div'); t.className='cursor-trail'; t.style.top=e.clientY+'px'; t.style.left=e.clientX+'px';
+      document.body.appendChild(t); setTimeout(()=>t.remove(),600);
+    });
 
-<div class="cursor" id="cursor"></div>
-
-<div class="seo-text">
-Future Search — výsledky vyhledávání online. Vyzkoušej vyhledávač Future Search pro dotazy jako pes, kočka, technologie, počasí, hry a další.
-</div>
-
-<script>
-const DARK_CX = "84d63b08624fe419d"; // dark
-const LIGHT_CX = "a1ef681a86c0942ad"; // light
-
-// Cursor
-document.addEventListener('mousemove', e => {
-  const c = document.getElementById('cursor');
-  c.style.top = e.clientY + 'px';
-  c.style.left = e.clientX + 'px';
-  const t = document.createElement('div');
-  t.className='cursor-trail';
-  t.style.top=e.clientY+'px';
-  t.style.left=e.clientX+'px';
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),600);
-});
-
-// Bookmarks
-function addBookmark(title,url){
-  let bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[];
-  if(bookmarks.find(b=>b.url===url)){alert("Already bookmarked"); return;}
-  bookmarks.push({title,url});
-  localStorage.setItem('bookmarks',JSON.stringify(bookmarks));
-  displayBookmarks();
-}
-function displayBookmarks(){
-  const bar=document.getElementById('bookmarks-bar');
-  const bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[];
-  bar.innerHTML=bookmarks.map(b=>`<div class="bookmark" oncontextmenu="showContextMenu(event,'${b.url}')"><a href="${b.url}" target="_blank">${b.title}</a></div>`).join('');
-}
-function showContextMenu(e,url){
-  e.preventDefault();
-  const menu=document.createElement('div');
-  menu.className='context-menu';
-  menu.innerHTML=`<button onclick="deleteBookmark('${url}')">Delete</button>`;
-  document.body.appendChild(menu);
-  menu.style.top=e.clientY+'px';
-  menu.style.left=e.clientX+'px';
-  document.addEventListener('click',()=>menu.remove(),{once:true});
-}
-function deleteBookmark(url){
-  let bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[];
-  bookmarks=bookmarks.filter(b=>b.url!==url);
-  localStorage.setItem('bookmarks',JSON.stringify(bookmarks));
-  displayBookmarks();
-}
-
-// Theme toggle and CSE reload
-function loadCSE(cx){
-  const container=document.getElementById('cse-container');
-  container.innerHTML='';
-  const script=document.createElement('script');
-  script.src=`https://cse.google.com/cse.js?cx=${cx}`;
-  script.async=true;
-  container.appendChild(script);
-}
-function toggleTheme(){
-  const body=document.body, btn=document.getElementById('themeToggleBtn');
-  if(body.classList.contains('dark-theme')){
-    body.classList.remove('dark-theme');
-    body.classList.add('light-theme');
-    btn.innerText="☀️";
-    localStorage.setItem('theme','light-theme');
-    loadCSE(LIGHT_CX);
-  }else{
-    body.classList.remove('light-theme');
-    body.classList.add('dark-theme');
-    btn.innerText="🌙";
-    localStorage.setItem('theme','dark-theme');
-    loadCSE(DARK_CX);
-  }
-}
-
-// Prefill ?q= parameter
-function prefillSearch(){
-  const query=new URLSearchParams(window.location.search).get("q");
-  if(query){
-    const input=document.querySelector("input.gsc-input");
-    if(input){
-      input.value=query;
-      const event=new KeyboardEvent('keydown',{key:'Enter'});
-      input.dispatchEvent(event);
+    // Load CSE based on theme
+    function loadCSE(cx){ 
+      const s=document.createElement('script'); 
+      s.src="https://cse.google.com/cse.js?cx="+cx; s.async=true; 
+      document.head.appendChild(s); 
     }
-  }
-}
 
-// Init
-window.addEventListener('load',()=>{
-  displayBookmarks();
-  const savedTheme=localStorage.getItem('theme');
-  if(savedTheme){document.body.classList.remove('dark-theme','light-theme');document.body.classList.add(savedTheme);}
-  document.getElementById('themeToggleBtn').onclick=toggleTheme;
+    function updateCSETheme(){
+      const cxDark="12d541be710094451"; // your dark CSE
+      const cxLight="a1ef681a86c0942ad"; // your light CSE
+      document.getElementById("cse-container").innerHTML='<div class="gcse-searchbox"></div><div class="gcse-searchresults"></div>';
+      loadCSE(document.body.classList.contains('dark-theme')? cxDark: cxLight);
+    }
 
-  // Load correct CSE
-  loadCSE(document.body.classList.contains('dark-theme')?DARK_CX:LIGHT_CX);
+    // Theme toggle
+    document.addEventListener("DOMContentLoaded", ()=>{
+      const savedTheme=localStorage.getItem("theme");
+      if(savedTheme){ document.body.classList.remove("dark-theme","light-theme"); document.body.classList.add(savedTheme); }
+      updateCSETheme();
+      const btn=document.getElementById("themeToggleBtn");
+      btn.innerText=document.body.classList.contains("dark-theme")?"🌙":"☀️";
+    });
 
-  prefillSearch();
-});
-</script>
+    document.getElementById("themeToggleBtn").addEventListener("click", ()=>{
+      const body=document.body;
+      body.classList.toggle("dark-theme"); body.classList.toggle("light-theme");
+      localStorage.setItem("theme", body.classList.contains("dark-theme")?"dark-theme":"light-theme");
+      document.getElementById("themeToggleBtn").innerText=body.classList.contains("dark-theme")?"🌙":"☀️";
+      updateCSETheme();
+    });
+
+    // Prefill ?q=
+    window.onload=()=>{
+      const query=new URLSearchParams(window.location.search).get("q");
+      if(query){
+        const input=document.querySelector("input.gsc-input");
+        const btn=document.querySelector("button.gsc-search-button");
+        if(input && btn){ input.value=query; btn.click(); }
+      }
+    };
+
+    // Detect URL
+    function isURL(str){ return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/\S*)?$/i.test(str); }
+    function formatURL(url){ if(!/^https?:\/\//i.test(url)) return "https://"+url; return url; }
+
+    setTimeout(()=>{
+      const input=document.querySelector("input.gsc-input");
+      if(input){ input.addEventListener("keydown", e=>{
+        if(e.key==="Enter"){ const query=input.value.trim(); if(isURL(query)){ e.preventDefault(); window.open(formatURL(query),"_blank"); } }
+      }); }
+    },1000);
+  </script>
 
 </body>
 </html>
