@@ -1,6 +1,5 @@
 <html lang="en">
 <head>
-  <!-- OneSignal Push -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -8,31 +7,18 @@
       await OneSignal.init({
         appId: "db5ff4b3-1170-45f0-8b54-2afc9e626f44",
         notifyButton: { enable: true },
-        promptOptions: {
-          slidedown: {
-            enabled: true,
-            actionMessage: "We’d like to send you updates!",
-            acceptButtonText: "Yes, notify me",
-            cancelButtonText: "No thanks"
-          }
-        }
       });
     });
   </script>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Future Search</title>
-  <meta name="description" content="Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.">
-  <link rel="canonical" href="https://futuresearch.netlify.app/" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
-  <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
+  <meta name="description" content="Future Search – moderní vyhledávač s podporou webu a obrázků.">
+  <link rel="canonical" href="https://futuresearch.netlify.app/">
+  <link rel="icon" href="favicon.png">
   <style>
     body { font-family:'Roboto',sans-serif; margin:0; padding:0; height:100vh;
-      transition: background 0.3s ease, transform 0.3s ease; cursor:none; }
+      transition: background 0.3s ease; cursor:none; }
     body.dark-theme { background:#000; }
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
     .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px;
@@ -42,15 +28,13 @@
       margin:0 auto 30px auto; width:fit-content; }
     #searchBar { width:300px; padding:15px; font-size:18px; border-radius:10px 0 0 10px;
       border:2px solid #00e0ff; outline:none; background:transparent; color:#e0e0e0; }
-    #searchCategory { width:150px; padding:15px; font-size:18px; border-radius:10px;
-      border:2px solid #00e0ff; background:transparent; color:#e0e0e0; cursor:pointer; }
     #searchBtn { width:50px; border:2px solid #00e0ff; border-left:none;
       border-radius:0 10px 10px 0; background:#00e0ff; color:#121212; font-size:22px;
       cursor:pointer; display:flex; justify-content:center; align-items:center; }
     #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff;
       transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease;
       max-height:70vh; overflow-y:auto; }
-    #results.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); word-wrap:break-word; }
+    #results.expanded { padding:20px; margin-top:20px; background:rgba(0,0,0,0.5); }
     .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8);
       border-radius:50%; pointer-events:none; transform:translate(-50%,-50%);
       box-shadow:0 0 15px rgba(0,224,255,0.8), 0 0 30px rgba(0,224,255,0.5); z-index:9999; }
@@ -60,19 +44,15 @@
     @media (max-width:600px){
       body{cursor:auto;}
       .search-container{flex-direction:column;gap:15px;width:90%;margin:0 auto 30px auto;}
-      #searchBar,#searchCategory,#searchBtn{width:100%;border-radius:10px;}
+      #searchBar,#searchBtn{width:100%;border-radius:10px;}
       .cursor,.cursor-trail{display:none;}
     }
   </style>
 </head>
-
 <body class="dark-theme">
-  <div id="bookmarks-bar"></div>
   <div style="text-align:center;">
-    <h1 onclick="window.location.href='https://futuresearch.netlify.app'"
-        style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">
-      Future Search
-    </h1>
+    <h1 onclick="window.location.href='https://futuresearch.netlify.app'" 
+        style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">Future Search</h1>
   </div>
 
   <button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
@@ -80,18 +60,14 @@
   <div class="search-container">
     <input type="text" id="searchBar" placeholder="Type a keyword...">
     <button id="searchBtn" onclick="performSearch()">🔍</button>
-    <select id="searchCategory">
-      <option value="web">Web</option>
-      <option value="image">Images</option>
-    </select>
   </div>
 
-  <div id="results"></div>
+  <div id="results" class="expanded"></div>
   <div class="cursor" id="cursor"></div>
 
-  <!-- Google CSE Script -->
+  <!-- Hidden Google CSE container -->
   <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
-  <div style="display:none;">
+  <div style="display:none">
     <div class="gcse-searchresults-only" id="hiddenCSE"></div>
   </div>
 
@@ -112,48 +88,39 @@
       btn.innerText=body.classList.contains("dark-theme")?"🌙":"☀️";
     }
 
-    // Bookmarks
-    function addBookmark(title,url){
-      let bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[];
-      if(bookmarks.find(b=>b.url===url)){alert("Already bookmarked");return;}
-      bookmarks.push({title,url});
-      localStorage.setItem('bookmarks',JSON.stringify(bookmarks));
-      displayBookmarks();
-    }
-    function displayBookmarks(){
-      const bar=document.getElementById('bookmarks-bar');
-      const bookmarks=JSON.parse(localStorage.getItem('bookmarks'))||[];
-      bar.innerHTML=bookmarks.map(b=>`<div class="bookmark"><a href="${b.url}" target="_blank">${b.title}</a></div>`).join('');
+    // Ensure Google CSE is ready
+    function waitForCSE(){
+      return new Promise(resolve=>{
+        const check=()=>{
+          if(window.google && google.search && google.search.cse && google.search.cse.element){
+            resolve();
+          } else setTimeout(check,200);
+        };
+        check();
+      });
     }
 
-    window.addEventListener('load', displayBookmarks);
-
-    // Perform search using Google CSE
-    function performSearch(){
+    async function performSearch(){
       const query=document.getElementById("searchBar").value.trim();
       if(!query){alert("Please enter a search term");return;}
-
       const resultsContainer=document.getElementById("results");
-      resultsContainer.classList.add("expanded");
       resultsContainer.innerHTML="<div>Loading...</div>";
 
-      // Inject query into hidden Google CSE
-      const element=google.search.cse.element.getElement('hiddenCSE');
-      element.execute(query);
+      await waitForCSE(); // Wait until CSE loads
+      google.search.cse.element.render({div:"hiddenCSE",tag:"searchresults-only"});
+      const cseElement=google.search.cse.element.getElement("hiddenCSE");
+      cseElement.execute(query);
 
-      // Observe and extract rendered results
       const observer=new MutationObserver(()=>{
-        const cseResults=document.querySelector('#hiddenCSE .gsc-webResult');
-        if(cseResults){
-          const html=document.querySelector('#hiddenCSE .gsc-resultsRoot').innerHTML;
-          resultsContainer.innerHTML=html;
+        const cseRoot=document.querySelector('#hiddenCSE .gsc-resultsRoot');
+        if(cseRoot && cseRoot.innerHTML.trim().length>0){
+          resultsContainer.innerHTML=cseRoot.innerHTML;
           observer.disconnect();
         }
       });
       observer.observe(document.querySelector('#hiddenCSE'),{childList:true,subtree:true});
     }
 
-    // Enter key support
     document.getElementById("searchBar").addEventListener("keydown",e=>{
       if(e.key==="Enter") performSearch();
     });
