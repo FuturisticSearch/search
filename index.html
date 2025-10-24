@@ -38,7 +38,6 @@
     @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
     @media (max-width:600px){
       body{cursor:auto;}
-      .search-container{flex-direction:column;gap:15px;width:90%;margin:0 auto 30px auto;}
       .cursor,.cursor-trail{display:none;}
     }
   </style>
@@ -49,21 +48,21 @@
         style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">Future Search</h1>
   </div>
 
-  <button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
+  <button class="theme-switch" id="themeToggleBtn">🌙</button>
 
-  <!-- Replaced search box with Google CSE widget -->
+  <!-- ✅ Google CSE search box -->
   <div class="search-container">
-    <div id="cseWidget" style="width:100%; max-width:350px;"></div>
+    <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
+    <div class="gcse-searchbox-only" id="cseWidget"></div>
   </div>
 
-  <div id="results" class="expanded">
-    <div id="cseResults"></div>
-  </div>
-
+  <div id="results" class="expanded"></div>
   <div class="cursor" id="cursor"></div>
 
-  <!-- Google CSE -->
-  <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
+  <!-- Hidden Google CSE results container -->
+  <div style="display:none">
+    <div class="gcse-searchresults-only" id="hiddenCSE"></div>
+  </div>
 
   <script>
     // Cursor animation
@@ -75,66 +74,79 @@
       document.body.appendChild(t); setTimeout(()=>t.remove(),600);
     });
 
-    // Theme toggle with save
-    function toggleTheme(){
-      const body=document.body, btn=document.getElementById('themeToggleBtn');
-      body.classList.toggle("dark-theme"); body.classList.toggle("light-theme");
-      const dark = body.classList.contains("dark-theme");
-      btn.innerText = dark?"🌙":"☀️";
-      localStorage.setItem("theme", dark?"dark":"light");
-    }
-    // Load saved theme
-    const savedTheme = localStorage.getItem("theme");
-    if(savedTheme){
-      document.body.classList.remove("dark-theme","light-theme");
-      document.body.classList.add(savedTheme+"-theme");
-      document.getElementById("themeToggleBtn").innerText = savedTheme==="dark"?"🌙":"☀️";
-    }
+    // Theme toggle with localStorage persistence
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme");
+      if(savedTheme){
+        document.body.classList.remove("dark-theme","light-theme");
+        document.body.classList.add(savedTheme);
+        const btn = document.getElementById("themeToggleBtn");
+        btn.innerText = savedTheme === "dark-theme" ? "🌙" : "☀️";
+      }
+    });
 
-    // Wait for CSE to be ready
-    function waitForCSE() {
-      return new Promise(resolve => {
-        const check = () => {
-          if (window.google && google.search && google.search.cse && google.search.cse.element) {
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      const body = document.body, btn = document.getElementById("themeToggleBtn");
+      if(body.classList.contains("dark-theme")){
+        body.classList.remove("dark-theme");
+        body.classList.add("light-theme");
+        localStorage.setItem("theme","light-theme");
+        btn.innerText = "☀️";
+      } else {
+        body.classList.remove("light-theme");
+        body.classList.add("dark-theme");
+        localStorage.setItem("theme","dark-theme");
+        btn.innerText = "🌙";
+      }
+    });
+
+    // Wait for CSE
+    function waitForCSE(){
+      return new Promise(resolve=>{
+        const check=()=>{
+          if(window.google && google.search && google.search.cse && google.search.cse.element){
             resolve();
-          } else setTimeout(check, 200);
+          } else setTimeout(check,200);
         };
         check();
       });
     }
 
-    waitForCSE().then(() => {
-      // Render search box
-      google.search.cse.element.render({
-        div: "cseWidget",
-        tag: "searchbox"
-      });
-
-      // Render search results
-      google.search.cse.element.render({
-        div: "cseResults",
-        tag: "searchresults-only"
-      });
-
-      // Prefill query from ?q= parameter if exists
+    function getQueryParam(param){
       const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get('q');
-      if (query) {
-        const boxElement = google.search.cse.element.getElement("cseWidget");
-        const resultsElement = google.search.cse.element.getElement("cseResults");
-        if (boxElement) boxElement.setValue(query);
-        if (resultsElement) resultsElement.execute(query);
+      return urlParams.get(param);
+    }
+
+    function isURL(str){
+      return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str);
+    }
+
+    function formatURL(url){
+      if(!/^https?:\/\//i.test(url)){
+        return "https://" + url;
+      }
+      return url;
+    }
+
+    waitForCSE().then(()=>{
+      const cseInput = document.querySelector("input.gsc-input");
+      const cseButton = document.querySelector("button.gsc-search-button");
+
+      // Prefill ?q= parameter
+      const initialQuery = getQueryParam("q");
+      if(initialQuery && cseInput && cseButton){
+        cseInput.value = initialQuery;
+        cseButton.click();
       }
 
-      // Detect URLs typed and open in a new tab
-      const boxInput = document.querySelector("#cseWidget input.gsc-input");
-      if (boxInput) {
-        boxInput.addEventListener("keydown", e => {
-          if (e.key === "Enter") {
-            const val = boxInput.value.trim();
-            if (/^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(val)) {
+      // Detect URL input
+      if(cseInput){
+        cseInput.addEventListener("keydown", e=>{
+          if(e.key === "Enter"){
+            const query = cseInput.value.trim();
+            if(isURL(query)){
               e.preventDefault();
-              window.open(/^https?:\/\//i.test(val) ? val : "https://" + val, "_blank");
+              window.open(formatURL(query), "_blank");
             }
           }
         });
