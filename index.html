@@ -26,11 +26,6 @@
       z-index:10000; display:flex; justify-content:center; align-items:center; }
     .search-container { display:flex; justify-content:center; align-items:center; gap:10px;
       margin:0 auto 30px auto; width:fit-content; }
-    #searchBar { width:300px; padding:15px; font-size:18px; border-radius:10px 0 0 10px;
-      border:2px solid #00e0ff; outline:none; background:transparent; color:#e0e0e0; }
-    #searchBtn { width:50px; border:2px solid #00e0ff; border-left:none;
-      border-radius:0 10px 10px 0; background:#00e0ff; color:#121212; font-size:22px;
-      cursor:pointer; display:flex; justify-content:center; align-items:center; }
     #results { padding:0 20px; margin-top:20px; border:none; background:transparent; color:#fff;
       transition: padding 0.3s ease, margin-top 0.3s ease, background 0.3s ease;
       max-height:70vh; overflow-y:auto; }
@@ -43,8 +38,6 @@
     @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
     @media (max-width:600px){
       body{cursor:auto;}
-      .search-container{flex-direction:column;gap:15px;width:90%;margin:0 auto 30px auto;}
-      #searchBar,#searchBtn{width:100%;border-radius:10px;}
       .cursor,.cursor-trail{display:none;}
     }
   </style>
@@ -55,18 +48,18 @@
         style="color:lightblue;text-shadow:0 0 10px #00e0ff;cursor:pointer;">Future Search</h1>
   </div>
 
-  <button class="theme-switch" id="themeToggleBtn" onclick="toggleTheme()">🌙</button>
+  <button class="theme-switch" id="themeToggleBtn">🌙</button>
 
+  <!-- ✅ Google CSE search box -->
   <div class="search-container">
-    <input type="text" id="searchBar" placeholder="Type a keyword...">
-    <button id="searchBtn" onclick="performSearch()">🔍</button>
+    <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
+    <div class="gcse-searchbox-only" id="cseWidget"></div>
   </div>
 
   <div id="results" class="expanded"></div>
   <div class="cursor" id="cursor"></div>
 
-  <!-- Hidden Google CSE container -->
-  <script async src="https://cse.google.com/cse.js?cx=12d541be710094451"></script>
+  <!-- Hidden Google CSE results container -->
   <div style="display:none">
     <div class="gcse-searchresults-only" id="hiddenCSE"></div>
   </div>
@@ -81,14 +74,33 @@
       document.body.appendChild(t); setTimeout(()=>t.remove(),600);
     });
 
-    // Theme toggle
-    function toggleTheme(){
-      const body=document.body, btn=document.getElementById('themeToggleBtn');
-      body.classList.toggle("dark-theme"); body.classList.toggle("light-theme");
-      btn.innerText=body.classList.contains("dark-theme")?"🌙":"☀️";
-    }
+    // Theme toggle with localStorage persistence
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme");
+      if(savedTheme){
+        document.body.classList.remove("dark-theme","light-theme");
+        document.body.classList.add(savedTheme);
+        const btn = document.getElementById("themeToggleBtn");
+        btn.innerText = savedTheme === "dark-theme" ? "🌙" : "☀️";
+      }
+    });
 
-    // Ensure Google CSE is ready
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      const body = document.body, btn = document.getElementById("themeToggleBtn");
+      if(body.classList.contains("dark-theme")){
+        body.classList.remove("dark-theme");
+        body.classList.add("light-theme");
+        localStorage.setItem("theme","light-theme");
+        btn.innerText = "☀️";
+      } else {
+        body.classList.remove("light-theme");
+        body.classList.add("dark-theme");
+        localStorage.setItem("theme","dark-theme");
+        btn.innerText = "🌙";
+      }
+    });
+
+    // Wait for CSE
     function waitForCSE(){
       return new Promise(resolve=>{
         const check=()=>{
@@ -100,29 +112,45 @@
       });
     }
 
-    async function performSearch(){
-      const query=document.getElementById("searchBar").value.trim();
-      if(!query){alert("Please enter a search term");return;}
-      const resultsContainer=document.getElementById("results");
-      resultsContainer.innerHTML="<div>Loading...</div>";
-
-      await waitForCSE(); // Wait until CSE loads
-      google.search.cse.element.render({div:"hiddenCSE",tag:"searchresults-only"});
-      const cseElement=google.search.cse.element.getElement("hiddenCSE");
-      cseElement.execute(query);
-
-      const observer=new MutationObserver(()=>{
-        const cseRoot=document.querySelector('#hiddenCSE .gsc-resultsRoot');
-        if(cseRoot && cseRoot.innerHTML.trim().length>0){
-          resultsContainer.innerHTML=cseRoot.innerHTML;
-          observer.disconnect();
-        }
-      });
-      observer.observe(document.querySelector('#hiddenCSE'),{childList:true,subtree:true});
+    function getQueryParam(param){
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     }
 
-    document.getElementById("searchBar").addEventListener("keydown",e=>{
-      if(e.key==="Enter") performSearch();
+    function isURL(str){
+      return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str);
+    }
+
+    function formatURL(url){
+      if(!/^https?:\/\//i.test(url)){
+        return "https://" + url;
+      }
+      return url;
+    }
+
+    waitForCSE().then(()=>{
+      const cseInput = document.querySelector("input.gsc-input");
+      const cseButton = document.querySelector("button.gsc-search-button");
+
+      // Prefill ?q= parameter
+      const initialQuery = getQueryParam("q");
+      if(initialQuery && cseInput && cseButton){
+        cseInput.value = initialQuery;
+        cseButton.click();
+      }
+
+      // Detect URL input
+      if(cseInput){
+        cseInput.addEventListener("keydown", e=>{
+          if(e.key === "Enter"){
+            const query = cseInput.value.trim();
+            if(isURL(query)){
+              e.preventDefault();
+              window.open(formatURL(query), "_blank");
+            }
+          }
+        });
+      }
     });
   </script>
 
