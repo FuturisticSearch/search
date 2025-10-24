@@ -1,11 +1,9 @@
-<htm<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Future Search</title>
-  <meta name="description" content="Future Search – moderní vyhledávač s podporou webu a obrázků.">
-  <link rel="canonical" href="https://futuresearch.netlify.app/">
   <link rel="icon" href="favicon.png">
 
   <!-- OneSignal -->
@@ -32,7 +30,7 @@
       transition: background 0.3s ease;
       cursor: none;
     }
-    body.dark-theme { background:#000; }
+    body.dark-theme { background: #000; }
     body.light-theme {
       background: url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed;
       background-size: cover;
@@ -48,17 +46,23 @@
       display: flex; justify-content: center; align-items: center;
     }
 
+    /* Header */
+    h1 {
+      color: lightblue;
+      text-shadow: 0 0 10px #00e0ff;
+      cursor: pointer;
+      text-align: center;
+      margin: 20px 0;
+    }
+
     /* Search container */
     .search-container {
       display: flex;
       justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin: 20px auto;
-      width: fit-content;
+      margin-bottom: 20px;
     }
 
-    /* CSE results overrides */
+    /* CSE results */
     .gsc-results .gsc-webResult {
       background: rgba(0,0,0,0.5);
       margin-bottom: 15px;
@@ -107,14 +111,6 @@
       body { cursor:auto; }
       .cursor,.cursor-trail { display:none; }
     }
-
-    /* Header */
-    h1 {
-      color: lightblue;
-      text-shadow: 0 0 10px #00e0ff;
-      cursor: pointer;
-      text-align: center;
-    }
   </style>
 </head>
 <body class="dark-theme">
@@ -127,11 +123,11 @@
 
   <!-- Search box -->
   <div class="search-container">
-    <div class="gcse-searchbox-only"></div>
+    <div class="gcse-searchbox"></div>
   </div>
 
-  <!-- Search results -->
-  <div class="gcse-searchresults-only"></div>
+  <!-- Results container -->
+  <div class="gcse-searchresults"></div>
 
   <!-- Cursor -->
   <div class="cursor" id="cursor"></div>
@@ -178,10 +174,9 @@
       }
     });
 
-    // Pre-fill ?q= parameter
+    // Prefill ?q= parameter
     window.onload = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const query = urlParams.get("q");
+      const query = new URLSearchParams(window.location.search).get("q");
       if(query){
         const input = document.querySelector("input.gsc-input");
         const button = document.querySelector("button.gsc-search-button");
@@ -192,7 +187,7 @@
       }
     };
 
-    // Detect URL input in search box
+    // Detect if user types a URL
     function isURL(str){
       return /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(str);
     }
@@ -205,7 +200,6 @@
 
     setTimeout(() => {
       const input = document.querySelector("input.gsc-input");
-      const button = document.querySelector("button.gsc-search-button");
       if(input){
         input.addEventListener("keydown", e=>{
           if(e.key === "Enter"){
