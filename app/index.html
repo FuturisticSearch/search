@@ -37,6 +37,26 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://futuresearch.netlify.app/favicon.png" />
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Future Search",
+    "url": "https://futuresearch.netlify.app/",
+    "applicationCategory": "SearchApplication",
+    "operatingSystem": "All",
+    "description": "Future Search je moderní vyhledávač s podporou webu a obrázků. Vyzkoušej rychlé a přehledné vyhledávání.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5", "reviewCount": "1" },
+    "potentialAction": { "@type": "SearchAction", "target": "https://futuresearch.netlify.app/?q={search_term_string}&category=web", "query-input": "required name=search_term_string" }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  { "@context": "https://schema.org", "@type": "WebSite", "name": "Future Search", "url": "https://futuresearch.netlify.app/" }
+  </script>
+
+  <!-- Fonts & Styles -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
 
@@ -46,35 +66,35 @@
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
     h1 { color:lightblue; text-shadow:0 0 10px #00e0ff; cursor:pointer; text-align:center; margin:20px 0; }
     .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
-
     .search-wrapper { width:100%; display:flex; justify-content:center; position:relative; }
     #cse-container { display:inline-block; text-align:left; max-width:800px; width:100%; position:relative; z-index:1; }
-
-    /* Fake search overlay */
+    
+    /* Fake overlay box for input only */
     .fake-box {
       position:absolute;
       top:0;
       left:0;
-      height:46px; /* approximate CSE input height */
-      width: calc(100% - 60px); /* leave space for Google search button */
-      background: rgba(18,18,18,1); /* dark theme */
-      border: 2px solid #00e0ff;
-      border-radius: 10px 0 0 10px;
-      box-shadow: 0 0 15px rgba(0,224,255,0.5);
-      pointer-events:none; /* allow typing/click through */
+      right:60px; /* leaves Google search button visible */
+      height:46px;
+      border:2px solid #00e0ff;
+      border-radius:10px 0 0 10px;
+      background:transparent;
+      pointer-events:none; /* click-through */
       z-index:2;
+      box-shadow:0 0 15px rgba(0,224,255,0.5);
     }
     body.light-theme .fake-box {
-      background: rgba(255,255,255,0.1);
-      border-color: #0077ff;
-      box-shadow: 0 0 15px rgba(0,119,255,0.4);
+      border-color:#0077ff;
+      box-shadow:0 0 15px rgba(0,119,255,0.4);
     }
 
     .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8),0 0 30px rgba(0,224,255,0.5); z-index:9999; }
     .cursor-trail { position:fixed; width:10px; height:10px; background:rgba(0,224,255,0.4); border-radius:50%; pointer-events:none; z-index:9998; animation:fade 0.6s ease-out forwards; }
     @keyframes fade { 0%{opacity:1;transform:scale(1);} 100%{opacity:0;transform:scale(2);} }
-
     @media (max-width:600px){ body { cursor:auto; } .cursor,.cursor-trail{ display:none; } #cse-container{width:95%;} }
+
+    /* SEO hidden text */
+    .seo-text { position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
   </style>
 </head>
 <body class="dark-theme">
@@ -91,6 +111,11 @@
   </div>
 
   <div class="cursor" id="cursor"></div>
+
+  <!-- SEO hidden text -->
+  <div class="seo-text">
+    Future Search — výsledky vyhledávání online. Vyzkoušej vyhledávač Future Search pro dotazy jako pes, kočka, technologie, počasí, hry a další.
+  </div>
 
   <script>
     // Cursor
@@ -109,8 +134,8 @@
     }
 
     function updateCSETheme(){
-      const cxDark="12d541be710094451";
-      const cxLight="a1ef681a86c0942ad";
+      const cxDark="12d541be710094451"; // Dark
+      const cxLight="a1ef681a86c0942ad"; // Light
       document.getElementById("cse-container").innerHTML='<div class="gcse-searchbox"></div><div class="gcse-searchresults"></div>';
       loadCSE(document.body.classList.contains('dark-theme')? cxDark: cxLight);
     }
