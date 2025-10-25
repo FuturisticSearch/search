@@ -46,27 +46,28 @@
     body.light-theme { background:url('https://cdn.pixabay.com/photo/2020/01/21/20/30/earth-4780749_960_720.jpg') no-repeat center center fixed; background-size:cover; }
     h1 { color:lightblue; text-shadow:0 0 10px #00e0ff; cursor:pointer; text-align:center; margin:20px 0; }
     .theme-switch { position:fixed; top:15px; right:15px; padding:10px; font-size:22px; background:#00e0ff; border-radius:50%; border:none; cursor:pointer; color:#121212; z-index:10000; display:flex; justify-content:center; align-items:center; }
-    .search-wrapper { width:100%; display:flex; justify-content:center; position:relative; }
 
+    .search-wrapper { width:100%; display:flex; justify-content:center; position:relative; }
     #cse-container { display:inline-block; text-align:left; max-width:800px; width:100%; position:relative; z-index:1; }
 
-    /* Fake overlay box */
+    /* Fake search overlay */
     .fake-box {
       position:absolute;
       top:0;
       left:0;
-      right:60px; /* leave room for Google search button */
-      height:46px; /* approximate height of input */
-      border:2px solid #00e0ff;
-      border-radius:10px 0 0 10px;
-      background:transparent;
-      pointer-events:none; /* click-through */
+      height:46px; /* approximate CSE input height */
+      width: calc(100% - 60px); /* leave space for Google search button */
+      background: rgba(18,18,18,1); /* dark theme */
+      border: 2px solid #00e0ff;
+      border-radius: 10px 0 0 10px;
+      box-shadow: 0 0 15px rgba(0,224,255,0.5);
+      pointer-events:none; /* allow typing/click through */
       z-index:2;
-      box-shadow:0 0 15px rgba(0,224,255,0.5);
     }
     body.light-theme .fake-box {
-      border-color:#0077ff;
-      box-shadow:0 0 15px rgba(0,119,255,0.4);
+      background: rgba(255,255,255,0.1);
+      border-color: #0077ff;
+      box-shadow: 0 0 15px rgba(0,119,255,0.4);
     }
 
     .cursor { position:fixed; width:20px; height:20px; background:rgba(0,224,255,0.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); box-shadow:0 0 15px rgba(0,224,255,0.8),0 0 30px rgba(0,224,255,0.5); z-index:9999; }
@@ -108,8 +109,8 @@
     }
 
     function updateCSETheme(){
-      const cxDark="12d541be710094451"; // Dark
-      const cxLight="a1ef681a86c0942ad"; // Light
+      const cxDark="12d541be710094451";
+      const cxLight="a1ef681a86c0942ad";
       document.getElementById("cse-container").innerHTML='<div class="gcse-searchbox"></div><div class="gcse-searchresults"></div>';
       loadCSE(document.body.classList.contains('dark-theme')? cxDark: cxLight);
     }
