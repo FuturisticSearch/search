@@ -125,16 +125,19 @@
       location.reload();
     });
 
-    // Function to update title
+    // Update title
     function updatePageTitle(query){
       if(!query) return;
       const formatted = query.charAt(0).toUpperCase() + query.slice(1);
       document.title = `${formatted} - Future Search`;
     }
 
-    // Prefill ?q=
-    window.onload=()=>{
-      const query=new URLSearchParams(window.location.search).get("q");
+    // Prefill ?q= or #gsc.q=
+    function checkQuery(){
+      let query = new URLSearchParams(window.location.search).get("q");
+      if(!query && window.location.hash.includes("gsc.q=")){
+        query = decodeURIComponent(window.location.hash.split("gsc.q=")[1].split("&")[0] || "");
+      }
       if(query){
         const input=document.querySelector("input.gsc-input");
         const btn=document.querySelector("button.gsc-search-button");
@@ -144,7 +147,9 @@
         }
         updatePageTitle(query);
       }
-    };
+    }
+
+    window.onload = checkQuery;
 
     // Detect URL
     function isURL(str){ return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/\S*)?$/i.test(str); }
