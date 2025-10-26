@@ -122,11 +122,15 @@
       body.classList.toggle("dark-theme"); 
       body.classList.toggle("light-theme");
       localStorage.setItem("theme", body.classList.contains("dark-theme") ? "dark-theme" : "light-theme");
-      // Reload page after theme change
-      location.reload()
+      location.reload();
     });
 
-
+    // Function to update title
+    function updatePageTitle(query){
+      if(!query) return;
+      const formatted = query.charAt(0).toUpperCase() + query.slice(1);
+      document.title = `${formatted} - Future Search`;
+    }
 
     // Prefill ?q=
     window.onload=()=>{
@@ -134,7 +138,11 @@
       if(query){
         const input=document.querySelector("input.gsc-input");
         const btn=document.querySelector("button.gsc-search-button");
-        if(input && btn){ input.value=query; btn.click(); }
+        if(input && btn){ 
+          input.value=query; 
+          btn.click(); 
+        }
+        updatePageTitle(query);
       }
     };
 
@@ -144,9 +152,19 @@
 
     setTimeout(()=>{
       const input=document.querySelector("input.gsc-input");
-      if(input){ input.addEventListener("keydown", e=>{
-        if(e.key==="Enter"){ const query=input.value.trim(); if(isURL(query)){ e.preventDefault(); window.open(formatURL(query),"_blank"); } }
-      }); }
+      if(input){ 
+        input.addEventListener("keydown", e=>{
+          if(e.key==="Enter"){ 
+            const query=input.value.trim(); 
+            if(isURL(query)){ 
+              e.preventDefault(); 
+              window.open(formatURL(query),"_blank"); 
+            } else {
+              updatePageTitle(query);
+            }
+          }
+        });
+      }
     },1000);
   </script>
 
